@@ -30,16 +30,6 @@ func (p *astPrinter) printf(format string, args ...any) {
 	fmt.Printf(format, args...)
 }
 
-func (p *astPrinter) VisitNegateExpr(n *NegateExpr) {
-	p.printf("(negate")
-	p.indent++
-
-	n.expr.Visit(p)
-
-	p.indent--
-	p.printf(")")
-}
-
 func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
 	p.printf("(number %d)", n.token.Number)
 }

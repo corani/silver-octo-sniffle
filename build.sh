@@ -11,7 +11,8 @@ function print_usage {
     echo "  -b          build program"
     echo "  -i          install tools"
     echo "  -tu         run unit tests"
-    echo "  -tg         run golden tests"
+    echo "  -tg         verify golden tests"
+    echo "  -tr         record golden tests"
     echo "  -l          run golangci-lint"
 }
 
@@ -66,8 +67,8 @@ function go_unit_test {
     fi
 }
 
-function go_golden_test {
-    echo "[INFO] running golden tests..."
+function go_golden_test_verify {
+    echo "[INFO] verifying golden tests..."
 
     mkdir -p gen 
 
@@ -77,6 +78,18 @@ function go_golden_test {
         echo "[CMD] bin/compiler -src ${INPUT}"
         bin/compiler -src "${INPUT}" -tokens -ast -run > ${OUTPUT}
         diff -ayw --suppress-common-lines ${OUTPUT} ${EXPECTED}
+    done
+}
+
+function go_golden_test_record {
+    echo "[INFO] recording golden tests..."
+
+    mkdir -p gen 
+
+    for INPUT in $(find test -name "*.in"); do
+        OUTPUT=${INPUT/%in/exp}
+        echo "[CMD] bin/compiler -src ${INPUT}"
+        bin/compiler -src "${INPUT}" -tokens -ast -run > ${OUTPUT}
     done
 }
 
@@ -119,7 +132,11 @@ while [ "$#" -gt "0" ]; do
         ;;
     -tg)
         go_build
-        go_golden_test
+        go_golden_test_verify
+        ;;
+    -tr)
+        go_build
+        go_golden_test_record
         ;;
     -l)
         run_golangci

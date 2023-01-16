@@ -39,11 +39,6 @@ func (g *generator) Generate(root Node) {
 	fmt.Fprintln(g.out, `declare dso_local i32 @sprintf(i8*, i8*, ...)`)
 }
 
-func (g *generator) VisitNegateExpr(n *NegateExpr) {
-	n.expr.Visit(g)
-	// TODO(daniel): generate negate last register.
-}
-
 func (g *generator) VisitNumberExpr(n *NumberExpr) {
 	val := g.assign("alloca i32")
 	fmt.Fprintf(g.out, "store i32 %v, i32* %v\n", n.token.Number, val)

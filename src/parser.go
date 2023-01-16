@@ -3,7 +3,6 @@ package main
 import "fmt"
 
 type Visitor interface {
-	VisitNegateExpr(*NegateExpr)
 	VisitNumberExpr(*NumberExpr)
 	VisitBinaryExpr(*BinaryExpr)
 	VisitPrintStmt(*PrintStmt)
@@ -12,19 +11,6 @@ type Visitor interface {
 type Node interface {
 	Token() Token
 	Visit(Visitor)
-}
-
-type NegateExpr struct {
-	token Token
-	expr  Node
-}
-
-func (n *NegateExpr) Token() Token {
-	return n.token
-}
-
-func (n *NegateExpr) Visit(v Visitor) {
-	v.VisitNegateExpr(n)
 }
 
 type NumberExpr struct {
@@ -121,48 +107,28 @@ func (p *Parser) parsePrintStmt() (Node, error) {
 }
 
 func (p *Parser) parseExpr() (Node, error) {
-	switch p.currentType() {
-	case TokenMinus:
-		// Unary Minus.
-		t, _ := p.require(TokenMinus)
-
-		n, err := p.parseExpr()
-		if err != nil {
-			return n, err
-		}
-
-		return &NegateExpr{
-			token: t,
-			expr:  n,
-		}, nil
-	case TokenPlus:
-		// Unary Plus is a no-op.
-		p.require(TokenPlus)
-
-		return p.parseExpr()
-	default:
-		lhs, err := p.parseTerm()
-		if err != nil {
-			return lhs, err
-		}
-
-		// NOTE(daniel): parse a chain of +/- operators
-		for op := p.currentToken(); op.Type == TokenPlus || op.Type == TokenMinus; op = p.currentToken() {
-			p.index++
-
-			rhs, err := p.parseTerm()
-			if err != nil {
-				return rhs, err
-			}
-
-			lhs = &BinaryExpr{
-				token: op,
-				args:  []Node{lhs, rhs},
-			}
-		}
-
-		return lhs, nil
+	// expr := term { '+' | '-' term }
+	lhs, err := p.parseTerm()
+	if err != nil {
+		return lhs, err
 	}
+
+	// NOTE(daniel): parse a chain of +/- operators
+	for op := p.currentToken(); op.Type == TokenPlus || op.Type == TokenMinus; op = p.currentToken() {
+		p.index++
+
+		rhs, err := p.parseTerm()
+		if err != nil {
+			return rhs, err
+		}
+
+		lhs = &BinaryExpr{
+			token: op,
+			args:  []Node{lhs, rhs},
+		}
+	}
+
+	return lhs, nil
 }
 
 func (p *Parser) parseTerm() (Node, error) {
@@ -170,13 +136,41 @@ func (p *Parser) parseTerm() (Node, error) {
 }
 
 func (p *Parser) parseNumberExpr() (Node, error) {
-	node := &NumberExpr{
-		token: p.currentToken(),
+	var op *Token
+
+	switch p.currentType() {
+	case TokenMinus:
+		// Unary Minus.
+		t, _ := p.require(TokenMinus)
+
+		op = &t
+	case TokenPlus:
+		// Unary Plus is a no-op so we ignore it.
+		_, _ = p.require(TokenPlus)
 	}
 
-	p.index++
+	t, err := p.require(TokenNumber)
+	if err != nil {
+		return nil, err
+	}
 
-	return node, nil
+	num := &NumberExpr{token: t}
+
+	if op == nil {
+		return num, nil
+	}
+
+	zero := &NumberExpr{token: t}
+	zero.token.Number = 0
+	zero.token.Text = ""
+
+	return &BinaryExpr{
+		token: *op,
+		args: []Node{
+			zero,
+			num,
+		},
+	}, nil
 }
 
 func (p *Parser) require(exp TokenType) (Token, error) {

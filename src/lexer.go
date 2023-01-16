@@ -14,8 +14,8 @@ const (
 	TokenPrint  TokenType = "print"
 	TokenLParen TokenType = "lparen"
 	TokenRParen TokenType = "rparen"
-	TokenPlus   TokenType = "plus"
-	TokenMinus  TokenType = "-"
+	TokenPlus   TokenType = "add"
+	TokenMinus  TokenType = "sub"
 	TokenComma  TokenType = "comma"
 	TokenEOF    TokenType = "eof"
 )
