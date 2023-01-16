@@ -72,7 +72,7 @@ function go_golden_test_verify {
 
     mkdir -p gen 
 
-    for INPUT in $(find test -name "*.in"); do
+    for INPUT in $(find test -name "*.in" | sort); do
         OUTPUT=${INPUT/%in/act}
         EXPECTED=${INPUT/%in/exp}
         echo "[CMD] bin/compiler -src ${INPUT}"
@@ -86,7 +86,7 @@ function go_golden_test_record {
 
     mkdir -p gen 
 
-    for INPUT in $(find test -name "*.in"); do
+    for INPUT in $(find test -name "*.in" | sort); do
         OUTPUT=${INPUT/%in/exp}
         echo "[CMD] bin/compiler -src ${INPUT}"
         bin/compiler -src "${INPUT}" -tokens -ast -run > ${OUTPUT}
