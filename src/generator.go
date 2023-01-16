@@ -26,7 +26,8 @@ var _ Visitor = (*generator)(nil)
 func (g *generator) Generate(root Node) {
 	fmt.Fprintln(g.out, `target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"`)
 	fmt.Fprintln(g.out, `target triple = "x86_64-pc-linux-gnu"`)
-	fmt.Fprintln(g.out, `@format = internal constant [3 x i8] c"%d\00"`)
+	format := "%d\000" // this nonsense is needed to keep govet quiet
+	fmt.Fprintln(g.out, `@format = internal constant [3 x i8] c"`+format+`"`)
 	fmt.Fprintln(g.out, `define dso_local i32 @main() {`)
 
 	root.Visit(g)
@@ -72,13 +73,4 @@ func (g *generator) assign(format string, args ...any) string {
 	fmt.Fprintf(g.out, "%%%d = %v\n", id, fmt.Sprintf(format, args...))
 
 	return fmt.Sprintf("%%%d", id)
-}
-
-func (g *generator) constant(format string, args ...any) string {
-	id := fmt.Sprintf("@val.%d", g.conid)
-	g.conid++
-
-	fmt.Fprintf(g.out, "%s = %v\n", id, fmt.Sprintf(format, args...))
-
-	return id
 }

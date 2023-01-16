@@ -38,9 +38,16 @@ func main() {
 		printAST(ast)
 	}
 
-	baseName := strings.TrimSuffix(*srcName, filepath.Ext(*srcName))
-	llName := baseName + ".ll"
-	outName := baseName + ".out"
+	baseName := strings.TrimSuffix(filepath.Base(*srcName), filepath.Ext(*srcName))
+
+	dir, err := os.MkdirTemp("", "")
+	if err != nil {
+		panic(err)
+	}
+	defer os.RemoveAll(dir)
+
+	llName := filepath.Join(dir, baseName+".ll")
+	outName := filepath.Join(dir, baseName+".out")
 
 	out, err := os.Create(llName)
 	if err != nil {

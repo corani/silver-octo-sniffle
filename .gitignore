@@ -1,2 +1,5 @@
 *.ll
 *.out 
+*.act
+bin
+tools/bin
