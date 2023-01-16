@@ -15,8 +15,18 @@ const (
 	TokenLParen TokenType = "lparen"
 	TokenRParen TokenType = "rparen"
 	TokenPlus   TokenType = "plus"
+	TokenMinus  TokenType = "-"
+	TokenComma  TokenType = "comma"
 	TokenEOF    TokenType = "eof"
 )
+
+var mapCharToToken = map[byte]TokenType{
+	'(': TokenLParen,
+	')': TokenRParen,
+	'+': TokenPlus,
+	'-': TokenMinus,
+	',': TokenComma,
+}
 
 type Range struct {
 	FromRow, FromCol int
@@ -64,93 +74,72 @@ func lex(name string, bs []byte) (Tokens, error) {
 		startr := row
 		startc := col
 
+		var tokenType TokenType
+
 		switch {
-		case bs[i] >= '0' && bs[i] <= '9':
-			for bs[i] >= '0' && bs[i] <= '9' {
+		case numeric(bs[i]):
+			for numeric(bs[i]) {
 				i++
 				col++
 			}
 
-			text := string(bs[starti:i])
-			num, err := strconv.Atoi(text)
-			if err != nil {
-				return result, err
-			}
-
-			result = append(result, Token{
-				Type:   TokenNumber,
-				File:   name,
-				Range:  Range{startr, startc, row, col},
-				Text:   text,
-				Number: num,
-			})
-		case bs[i] >= 'a' && bs[i] <= 'z':
-			for (bs[i] >= '0' && bs[i] <= '9') || (bs[i] >= 'a' && bs[i] <= 'z') {
+			tokenType = TokenNumber
+		case alpha(bs[i]):
+			for alphanumeric(bs[i]) {
 				i++
 				col++
 			}
 
-			text := string(bs[starti:i])
-			typ := TokenIdent
+			tokenType = TokenIdent
 
-			switch text {
+			// TODO(daniel): move this to semantic analysis?
+			switch string(bs[starti:i]) {
 			case "print":
-				typ = TokenPrint
+				tokenType = TokenPrint
 			}
-
-			result = append(result, Token{
-				Type:  typ,
-				File:  name,
-				Range: Range{startr, startc, row, col},
-				Text:  text,
-			})
 		default:
-			switch bs[i] {
-			case '(':
+			if t, ok := mapCharToToken[bs[i]]; ok {
 				i++
 				col++
-
-				result = append(result, Token{
-					Type:   TokenLParen,
-					File:   name,
-					Range:  Range{startr, startc, row, col},
-					Text:   string(bs[starti:i]),
-					Number: 0,
-				})
-			case ')':
-				i++
-				col++
-
-				result = append(result, Token{
-					Type:   TokenRParen,
-					File:   name,
-					Range:  Range{startr, startc, row, col},
-					Text:   string(bs[starti:i]),
-					Number: 0,
-				})
-			case '+':
-				i++
-				col++
-
-				result = append(result, Token{
-					Type:   TokenPlus,
-					File:   name,
-					Range:  Range{startr, startc, row, col},
-					Text:   string(bs[starti:i]),
-					Number: 0,
-				})
-			case '\n':
-				i++
-				row++
-				col = 0
-			case '\r', ' ', '\t':
-				i++
-			default:
-				return result, fmt.Errorf("unknown character '%c'", bs[i])
+				tokenType = t
+			} else {
+				switch bs[i] {
+				case '\n':
+					i++
+					row++
+					col = 0
+					continue
+				case '\r', ' ', '\t':
+					i++
+					continue
+				default:
+					return result, fmt.Errorf("unknown character '%c'", bs[i])
+				}
 			}
 		}
+
+		// NOTE(daniel): add the identified token.
+		text := string(bs[starti:i])
+		var num int
+
+		if tokenType == TokenNumber {
+			if i, err := strconv.Atoi(text); err != nil {
+				return result, err
+			} else {
+				num = i
+			}
+		}
+
+		result = append(result, Token{
+			Type:   tokenType,
+			File:   name,
+			Range:  Range{startr, startc, row, col},
+			Text:   text,
+			Number: num,
+		})
 	}
 
+	// NOTE(daniel): add EOF token.
 	result = append(result, Token{
 		Type:   TokenEOF,
 		File:   name,
@@ -160,4 +149,16 @@ func lex(name string, bs []byte) (Tokens, error) {
 	})
 
 	return result, nil
+}
+
+func alpha(b byte) bool {
+	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z')
+}
+
+func numeric(b byte) bool {
+	return (b >= '0' && b <= '9')
+}
+
+func alphanumeric(b byte) bool {
+	return alpha(b) || numeric(b)
 }

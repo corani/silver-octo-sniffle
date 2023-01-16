@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 type Visitor interface {
+	VisitNegateExpr(*NegateExpr)
 	VisitNumberExpr(*NumberExpr)
 	VisitBinaryExpr(*BinaryExpr)
 	VisitPrintStmt(*PrintStmt)
@@ -11,6 +12,19 @@ type Visitor interface {
 type Node interface {
 	Token() Token
 	Visit(Visitor)
+}
+
+type NegateExpr struct {
+	token Token
+	expr  Node
+}
+
+func (n *NegateExpr) Token() Token {
+	return n.token
+}
+
+func (n *NegateExpr) Visit(v Visitor) {
+	v.VisitNegateExpr(n)
 }
 
 type NumberExpr struct {
@@ -66,17 +80,17 @@ func parse(tokens Tokens) (Node, error) {
 }
 
 func (p *Parser) parse() (Node, error) {
-	switch p.tokens[p.index].Type {
+	switch p.currentType() {
 	case TokenPrint:
-		return p.parsePrint()
+		return p.parsePrintStmt()
 	default:
 		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index])
 	}
 }
 
-func (p *Parser) parsePrint() (Node, error) {
+func (p *Parser) parsePrintStmt() (Node, error) {
 	node := &PrintStmt{
-		token: p.tokens[p.index],
+		token: p.currentToken(),
 		args:  nil,
 	}
 
@@ -86,38 +100,18 @@ func (p *Parser) parsePrint() (Node, error) {
 		return node, err
 	}
 
-	var args []Node
-	var op Token
+	for {
+		expr, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
 
-	for p.tokens[p.index].Type != TokenRParen {
-		switch p.tokens[p.index].Type {
-		case TokenNumber:
-			arg, err := p.parseNumber()
-			if err != nil {
-				return node, err
-			}
+		node.args = append(node.args, expr)
 
-			args = append(args, arg)
-
-			if len(args) == 2 && op.Type != "" {
-				switch op.Type {
-				case TokenPlus:
-					plus := &BinaryExpr{
-						token: op,
-						args:  args,
-					}
-
-					args = []Node{plus}
-					op = Token{}
-				}
-			}
-		case TokenPlus:
-			op = p.tokens[p.index]
-			p.index++
+		if !p.expect(TokenComma) {
+			break
 		}
 	}
-
-	node.args = args
 
 	if _, err := p.require(TokenRParen); err != nil {
 		return node, err
@@ -126,9 +120,58 @@ func (p *Parser) parsePrint() (Node, error) {
 	return node, nil
 }
 
-func (p *Parser) parseNumber() (Node, error) {
+func (p *Parser) parseExpr() (Node, error) {
+	switch p.currentType() {
+	case TokenMinus:
+		// Unary Minus.
+		t, _ := p.require(TokenMinus)
+
+		n, err := p.parseExpr()
+		if err != nil {
+			return n, err
+		}
+
+		return &NegateExpr{
+			token: t,
+			expr:  n,
+		}, nil
+	case TokenPlus:
+		// Unary Plus is a no-op.
+		p.require(TokenPlus)
+
+		return p.parseExpr()
+	default:
+		lhs, err := p.parseTerm()
+		if err != nil {
+			return lhs, err
+		}
+
+		// NOTE(daniel): parse a chain of +/- operators
+		for op := p.currentToken(); op.Type == TokenPlus || op.Type == TokenMinus; op = p.currentToken() {
+			p.index++
+
+			rhs, err := p.parseTerm()
+			if err != nil {
+				return rhs, err
+			}
+
+			lhs = &BinaryExpr{
+				token: op,
+				args:  []Node{lhs, rhs},
+			}
+		}
+
+		return lhs, nil
+	}
+}
+
+func (p *Parser) parseTerm() (Node, error) {
+	return p.parseNumberExpr()
+}
+
+func (p *Parser) parseNumberExpr() (Node, error) {
 	node := &NumberExpr{
-		token: p.tokens[p.index],
+		token: p.currentToken(),
 	}
 
 	p.index++
@@ -137,12 +180,30 @@ func (p *Parser) parseNumber() (Node, error) {
 }
 
 func (p *Parser) require(exp TokenType) (Token, error) {
-	if p.tokens[p.index].Type == exp {
-		token := p.tokens[p.index]
+	if p.currentType() == exp {
+		token := p.currentToken()
 		p.index++
 
 		return token, nil
 	}
 
 	return Token{}, fmt.Errorf("unexpected token: %v (expected %v)", p.tokens[p.index], exp)
+}
+
+func (p *Parser) expect(exp TokenType) bool {
+	if p.currentType() == exp {
+		p.index++
+
+		return true
+	}
+
+	return false
+}
+
+func (p *Parser) currentToken() Token {
+	return p.tokens[p.index]
+}
+
+func (p *Parser) currentType() TokenType {
+	return p.tokens[p.index].Type
 }

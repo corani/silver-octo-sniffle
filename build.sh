@@ -76,7 +76,7 @@ function go_golden_test {
         EXPECTED=${INPUT/%in/exp}
         echo "[CMD] bin/compiler -src ${INPUT}"
         bin/compiler -src "${INPUT}" -tokens -ast -run > ${OUTPUT}
-        diff -yw --suppress-common-lines ${OUTPUT} ${EXPECTED}
+        diff -ayw --suppress-common-lines ${OUTPUT} ${EXPECTED}
     done
 }
 

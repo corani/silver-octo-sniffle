@@ -39,6 +39,11 @@ func (g *generator) Generate(root Node) {
 	fmt.Fprintln(g.out, `declare dso_local i32 @sprintf(i8*, i8*, ...)`)
 }
 
+func (g *generator) VisitNegateExpr(n *NegateExpr) {
+	n.expr.Visit(g)
+	// TODO(daniel): generate negate last register.
+}
+
 func (g *generator) VisitNumberExpr(n *NumberExpr) {
 	val := g.assign("alloca i32")
 	fmt.Fprintf(g.out, "store i32 %v, i32* %v\n", n.token.Number, val)
@@ -50,7 +55,12 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	left := fmt.Sprintf("%%%d", g.ssaid-1)
 	n.args[1].Visit(g)
 	right := fmt.Sprintf("%%%d", g.ssaid-1)
-	g.assign("add i32 %v, %v", left, right)
+	switch n.token.Type {
+	case TokenMinus:
+		g.assign("sub i32 %v, %v", left, right)
+	case TokenPlus:
+		g.assign("add i32 %v, %v", left, right)
+	}
 }
 
 func (g *generator) VisitPrintStmt(n *PrintStmt) {

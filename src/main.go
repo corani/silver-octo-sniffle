@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -55,13 +56,15 @@ func main() {
 	}
 	defer out.Close()
 
-	generateIR(out, ast)
+	fmt.Println("IR:")
+	generateIR(io.MultiWriter(out, os.Stdout), ast)
 
 	if err := compile(llName, outName); err != nil {
 		panic(err)
 	}
 
 	if *run {
+		fmt.Println("Run:")
 		absName, err := filepath.Abs(outName)
 		if err != nil {
 			panic(err)
