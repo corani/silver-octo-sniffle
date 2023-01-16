@@ -113,7 +113,7 @@ func (p *Parser) parseExpr() (Node, error) {
 		return lhs, err
 	}
 
-	// NOTE(daniel): parse a chain of +/- operators
+	// NOTE(daniel): parse a chain of `+`/`-` operators
 	for op := p.currentToken(); op.Type == TokenPlus || op.Type == TokenMinus; op = p.currentToken() {
 		p.index++
 
@@ -132,18 +132,59 @@ func (p *Parser) parseExpr() (Node, error) {
 }
 
 func (p *Parser) parseTerm() (Node, error) {
-	return p.parseNumberExpr()
+	// term := factor { '*' | '/' factor }
+	lhs, err := p.parseFactor()
+	if err != nil {
+		return lhs, err
+	}
+
+	// NOTE(daniel): parse a chain of `*`/`/` operators
+	for op := p.currentToken(); op.Type == TokenStar || op.Type == TokenSlash; op = p.currentToken() {
+		p.index++
+
+		rhs, err := p.parseFactor()
+		if err != nil {
+			return rhs, err
+		}
+
+		lhs = &BinaryExpr{
+			token: op,
+			args:  []Node{lhs, rhs},
+		}
+	}
+
+	return lhs, nil
+}
+
+func (p *Parser) parseFactor() (Node, error) {
+	// factor := '(' expr ')' | number
+	if p.currentType() != TokenLParen {
+		return p.parseNumberExpr()
+	}
+
+	if _, err := p.require(TokenLParen); err != nil {
+		return nil, err
+	}
+
+	expr, err := p.parseExpr()
+	if err != nil {
+		return expr, err
+	}
+
+	if _, err := p.require(TokenRParen); err != nil {
+		return nil, err
+	}
+
+	return expr, nil
 }
 
 func (p *Parser) parseNumberExpr() (Node, error) {
-	var op *Token
+	var op Token
 
 	switch p.currentType() {
 	case TokenMinus:
 		// Unary Minus.
-		t, _ := p.require(TokenMinus)
-
-		op = &t
+		op, _ = p.require(TokenMinus)
 	case TokenPlus:
 		// Unary Plus is a no-op so we ignore it.
 		_, _ = p.require(TokenPlus)
@@ -156,20 +197,19 @@ func (p *Parser) parseNumberExpr() (Node, error) {
 
 	num := &NumberExpr{token: t}
 
-	if op == nil {
+	if op.Type == TokenInvalid {
 		return num, nil
 	}
 
+	// NOTE(daniel): There is no negate for integers in LLVM IR, so we treat
+	// `-x` as `0 - x`. That means we don't need generator code either.
 	zero := &NumberExpr{token: t}
 	zero.token.Number = 0
 	zero.token.Text = ""
 
 	return &BinaryExpr{
-		token: *op,
-		args: []Node{
-			zero,
-			num,
-		},
+		token: op,
+		args:  []Node{zero, num},
 	}, nil
 }
 

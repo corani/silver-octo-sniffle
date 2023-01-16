@@ -55,6 +55,10 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 		g.assign("sub i32 %v, %v", left, right)
 	case TokenPlus:
 		g.assign("add i32 %v, %v", left, right)
+	case TokenStar:
+		g.assign("mul i32 %v, %v", left, right)
+	case TokenSlash:
+		g.assign("udiv i32 %v, %v", left, right)
 	}
 }
 

@@ -9,15 +9,18 @@ import (
 type TokenType string
 
 const (
-	TokenNumber TokenType = "number"
-	TokenIdent  TokenType = "ident"
-	TokenPrint  TokenType = "print"
-	TokenLParen TokenType = "lparen"
-	TokenRParen TokenType = "rparen"
-	TokenPlus   TokenType = "add"
-	TokenMinus  TokenType = "sub"
-	TokenComma  TokenType = "comma"
-	TokenEOF    TokenType = "eof"
+	TokenInvalid TokenType = ""
+	TokenNumber  TokenType = "number"
+	TokenIdent   TokenType = "ident"
+	TokenPrint   TokenType = "print"
+	TokenLParen  TokenType = "lparen"
+	TokenRParen  TokenType = "rparen"
+	TokenPlus    TokenType = "add"
+	TokenMinus   TokenType = "sub"
+	TokenStar    TokenType = "mul"
+	TokenSlash   TokenType = "div"
+	TokenComma   TokenType = "comma"
+	TokenEOF     TokenType = "eof"
 )
 
 var mapCharToToken = map[byte]TokenType{
@@ -25,6 +28,8 @@ var mapCharToToken = map[byte]TokenType{
 	')': TokenRParen,
 	'+': TokenPlus,
 	'-': TokenMinus,
+	'*': TokenStar,
+	'/': TokenSlash,
 	',': TokenComma,
 }
 
