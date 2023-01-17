@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"runtime"
 )
 
 func generateIR(writer io.Writer, root Node) {
@@ -25,7 +26,7 @@ var _ Visitor = (*generator)(nil)
 
 func (g *generator) Generate(root Node) {
 	fmt.Fprintln(g.out, `target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"`)
-	fmt.Fprintln(g.out, `target triple = "x86_64-pc-linux-gnu"`)
+	fmt.Fprintf(g.out, "target triple = \"%v\"\n", g.getTargetTriple())
 
 	root.Visit(g)
 }
@@ -89,4 +90,24 @@ func (g *generator) assign(format string, args ...any) string {
 	fmt.Fprintf(g.out, "%%%d = %v\n", id, fmt.Sprintf(format, args...))
 
 	return fmt.Sprintf("%%%d", id)
+}
+
+func (g *generator) getTargetTriple() string {
+	var os string
+
+	switch runtime.GOOS {
+	case "linux":
+		os = "linux"
+	default:
+		panic(fmt.Sprintf("unknown OS: %v", runtime.GOOS))
+	}
+
+	switch runtime.GOARCH {
+	case "amd64":
+		return fmt.Sprintf("x86_64-pc-%v-gnu", os)
+	case "arm64":
+		return fmt.Sprintf("aarch64-unknown-%v-gnu", os)
+	default:
+		panic(fmt.Sprintf("unknown architecture: %v", runtime.GOARCH))
+	}
 }
