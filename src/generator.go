@@ -11,6 +11,8 @@ import (
 	"github.com/llir/llvm/ir/value"
 )
 
+var zero = constant.NewInt(types.I32, 0)
+
 func generateIR(writer io.Writer, root Node) {
 	g := &generator{
 		currentModule: ir.NewModule(),
@@ -18,12 +20,11 @@ func generateIR(writer io.Writer, root Node) {
 		currentValue:  nil,
 		stdlib:        make(map[string]*ir.Func),
 		strings:       make(map[string]*ir.Global),
-		buf:           nil,
 	}
 
-	g.Generate(root)
+	module := g.Generate(root)
 
-	fmt.Fprintln(writer, g.currentModule)
+	fmt.Fprintln(writer, module)
 }
 
 type generator struct {
@@ -32,55 +33,48 @@ type generator struct {
 	currentValue  value.Value
 	stdlib        map[string]*ir.Func
 	strings       map[string]*ir.Global
-	buf           *ir.InstAlloca
 }
 
 var _ Visitor = (*generator)(nil)
 
-func (g *generator) Generate(root Node) {
+func (g *generator) Generate(root Node) *ir.Module {
 	g.currentModule.TargetTriple = g.getTargetTriple()
 	g.generateStdlib()
 
 	root.Visit(g)
+
+	return g.currentModule
 }
 
 func (g *generator) VisitModule(n *Module) {
 	main := g.currentModule.NewFunc("main", types.I32)
-	g.stdlib["main"] = main
-
 	g.currentBlock = main.NewBlock("entry")
 
 	for _, stmt := range n.stmts {
 		stmt.Visit(g)
 	}
 
-	g.currentBlock.NewRet(constant.NewInt(types.I32, 0))
+	g.currentBlock.NewRet(zero)
 }
 
 func (g *generator) VisitPrintStmt(n *PrintStmt) {
 	for _, arg := range n.args {
-		arg.Visit(g)
-		number := g.currentValue
+		number := g.visitAndReturnValue(arg)
 
-		if g.buf == nil {
-			g.buf = g.currentBlock.NewAlloca(types.NewArray(318, types.I8))
-		}
+		format := g.internString("%d\n\000")
+		formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
 
-		bufptr := g.currentBlock.NewGetElementPtr(g.buf.ElemType, g.buf, constant.NewInt(types.I32, 0), constant.NewInt(types.I32, 0))
-
-		format := g.intern("%d\000")
-		formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, constant.NewInt(types.I32, 0), constant.NewInt(types.I32, 0))
-
-		g.currentBlock.NewCall(g.stdlib["sprintf"], bufptr, formatptr, number)
-		g.currentBlock.NewCall(g.stdlib["puts"], bufptr)
+		g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
 	}
 }
 
 func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
-	n.args[0].Visit(g)
-	left := g.currentValue
-	n.args[1].Visit(g)
-	right := g.currentValue
+	if len(n.args) != 2 {
+		panic(fmt.Sprintf("expected two arguments, got %d", len(n.args)))
+	}
+
+	left := g.visitAndReturnValue(n.args[0])
+	right := g.visitAndReturnValue(n.args[1])
 
 	switch n.token.Type {
 	case TokenMinus:
@@ -91,11 +85,19 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 		g.currentValue = g.currentBlock.NewMul(left, right)
 	case TokenSlash:
 		g.currentValue = g.currentBlock.NewSDiv(left, right)
+	default:
+		panic(fmt.Sprintf("unsupported token type: %+v", n.token))
 	}
 }
 
 func (g *generator) VisitNumberExpr(n *NumberExpr) {
 	g.currentValue = constant.NewInt(types.I32, int64(n.token.Number))
+}
+
+func (g *generator) visitAndReturnValue(n Node) value.Value {
+	n.Visit(g)
+
+	return g.currentValue
 }
 
 func (g *generator) generateStdlib() {
@@ -108,9 +110,14 @@ func (g *generator) generateStdlib() {
 		ir.NewParam("format", types.I8Ptr))
 	sprintf.Sig.Variadic = true
 	g.stdlib["sprintf"] = sprintf
+
+	printf := g.currentModule.NewFunc("printf", types.I32,
+		ir.NewParam("format", types.I8Ptr))
+	printf.Sig.Variadic = true
+	g.stdlib["printf"] = printf
 }
 
-func (g *generator) intern(s string) *ir.Global {
+func (g *generator) internString(s string) *ir.Global {
 	if v, ok := g.strings[s]; ok {
 		return v
 	}
@@ -121,6 +128,7 @@ func (g *generator) intern(s string) *ir.Global {
 	return def
 }
 
+// incomplete and probably wrong!
 func (g *generator) getTargetTriple() string {
 	var os string
 

@@ -18,7 +18,7 @@ AST:
 IR:
 target triple = "x86_64-pc-linux-gnu"
 
-@0 = global [3 x i8] c"%d\00"
+@0 = global [4 x i8] c"%d\0A\00"
 
 declare i32 @puts(i8* %str)
 
@@ -26,14 +26,13 @@ declare i32 @rand()
 
 declare i32 @sprintf(i8* %buf, i8* %format, ...)
 
+declare i32 @printf(i8* %format, ...)
+
 define i32 @main() {
 entry:
 	%0 = sub i32 66, 33
-	%1 = alloca [318 x i8]
-	%2 = getelementptr [318 x i8], [318 x i8]* %1, i32 0, i32 0
-	%3 = getelementptr [3 x i8], [3 x i8]* @0, i32 0, i32 0
-	%4 = call i32 (i8*, i8*, ...) @sprintf(i8* %2, i8* %3, i32 %0)
-	%5 = call i32 @puts(i8* %2)
+	%1 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
+	%2 = call i32 (i8*, ...) @printf(i8* %1, i32 %0)
 	ret i32 0
 }
 
