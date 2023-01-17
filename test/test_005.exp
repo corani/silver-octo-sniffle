@@ -8,13 +8,15 @@ test/test_005.in:1:11:	number	"35"	35	(1, 11) -> (1, 13)
 test/test_005.in:1:13:	rparen	")"	0	(1, 13) -> (1, 14)
 test/test_005.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 AST:
-(print
-  (add
-    (sub
-      (number 0)
-      (number 34)
+(module
+  (print
+    (add
+      (sub
+        (number 0)
+        (number 34)
+      )
+      (number 35)
     )
-    (number 35)
   )
 )
 IR:

@@ -2,55 +2,6 @@ package main
 
 import "fmt"
 
-type Visitor interface {
-	VisitNumberExpr(*NumberExpr)
-	VisitBinaryExpr(*BinaryExpr)
-	VisitPrintStmt(*PrintStmt)
-}
-
-type Node interface {
-	Token() Token
-	Visit(Visitor)
-}
-
-type NumberExpr struct {
-	token Token
-}
-
-func (n *NumberExpr) Token() Token {
-	return n.token
-}
-
-func (n *NumberExpr) Visit(v Visitor) {
-	v.VisitNumberExpr(n)
-}
-
-type BinaryExpr struct {
-	token Token
-	args  []Node
-}
-
-func (n *BinaryExpr) Token() Token {
-	return n.token
-}
-
-func (n *BinaryExpr) Visit(v Visitor) {
-	v.VisitBinaryExpr(n)
-}
-
-type PrintStmt struct {
-	token Token
-	args  []Node
-}
-
-func (n *PrintStmt) Token() Token {
-	return n.token
-}
-
-func (n *PrintStmt) Visit(v Visitor) {
-	v.VisitPrintStmt(n)
-}
-
 type Parser struct {
 	tokens Tokens
 	index  int
@@ -66,12 +17,27 @@ func parse(tokens Tokens) (Node, error) {
 }
 
 func (p *Parser) parse() (Node, error) {
-	switch p.currentType() {
-	case TokenPrint:
-		return p.parsePrintStmt()
-	default:
-		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index])
+	return p.parseModule()
+}
+
+func (p *Parser) parseModule() (Node, error) {
+	node := &Module{}
+
+	for p.currentType() != TokenEOF {
+		switch p.currentType() {
+		case TokenPrint:
+			stmt, err := p.parsePrintStmt()
+			if err != nil {
+				return nil, err
+			}
+
+			node.stmts = append(node.stmts, stmt)
+		default:
+			return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index])
+		}
 	}
+
+	return node, nil
 }
 
 func (p *Parser) parsePrintStmt() (Node, error) {

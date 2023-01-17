@@ -30,16 +30,12 @@ func (p *astPrinter) printf(format string, args ...any) {
 	fmt.Printf(format, args...)
 }
 
-func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
-	p.printf("(number %d)", n.token.Number)
-}
-
-func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
-	p.printf("(%v", n.token.Type)
+func (p *astPrinter) VisitModule(n *Module) {
+	p.printf("(module")
 	p.indent++
 
-	for _, arg := range n.args {
-		arg.Visit(p)
+	for _, stmt := range n.stmts {
+		stmt.Visit(p)
 	}
 
 	p.indent--
@@ -56,4 +52,20 @@ func (p *astPrinter) VisitPrintStmt(n *PrintStmt) {
 
 	p.indent--
 	p.printf(")")
+}
+
+func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
+	p.printf("(%v", n.token.Type)
+	p.indent++
+
+	for _, arg := range n.args {
+		arg.Visit(p)
+	}
+
+	p.indent--
+	p.printf(")")
+}
+
+func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
+	p.printf("(number %d)", n.token.Number)
 }

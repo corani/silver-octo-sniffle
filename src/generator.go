@@ -26,11 +26,18 @@ var _ Visitor = (*generator)(nil)
 func (g *generator) Generate(root Node) {
 	fmt.Fprintln(g.out, `target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"`)
 	fmt.Fprintln(g.out, `target triple = "x86_64-pc-linux-gnu"`)
+
+	root.Visit(g)
+}
+
+func (g *generator) VisitModule(n *Module) {
 	format := "%d\\00" // this nonsense is needed to keep govet quiet
 	fmt.Fprintln(g.out, `@format = internal constant [3 x i8] c"`+format+`"`)
 	fmt.Fprintln(g.out, `define dso_local i32 @main() {`)
 
-	root.Visit(g)
+	for _, stmt := range n.stmts {
+		stmt.Visit(g)
+	}
 
 	fmt.Fprintln(g.out, `  ret i32 0`)
 	fmt.Fprintln(g.out, `}`)
@@ -39,10 +46,17 @@ func (g *generator) Generate(root Node) {
 	fmt.Fprintln(g.out, `declare dso_local i32 @sprintf(i8*, i8*, ...)`)
 }
 
-func (g *generator) VisitNumberExpr(n *NumberExpr) {
-	val := g.assign("alloca i32")
-	fmt.Fprintf(g.out, "store i32 %v, i32* %v\n", n.token.Number, val)
-	g.assign("load i32, i32* %v", val)
+func (g *generator) VisitPrintStmt(n *PrintStmt) {
+	for _, arg := range n.args {
+		arg.Visit(g)
+		number := fmt.Sprintf("%%%d", g.ssaid-1)
+
+		buf := g.assign("alloca [318 x i8]")
+		bufptr := g.assign("getelementptr inbounds [318 x i8], [318 x i8]* %v, i64 0, i64 0", buf)
+		formatptr := g.assign(`getelementptr inbounds [3 x i8], [3 x i8]* @format, i64 0, i64 0`)
+		g.assign(`call i32 (i8*, i8*, ...) @sprintf(i8* %v, i8* %v, i32 %v)`, bufptr, formatptr, number)
+		g.assign(`call i32 @puts(i8* %v)`, bufptr)
+	}
 }
 
 func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
@@ -62,17 +76,10 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	}
 }
 
-func (g *generator) VisitPrintStmt(n *PrintStmt) {
-	for _, arg := range n.args {
-		arg.Visit(g)
-		number := fmt.Sprintf("%%%d", g.ssaid-1)
-
-		buf := g.assign("alloca [318 x i8]")
-		bufptr := g.assign("getelementptr inbounds [318 x i8], [318 x i8]* %v, i64 0, i64 0", buf)
-		formatptr := g.assign(`getelementptr inbounds [3 x i8], [3 x i8]* @format, i64 0, i64 0`)
-		g.assign(`call i32 (i8*, i8*, ...) @sprintf(i8* %v, i8* %v, i32 %v)`, bufptr, formatptr, number)
-		g.assign(`call i32 @puts(i8* %v)`, bufptr)
-	}
+func (g *generator) VisitNumberExpr(n *NumberExpr) {
+	val := g.assign("alloca i32")
+	fmt.Fprintf(g.out, "store i32 %v, i32* %v\n", n.token.Number, val)
+	g.assign("load i32, i32* %v", val)
 }
 
 func (g *generator) assign(format string, args ...any) string {

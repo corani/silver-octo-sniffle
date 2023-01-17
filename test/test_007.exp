@@ -11,13 +11,15 @@ test/test_007.in:1:15:	number	"33"	33	(1, 15) -> (1, 17)
 test/test_007.in:1:17:	rparen	")"	0	(1, 17) -> (1, 18)
 test/test_007.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 AST:
-(print
-  (mul
-    (add
-      (number 34)
-      (number 35)
+(module
+  (print
+    (mul
+      (add
+        (number 34)
+        (number 35)
+      )
+      (number 33)
     )
-    (number 33)
   )
 )
 IR:

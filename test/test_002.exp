@@ -9,13 +9,15 @@ test/test_002.in:1:13:	number	"42000"	42000	(1, 13) -> (1, 18)
 test/test_002.in:1:18:	rparen	")"	0	(1, 18) -> (1, 19)
 test/test_002.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 AST:
-(print
-  (add
+(module
+  (print
     (add
-      (number 34)
-      (number 35)
+      (add
+        (number 34)
+        (number 35)
+      )
+      (number 42000)
     )
-    (number 42000)
   )
 )
 IR:
