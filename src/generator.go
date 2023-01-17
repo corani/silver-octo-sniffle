@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"runtime"
 
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
@@ -38,7 +37,7 @@ type generator struct {
 var _ Visitor = (*generator)(nil)
 
 func (g *generator) Generate(root Node) *ir.Module {
-	g.currentModule.TargetTriple = g.getTargetTriple()
+	g.currentModule.TargetTriple = "x86_64-pc-linux-gnu"
 	g.generateStdlib()
 
 	root.Visit(g)
@@ -126,25 +125,4 @@ func (g *generator) internString(s string) *ir.Global {
 	g.strings[s] = def
 
 	return def
-}
-
-// incomplete and probably wrong!
-func (g *generator) getTargetTriple() string {
-	var os string
-
-	switch runtime.GOOS {
-	case "linux":
-		os = "linux"
-	default:
-		panic(fmt.Sprintf("unknown OS: %v", runtime.GOOS))
-	}
-
-	switch runtime.GOARCH {
-	case "amd64":
-		return fmt.Sprintf("x86_64-pc-%v-gnu", os)
-	case "arm64":
-		return fmt.Sprintf("aarch64-unknown-%v-gnu", os)
-	default:
-		panic(fmt.Sprintf("unknown architecture: %v", runtime.GOARCH))
-	}
 }

@@ -6,7 +6,10 @@ import (
 )
 
 func compile(source, target string) error {
-	cmd := exec.Command("clang", "-o", target, source)
+	cmd := exec.Command("clang",
+		"-o", target, source,
+		"-Wno-override-module",
+	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
