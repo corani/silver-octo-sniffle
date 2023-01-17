@@ -18,6 +18,7 @@ func generateIR(writer io.Writer, root Node) {
 		currentValue:  nil,
 		stdlib:        make(map[string]*ir.Func),
 		strings:       make(map[string]*ir.Global),
+		buf:           nil,
 	}
 
 	g.Generate(root)
@@ -31,6 +32,7 @@ type generator struct {
 	currentValue  value.Value
 	stdlib        map[string]*ir.Func
 	strings       map[string]*ir.Global
+	buf           *ir.InstAlloca
 }
 
 var _ Visitor = (*generator)(nil)
@@ -60,8 +62,11 @@ func (g *generator) VisitPrintStmt(n *PrintStmt) {
 		arg.Visit(g)
 		number := g.currentValue
 
-		buf := g.currentBlock.NewAlloca(types.NewArray(318, types.I8))
-		bufptr := g.currentBlock.NewGetElementPtr(buf.ElemType, buf, constant.NewInt(types.I32, 0), constant.NewInt(types.I32, 0))
+		if g.buf == nil {
+			g.buf = g.currentBlock.NewAlloca(types.NewArray(318, types.I8))
+		}
+
+		bufptr := g.currentBlock.NewGetElementPtr(g.buf.ElemType, g.buf, constant.NewInt(types.I32, 0), constant.NewInt(types.I32, 0))
 
 		format := g.intern("%d\000")
 		formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, constant.NewInt(types.I32, 0), constant.NewInt(types.I32, 0))
