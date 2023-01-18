@@ -48,7 +48,7 @@ func main() {
 	defer os.RemoveAll(dir)
 
 	llName := filepath.Join(dir, baseName+".ll")
-	outName := filepath.Join(dir, baseName+".out")
+	outName := filepath.Join(filepath.Dir(filepath.Dir(*srcName)), "bin", baseName)
 
 	out, err := os.Create(llName)
 	if err != nil {
