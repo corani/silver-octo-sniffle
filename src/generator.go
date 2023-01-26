@@ -57,12 +57,29 @@ func (g *generator) VisitModule(n *Module) {
 
 func (g *generator) VisitPrintStmt(n *PrintStmt) {
 	for _, arg := range n.args {
-		number := g.visitAndReturnValue(arg)
+		// NOTE(daniel): we could probably do something smarter here, but for now this works.
+		switch arg.Type() {
+		case TypeInt64:
+			number := g.visitAndReturnValue(arg)
 
-		format := g.internString("%d\n\000")
-		formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+			format := g.internString("%d\n\000")
+			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
 
-		g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+			g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+		case TypeFloat64:
+			number := g.visitAndReturnValue(arg)
+
+			format := g.internString("%f\n\000")
+			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+			g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+		case TypeString:
+			str := g.visitAndReturnValue(arg)
+
+			g.currentBlock.NewCall(g.stdlib["puts"], str)
+		default:
+			panic(fmt.Sprintf("don't know how to print type: %s", arg.Type()))
+		}
 	}
 }
 
@@ -78,7 +95,9 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	case TokenStar:
 		g.currentValue = g.currentBlock.NewMul(left, right)
 	case TokenSlash:
-		g.currentValue = g.currentBlock.NewSDiv(left, right)
+		left = g.currentBlock.NewSIToFP(left, types.Double)
+		right = g.currentBlock.NewSIToFP(right, types.Double)
+		g.currentValue = g.currentBlock.NewFDiv(left, right)
 	default:
 		panic(fmt.Sprintf("unsupported token type: %+v", n.token))
 	}

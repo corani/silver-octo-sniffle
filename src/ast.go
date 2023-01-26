@@ -8,16 +8,19 @@ const (
 	TypeVoid Type = iota
 	TypeInt64
 	TypeFloat64
+	TypeString
 )
 
 func (t Type) String() string {
 	switch t {
 	case TypeVoid:
-		return "string"
+		return "void"
 	case TypeInt64:
 		return "i64"
 	case TypeFloat64:
 		return "f64"
+	case TypeString:
+		return "string"
 	default:
 		return fmt.Sprintf("undefined=%d", int(t))
 	}
