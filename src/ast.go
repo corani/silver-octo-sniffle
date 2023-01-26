@@ -1,5 +1,13 @@
 package main
 
+type Type int
+
+const (
+	TypeVoid Type = iota
+	TypeInt64
+	TypeFloat64
+)
+
 type Visitor interface {
 	VisitModule(*Module)
 	VisitPrintStmt(*PrintStmt)
@@ -12,8 +20,17 @@ type Node interface {
 	Visit(Visitor)
 }
 
+type Expr interface {
+	Node
+	Type() Type
+}
+
+type Stmt interface {
+	Node
+}
+
 type Module struct {
-	stmts []Node
+	stmts []Stmt
 }
 
 var _ Node = (*Module)(nil)
@@ -32,12 +49,17 @@ func (n *Module) Visit(v Visitor) {
 
 type NumberExpr struct {
 	token Token
+	typ   Type
 }
 
-var _ Node = (*NumberExpr)(nil)
+var _ Expr = (*NumberExpr)(nil)
 
 func (n *NumberExpr) Token() Token {
 	return n.token
+}
+
+func (n *NumberExpr) Type() Type {
+	return n.typ
 }
 
 func (n *NumberExpr) Visit(v Visitor) {
@@ -46,13 +68,18 @@ func (n *NumberExpr) Visit(v Visitor) {
 
 type BinaryExpr struct {
 	token Token
-	args  []Node
+	args  []Expr
+	typ   Type
 }
 
-var _ Node = (*BinaryExpr)(nil)
+var _ Expr = (*BinaryExpr)(nil)
 
 func (n *BinaryExpr) Token() Token {
 	return n.token
+}
+
+func (n *BinaryExpr) Type() Type {
+	return n.typ
 }
 
 func (n *BinaryExpr) Visit(v Visitor) {
@@ -61,10 +88,10 @@ func (n *BinaryExpr) Visit(v Visitor) {
 
 type PrintStmt struct {
 	token Token
-	args  []Node
+	args  []Expr
 }
 
-var _ Node = (*PrintStmt)(nil)
+var _ Stmt = (*PrintStmt)(nil)
 
 func (n *PrintStmt) Token() Token {
 	return n.token

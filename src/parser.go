@@ -40,7 +40,7 @@ func (p *Parser) parseModule() (Node, error) {
 	return node, nil
 }
 
-func (p *Parser) parsePrintStmt() (Node, error) {
+func (p *Parser) parsePrintStmt() (Stmt, error) {
 	node := &PrintStmt{
 		token: p.currentToken(),
 		args:  nil,
@@ -72,7 +72,7 @@ func (p *Parser) parsePrintStmt() (Node, error) {
 	return node, nil
 }
 
-func (p *Parser) parseExpr() (Node, error) {
+func (p *Parser) parseExpr() (Expr, error) {
 	// expr := term { '+' | '-' term }
 	lhs, err := p.parseTerm()
 	if err != nil {
@@ -90,14 +90,14 @@ func (p *Parser) parseExpr() (Node, error) {
 
 		lhs = &BinaryExpr{
 			token: op,
-			args:  []Node{lhs, rhs},
+			args:  []Expr{lhs, rhs},
 		}
 	}
 
 	return lhs, nil
 }
 
-func (p *Parser) parseTerm() (Node, error) {
+func (p *Parser) parseTerm() (Expr, error) {
 	// term := factor { '*' | '/' factor }
 	lhs, err := p.parseFactor()
 	if err != nil {
@@ -115,14 +115,14 @@ func (p *Parser) parseTerm() (Node, error) {
 
 		lhs = &BinaryExpr{
 			token: op,
-			args:  []Node{lhs, rhs},
+			args:  []Expr{lhs, rhs},
 		}
 	}
 
 	return lhs, nil
 }
 
-func (p *Parser) parseFactor() (Node, error) {
+func (p *Parser) parseFactor() (Expr, error) {
 	// factor := '(' expr ')' | number
 	if p.currentType() != TokenLParen {
 		return p.parseNumberExpr()
@@ -144,7 +144,7 @@ func (p *Parser) parseFactor() (Node, error) {
 	return expr, nil
 }
 
-func (p *Parser) parseNumberExpr() (Node, error) {
+func (p *Parser) parseNumberExpr() (Expr, error) {
 	var op Token
 
 	switch p.currentType() {
@@ -175,7 +175,7 @@ func (p *Parser) parseNumberExpr() (Node, error) {
 
 	return &BinaryExpr{
 		token: op,
-		args:  []Node{zero, num},
+		args:  []Expr{zero, num},
 	}, nil
 }
 
