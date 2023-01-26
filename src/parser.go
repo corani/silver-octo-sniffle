@@ -24,24 +24,35 @@ func (p *Parser) parseModule() (Node, error) {
 	node := &Module{}
 
 	for p.currentType() != TokenEOF {
-		switch p.currentType() {
-		case TokenPrint:
-			stmt, err := p.parsePrintStmt()
-			if err != nil {
-				return nil, err
-			}
-
-			node.stmts = append(node.stmts, stmt)
-		default:
-			return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index])
+		stmt, err := p.parseStmt()
+		if err != nil {
+			return nil, err
 		}
+
+		node.stmts = append(node.stmts, stmt)
 	}
 
 	return node, nil
 }
 
-func (p *Parser) parsePrintStmt() (Stmt, error) {
-	node := &PrintStmt{
+func (p *Parser) parseStmt() (Stmt, error) {
+	switch p.currentType() {
+	case TokenIdent:
+		expr, err := p.parseCallExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		return &ExprStmt{
+			expr: expr,
+		}, nil
+	default:
+		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index])
+	}
+}
+
+func (p *Parser) parseCallExpr() (Expr, error) {
+	node := &CallExpr{
 		token: p.currentToken(),
 		args:  nil,
 	}

@@ -43,12 +43,6 @@ func lex(name string, bs []byte) (Tokens, error) {
 			}
 
 			tokenType = TokenIdent
-
-			// TODO(daniel): move this to semantic analysis?
-			switch string(bs[starti:i]) {
-			case "print":
-				tokenType = TokenPrint
-			}
 		default:
 			if t, ok := mapCharToToken[bs[i]]; ok {
 				i++

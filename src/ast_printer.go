@@ -42,8 +42,18 @@ func (p *astPrinter) VisitModule(n *Module) {
 	p.printf(")")
 }
 
-func (p *astPrinter) VisitPrintStmt(n *PrintStmt) {
-	p.printf("(print")
+func (p *astPrinter) VisitExprStmt(n *ExprStmt) {
+	p.printf("(expr2stmt")
+	p.indent++
+
+	n.expr.Visit(p)
+
+	p.indent--
+	p.printf(")")
+}
+
+func (p *astPrinter) VisitCallExpr(n *CallExpr) {
+	p.printf("(%v [%v]", n.token.Text, n.typ)
 	p.indent++
 
 	for _, arg := range n.args {

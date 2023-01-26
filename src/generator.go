@@ -55,31 +55,17 @@ func (g *generator) VisitModule(n *Module) {
 	g.currentBlock.NewRet(zero)
 }
 
-func (g *generator) VisitPrintStmt(n *PrintStmt) {
-	for _, arg := range n.args {
-		// NOTE(daniel): we could probably do something smarter here, but for now this works.
-		switch arg.Type() {
-		case TypeInt64:
-			number := g.visitAndReturnValue(arg)
+func (g *generator) VisitExprStmt(n *ExprStmt) {
+	// NOTE(daniel): ignore the result.
+	n.expr.Visit(g)
+}
 
-			format := g.internString("%d\n\000")
-			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-			g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
-		case TypeFloat64:
-			number := g.visitAndReturnValue(arg)
-
-			format := g.internString("%f\n\000")
-			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-			g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
-		case TypeString:
-			str := g.visitAndReturnValue(arg)
-
-			g.currentBlock.NewCall(g.stdlib["puts"], str)
-		default:
-			panic(fmt.Sprintf("don't know how to print type: %s", arg.Type()))
-		}
+func (g *generator) VisitCallExpr(n *CallExpr) {
+	switch n.token.Text {
+	case "print":
+		g.callPrint(n.args)
+	default:
+		panic(fmt.Sprintf("don't know how to call %q", n.token.Text))
 	}
 }
 
@@ -111,6 +97,34 @@ func (g *generator) visitAndReturnValue(n Node) value.Value {
 	n.Visit(g)
 
 	return g.currentValue
+}
+
+func (g *generator) callPrint(args []Expr) {
+	for _, arg := range args {
+		// NOTE(daniel): we could probably do something smarter here, but for now this works.
+		switch arg.Type() {
+		case TypeInt64:
+			number := g.visitAndReturnValue(arg)
+
+			format := g.internString("%d\n\000")
+			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+			g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+		case TypeFloat64:
+			number := g.visitAndReturnValue(arg)
+
+			format := g.internString("%f\n\000")
+			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+			g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+		case TypeString:
+			str := g.visitAndReturnValue(arg)
+
+			g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
+		default:
+			panic(fmt.Sprintf("don't know how to print type: %s", arg.Type()))
+		}
+	}
 }
 
 func (g *generator) generateStdlib() {

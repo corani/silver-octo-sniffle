@@ -28,7 +28,8 @@ func (t Type) String() string {
 
 type Visitor interface {
 	VisitModule(*Module)
-	VisitPrintStmt(*PrintStmt)
+	VisitExprStmt(*ExprStmt)
+	VisitCallExpr(*CallExpr)
 	VisitBinaryExpr(*BinaryExpr)
 	VisitNumberExpr(*NumberExpr)
 }
@@ -104,17 +105,36 @@ func (n *BinaryExpr) Visit(v Visitor) {
 	v.VisitBinaryExpr(n)
 }
 
-type PrintStmt struct {
+type CallExpr struct {
 	token Token
+	typ   Type
 	args  []Expr
 }
 
-var _ Stmt = (*PrintStmt)(nil)
+var _ Expr = (*CallExpr)(nil)
 
-func (n *PrintStmt) Token() Token {
+func (n *CallExpr) Token() Token {
 	return n.token
 }
 
-func (n *PrintStmt) Visit(v Visitor) {
-	v.VisitPrintStmt(n)
+func (n *CallExpr) Type() Type {
+	return n.typ
+}
+
+func (n *CallExpr) Visit(v Visitor) {
+	v.VisitCallExpr(n)
+}
+
+type ExprStmt struct {
+	expr Expr
+}
+
+var _ Stmt = (*ExprStmt)(nil)
+
+func (n *ExprStmt) Token() Token {
+	return n.expr.Token()
+}
+
+func (n *ExprStmt) Visit(v Visitor) {
+	v.VisitExprStmt(n)
 }

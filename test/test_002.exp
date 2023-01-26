@@ -1,5 +1,5 @@
 Tokens:
-test/test_002.in:1:1:	print	"print"	0	(1, 1) -> (1, 6)
+test/test_002.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
 test/test_002.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
 test/test_002.in:1:7:	number	"34"	34	(1, 7) -> (1, 9)
 test/test_002.in:1:9:	add	"+"	0	(1, 9) -> (1, 10)
@@ -10,13 +10,15 @@ test/test_002.in:1:18:	rparen	")"	0	(1, 18) -> (1, 19)
 test/test_002.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 AST:
 (module
-  (print
-    (add [i64]
+  (expr2stmt
+    (print [void]
       (add [i64]
-        (number [i64] 34)
-        (number [i64] 35)
+        (add [i64]
+          (number [i64] 34)
+          (number [i64] 35)
+        )
+        (number [i64] 42000)
       )
-      (number [i64] 42000)
     )
   )
 )

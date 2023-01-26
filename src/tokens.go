@@ -11,7 +11,6 @@ const (
 	TokenInvalid TokenType = ""
 	TokenNumber  TokenType = "number"
 	TokenIdent   TokenType = "ident"
-	TokenPrint   TokenType = "print"
 	TokenLParen  TokenType = "lparen"
 	TokenRParen  TokenType = "rparen"
 	TokenPlus    TokenType = "add"
