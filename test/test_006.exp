@@ -23,8 +23,6 @@ AST:
   )
 )
 IR:
-target triple = "x86_64-pc-linux-gnu"
-
 @0 = global [4 x i8] c"%d\0A\00"
 
 declare i32 @puts(i8* %str)

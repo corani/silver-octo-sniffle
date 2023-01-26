@@ -37,7 +37,6 @@ type generator struct {
 var _ Visitor = (*generator)(nil)
 
 func (g *generator) Generate(root Node) *ir.Module {
-	g.currentModule.TargetTriple = "x86_64-pc-linux-gnu"
 	g.generateStdlib()
 
 	root.Visit(g)
@@ -68,10 +67,6 @@ func (g *generator) VisitPrintStmt(n *PrintStmt) {
 }
 
 func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
-	if len(n.args) != 2 {
-		panic(fmt.Sprintf("expected two arguments, got %d", len(n.args)))
-	}
-
 	left := g.visitAndReturnValue(n.args[0])
 	right := g.visitAndReturnValue(n.args[1])
 
