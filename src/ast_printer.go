@@ -55,7 +55,7 @@ func (p *astPrinter) VisitPrintStmt(n *PrintStmt) {
 }
 
 func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
-	p.printf("(%v", n.token.Type)
+	p.printf("(%v [%v]", n.token.Type, n.typ)
 	p.indent++
 
 	for _, arg := range n.args {
@@ -67,5 +67,5 @@ func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
 }
 
 func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
-	p.printf("(number %d)", n.token.Number)
+	p.printf("(number [%v] %d)", n.typ, n.token.Number)
 }

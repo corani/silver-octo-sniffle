@@ -10,12 +10,12 @@ test/test_005.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 AST:
 (module
   (print
-    (add
-      (sub
-        (number 0)
-        (number 34)
+    (add [i64]
+      (sub [i64]
+        (number [i64] 0)
+        (number [i64] 34)
       )
-      (number 35)
+      (number [i64] 35)
     )
   )
 )

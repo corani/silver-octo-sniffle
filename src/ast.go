@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Type int
 
 const (
@@ -7,6 +9,19 @@ const (
 	TypeInt64
 	TypeFloat64
 )
+
+func (t Type) String() string {
+	switch t {
+	case TypeVoid:
+		return "string"
+	case TypeInt64:
+		return "i64"
+	case TypeFloat64:
+		return "f64"
+	default:
+		return fmt.Sprintf("undefined=%d", int(t))
+	}
+}
 
 type Visitor interface {
 	VisitModule(*Module)

@@ -35,6 +35,8 @@ func main() {
 		panic(err)
 	}
 
+	typeCheck(ast)
+
 	if *outAST {
 		printAST(ast)
 	}

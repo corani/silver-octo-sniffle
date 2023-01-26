@@ -7,7 +7,7 @@ test/test_001.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 AST:
 (module
   (print
-    (number 42)
+    (number [i64] 42)
   )
 )
 IR:

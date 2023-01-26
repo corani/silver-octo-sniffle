@@ -9,9 +9,9 @@ test/test_003.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 AST:
 (module
   (print
-    (sub
-      (number 66)
-      (number 33)
+    (sub [i64]
+      (number [i64] 66)
+      (number [i64] 33)
     )
   )
 )
