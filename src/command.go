@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"os"
 	"os/exec"
 )
@@ -16,11 +17,11 @@ func compile(source, target string) error {
 	return cmd.Run()
 }
 
-func execute(name string) error {
+func execute(w io.Writer, name string) error {
 	cmd := exec.Command(name)
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = w
+	cmd.Stderr = w
 
 	return cmd.Run()
 }

@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"strings"
 )
 
-func printAST(root Node) {
+func printAST(w io.Writer, root Node) {
 	printer := &astPrinter{
 		indent: 0,
+		out:    w,
 	}
 
 	printer.Print(root)
@@ -15,19 +17,20 @@ func printAST(root Node) {
 
 type astPrinter struct {
 	indent int
+	out    io.Writer
 }
 
 var _ Visitor = (*astPrinter)(nil)
 
 func (p *astPrinter) Print(root Node) {
-	fmt.Println("AST:")
+	fmt.Fprintln(p.out, "AST:")
 	root.Visit(p)
 }
 
 func (p *astPrinter) printf(format string, args ...any) {
 	format = strings.Repeat("  ", p.indent) + format + "\n"
 
-	fmt.Printf(format, args...)
+	fmt.Fprintf(p.out, format, args...)
 }
 
 func (p *astPrinter) VisitModule(n *Module) {

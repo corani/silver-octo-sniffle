@@ -2,7 +2,10 @@ module github.com/corani/silver-octo-sniffle
 
 go 1.19
 
-require github.com/llir/llvm v0.3.6
+require (
+	github.com/google/go-cmp v0.3.1
+	github.com/llir/llvm v0.3.6
+)
 
 require (
 	github.com/mewmew/float v0.0.0-20201204173432-505706aa38fa // indirect

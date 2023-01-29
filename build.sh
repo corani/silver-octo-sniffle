@@ -50,7 +50,14 @@ function go_unit_test {
 
     mkdir -p gen
 
-    do_echo go test -v -timeout 1m -race \
+    # NOTE(daniel): -race is not supported on android/aarch64
+    if [ $(uname -m) == "aarch64" ]; then
+        opts=()
+    else
+        opts=(-race)
+    fi
+
+    do_echo go test -v -timeout 1m "${opts[@]}" \
         -cover -coverpkg=./... -coverprofile=gen/cover.out \
         ./src/... | tee gen/test.out
     sed -n -e '/^FAIL.*/p' -e '/^--- FAIL/p' gen/test.out > gen/summary.out
