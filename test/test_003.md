@@ -3,7 +3,7 @@
 print(66-33)
 ```
 ## Tokens
-```
+```tsv
 test/test_003.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
 test/test_003.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
 test/test_003.in:1:7:	number	"66"	66	(1, 7) -> (1, 9)

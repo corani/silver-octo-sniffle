@@ -57,6 +57,7 @@ func lex(name string, bs []byte) (Tokens, error) {
 					continue
 				case '\r', ' ', '\t':
 					i++
+					col++
 					continue
 				default:
 					return result, fmt.Errorf("unknown character '%c'", bs[i])

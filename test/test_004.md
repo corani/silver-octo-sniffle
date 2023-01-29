@@ -3,7 +3,7 @@
 print(-42)
 ```
 ## Tokens
-```
+```tsv
 test/test_004.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
 test/test_004.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
 test/test_004.in:1:7:	sub	"-"	0	(1, 7) -> (1, 8)
