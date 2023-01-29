@@ -35,11 +35,13 @@ type Tokens []Token
 func (t Tokens) String() string {
 	var parts []string
 
-	parts = append(parts, "Tokens:")
+	parts = append(parts, "## Tokens", "```")
 
 	for _, v := range t {
 		parts = append(parts, v.String())
 	}
+
+	parts = append(parts, "```")
 
 	return strings.Join(parts, "\n")
 }

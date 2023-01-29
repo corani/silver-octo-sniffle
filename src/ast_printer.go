@@ -23,8 +23,10 @@ type astPrinter struct {
 var _ Visitor = (*astPrinter)(nil)
 
 func (p *astPrinter) Print(root Node) {
-	fmt.Fprintln(p.out, "AST:")
+	fmt.Fprintln(p.out, "## AST")
+	fmt.Fprintln(p.out, "```scheme")
 	root.Visit(p)
+	fmt.Fprintln(p.out, "```")
 }
 
 func (p *astPrinter) printf(format string, args ...any) {

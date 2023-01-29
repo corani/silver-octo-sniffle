@@ -1,4 +1,9 @@
-Tokens:
+# test/test_005.in
+```
+print( -34 + 35 )
+```
+## Tokens
+```
 test/test_005.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
 test/test_005.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
 test/test_005.in:1:7:	sub	"-"	0	(1, 7) -> (1, 8)
@@ -7,7 +12,9 @@ test/test_005.in:1:10:	add	"+"	0	(1, 10) -> (1, 11)
 test/test_005.in:1:11:	number	"35"	35	(1, 11) -> (1, 13)
 test/test_005.in:1:13:	rparen	")"	0	(1, 13) -> (1, 14)
 test/test_005.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
-AST:
+```
+## AST
+```scheme
 (module
   (expr2stmt
     (print [void]
@@ -21,7 +28,9 @@ AST:
     )
   )
 )
-IR:
+```
+## IR
+```llvm
 @0 = global [4 x i8] c"%d\0A\00"
 
 declare i32 @puts(i8* %str)
@@ -41,5 +50,8 @@ entry:
 	ret i32 0
 }
 
-Run:
+```
+## Run
+```bash
 1
+```

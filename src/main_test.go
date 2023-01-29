@@ -20,6 +20,8 @@ func TestMain(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// TODO(daniel): perhaps we should have only a single markdown file per
+	// test and extract the source code from the first code block.
 	filepath.Walk("test", func(path string, info fs.FileInfo, err error) error {
 		if err != nil || !strings.HasSuffix(info.Name(), ".in") {
 			return err
@@ -29,7 +31,7 @@ func TestMain(t *testing.T) {
 			t.Parallel()
 
 			// TODO(daniel): this could be more robust.
-			exp, err := os.ReadFile(strings.ReplaceAll(path, ".in", ".exp"))
+			exp, err := os.ReadFile(strings.ReplaceAll(path, ".in", ".md"))
 			if err != nil {
 				t.Fatal(err)
 			}

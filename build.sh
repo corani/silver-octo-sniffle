@@ -74,6 +74,9 @@ function go_unit_test {
     fi
 }
 
+# TODO(daniel): get rid of these, as the golden tests are included in the
+# unit tests. Only question is how to record the tests. Maybe by providing
+# a test flag for that?
 function go_golden_test_verify {
     echo "[INFO] verifying golden tests..."
 
@@ -81,7 +84,7 @@ function go_golden_test_verify {
 
     for INPUT in $(find test -name "*.in" | sort); do
         OUTPUT=${INPUT/%in/act}
-        EXPECTED=${INPUT/%in/exp}
+        EXPECTED=${INPUT/%in/md}
         echo "[CMD] bin/compiler -src ${INPUT}"
         bin/compiler -src "${INPUT}" -tokens -ast -run > ${OUTPUT}
         diff -ayw --suppress-common-lines ${OUTPUT} ${EXPECTED}
@@ -94,7 +97,7 @@ function go_golden_test_record {
     mkdir -p gen 
 
     for INPUT in $(find test -name "*.in" | sort); do
-        OUTPUT=${INPUT/%in/exp}
+        OUTPUT=${INPUT/%in/md}
         echo "[CMD] bin/compiler -src ${INPUT}"
         bin/compiler -src "${INPUT}" -tokens -ast -run > ${OUTPUT}
     done

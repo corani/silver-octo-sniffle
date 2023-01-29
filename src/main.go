@@ -20,6 +20,13 @@ func do(srcName string, w io.Writer, outTokens bool, outAST bool, run bool) {
 		panic(err)
 	}
 
+	if outTokens || outAST || run {
+		fmt.Fprintf(w, "# %s\n", srcName)
+		fmt.Fprintln(w, "```")
+		fmt.Fprint(w, string(bs))
+		fmt.Fprintln(w, "```")
+	}
+
 	if outTokens {
 		fmt.Fprintln(w, tokens)
 	}
@@ -52,15 +59,19 @@ func do(srcName string, w io.Writer, outTokens bool, outAST bool, run bool) {
 	}
 	defer out.Close()
 
-	fmt.Fprintln(w, "IR:")
+	fmt.Fprintln(w, "## IR")
+	fmt.Fprintln(w, "```llvm")
 	generateIR(io.MultiWriter(out, w), ast)
+	fmt.Fprintln(w, "```")
 
 	if err := compile(llName, outName); err != nil {
 		panic(err)
 	}
 
 	if run {
-		fmt.Fprintln(w, "Run:")
+		fmt.Fprintln(w, "## Run")
+		fmt.Fprintln(w, "```bash")
+
 		absName, err := filepath.Abs(outName)
 		if err != nil {
 			panic(err)
@@ -69,6 +80,8 @@ func do(srcName string, w io.Writer, outTokens bool, outAST bool, run bool) {
 		if err := execute(w, absName); err != nil {
 			panic(err)
 		}
+
+		fmt.Fprintln(w, "```")
 	}
 }
 
