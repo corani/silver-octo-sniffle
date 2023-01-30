@@ -43,6 +43,14 @@ var mapIdentToToken = map[string]TokenType{
 	"OR":  TokenOr,
 }
 
+func checkKeyword(s string) TokenType {
+	if v, ok := mapIdentToToken[s]; ok {
+		return v
+	}
+
+	return TokenIdent
+}
+
 type Range struct {
 	FromRow, FromCol int
 	ToRow, ToCol     int
