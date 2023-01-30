@@ -84,14 +84,15 @@ func (p *Parser) parseCallExpr() (Expr, error) {
 }
 
 func (p *Parser) parseExpr() (Expr, error) {
-	// expr := term { '+' | '-' term }
+	// expr := term { '+' | '-' | 'OR' term }
+	addOperators := []TokenType{TokenPlus, TokenMinus, TokenOr}
+
 	lhs, err := p.parseTerm()
 	if err != nil {
 		return lhs, err
 	}
 
-	// NOTE(daniel): parse a chain of `+`/`-` operators
-	for op := p.currentToken(); op.Type == TokenPlus || op.Type == TokenMinus; op = p.currentToken() {
+	for op := p.currentToken(); p.tokenIs(addOperators...); op = p.currentToken() {
 		p.index++
 
 		rhs, err := p.parseTerm()
@@ -109,14 +110,15 @@ func (p *Parser) parseExpr() (Expr, error) {
 }
 
 func (p *Parser) parseTerm() (Expr, error) {
-	// term := factor { '*' | '/' factor }
+	// term := factor { '*' | '/' | 'DIV' | 'MUL' | '&' factor }
+	mulOperators := []TokenType{TokenStar, TokenSlash, TokenDiv, TokenMod, TokenAmpersand}
+
 	lhs, err := p.parseFactor()
 	if err != nil {
 		return lhs, err
 	}
 
-	// NOTE(daniel): parse a chain of `*`/`/` operators
-	for op := p.currentToken(); op.Type == TokenStar || op.Type == TokenSlash; op = p.currentToken() {
+	for op := p.currentToken(); p.tokenIs(mulOperators...); op = p.currentToken() {
 		p.index++
 
 		rhs, err := p.parseFactor()
@@ -217,4 +219,16 @@ func (p *Parser) currentToken() Token {
 
 func (p *Parser) currentType() TokenType {
 	return p.tokens[p.index].Type
+}
+
+func (p *Parser) tokenIs(opts ...TokenType) bool {
+	current := p.currentType()
+
+	for _, opt := range opts {
+		if opt == current {
+			return true
+		}
+	}
+
+	return false
 }

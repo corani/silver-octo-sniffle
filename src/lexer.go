@@ -5,16 +5,6 @@ import (
 	"strconv"
 )
 
-var mapCharToToken = map[byte]TokenType{
-	'(': TokenLParen,
-	')': TokenRParen,
-	'+': TokenPlus,
-	'-': TokenMinus,
-	'*': TokenStar,
-	'/': TokenSlash,
-	',': TokenComma,
-}
-
 func lex(name string, bs []byte) (Tokens, error) {
 	var result Tokens
 
@@ -30,6 +20,7 @@ func lex(name string, bs []byte) (Tokens, error) {
 
 		switch {
 		case numeric(bs[i]):
+			// TODO(daniel): support REAL numbers.
 			for numeric(bs[i]) {
 				i++
 				col++
@@ -42,7 +33,11 @@ func lex(name string, bs []byte) (Tokens, error) {
 				col++
 			}
 
-			tokenType = TokenIdent
+			if v, ok := mapIdentToToken[string(bs[starti:i])]; ok {
+				tokenType = v
+			} else {
+				tokenType = TokenIdent
+			}
 		default:
 			if t, ok := mapCharToToken[bs[i]]; ok {
 				i++

@@ -73,17 +73,46 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	left := g.visitAndReturnValue(n.args[0])
 	right := g.visitAndReturnValue(n.args[1])
 
+	// TODO(daniel): is automatic conversion a thing?
+	// TODO(daniel): this assumes only `I32` and `Double` types.
 	switch n.token.Type {
 	case TokenMinus:
-		g.currentValue = g.currentBlock.NewSub(left, right)
+		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+			// INTEGER subtraction
+			g.currentValue = g.currentBlock.NewSub(left, right)
+		} else {
+			// REAL subtraction
+			g.currentValue = g.currentBlock.NewFSub(g.anyToReal(left), g.anyToReal(right))
+		}
 	case TokenPlus:
-		g.currentValue = g.currentBlock.NewAdd(left, right)
+		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+			// INTEGER addition
+			g.currentValue = g.currentBlock.NewAdd(left, right)
+		} else {
+			// REAL addition
+			g.currentValue = g.currentBlock.NewFAdd(g.anyToReal(left), g.anyToReal(right))
+		}
 	case TokenStar:
-		g.currentValue = g.currentBlock.NewMul(left, right)
+		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+			// INTEGER multiplication
+			g.currentValue = g.currentBlock.NewMul(left, right)
+		} else {
+			// REAL multiplication
+			g.currentValue = g.currentBlock.NewFMul(g.anyToReal(left), g.anyToReal(right))
+		}
 	case TokenSlash:
-		left = g.currentBlock.NewSIToFP(left, types.Double)
-		right = g.currentBlock.NewSIToFP(right, types.Double)
-		g.currentValue = g.currentBlock.NewFDiv(left, right)
+		// REAL division
+		g.currentValue = g.currentBlock.NewFDiv(g.anyToReal(left), g.anyToReal(right))
+	case TokenDiv:
+		// INTEGER division
+		g.currentValue = g.currentBlock.NewSDiv(g.anyToInteger(left), g.anyToInteger(right))
+	case TokenMod:
+		// INTEGER modulus
+		g.currentValue = g.currentBlock.NewSRem(g.anyToInteger(left), g.anyToInteger(right))
+	case TokenAmpersand:
+		// logical AND
+	case TokenOr:
+		// logical OR
 	default:
 		panic(fmt.Sprintf("unsupported token type: %+v", n.token))
 	}
@@ -99,7 +128,25 @@ func (g *generator) visitAndReturnValue(n Node) value.Value {
 	return g.currentValue
 }
 
+func (g *generator) anyToReal(v value.Value) value.Value {
+	if !v.Type().Equal(types.Double) {
+		v = g.currentBlock.NewSIToFP(v, types.Double)
+	}
+
+	return v
+}
+
+func (g *generator) anyToInteger(v value.Value) value.Value {
+	if !v.Type().Equal(types.I32) {
+		v = g.currentBlock.NewFPToSI(v, types.I32)
+	}
+
+	return v
+}
+
 func (g *generator) callPrint(args []Expr) {
+	// TODO(daniel): make print a (polymorphic?) function in the "stdlib" and make an actual
+	// function call here.
 	for _, arg := range args {
 		// NOTE(daniel): we could probably do something smarter here, but for now this works.
 		switch arg.Type() {

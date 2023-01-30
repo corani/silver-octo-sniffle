@@ -8,18 +8,40 @@ import (
 type TokenType string
 
 const (
-	TokenInvalid TokenType = ""
-	TokenNumber  TokenType = "number"
-	TokenIdent   TokenType = "ident"
-	TokenLParen  TokenType = "lparen"
-	TokenRParen  TokenType = "rparen"
-	TokenPlus    TokenType = "add"
-	TokenMinus   TokenType = "sub"
-	TokenStar    TokenType = "mul"
-	TokenSlash   TokenType = "div"
-	TokenComma   TokenType = "comma"
-	TokenEOF     TokenType = "eof"
+	TokenInvalid   TokenType = ""
+	TokenNumber    TokenType = "number"
+	TokenLParen    TokenType = "lparen"
+	TokenRParen    TokenType = "rparen"
+	TokenPlus      TokenType = "plus"
+	TokenMinus     TokenType = "minus"
+	TokenStar      TokenType = "star"
+	TokenSlash     TokenType = "slash"
+	TokenComma     TokenType = "comma"
+	TokenAmpersand TokenType = "ampersand"
+	TokenIdent     TokenType = "ident"
+	TokenDiv       TokenType = "div"
+	TokenMod       TokenType = "mod"
+	TokenOr        TokenType = "or"
+	TokenEOF       TokenType = "eof"
 )
+
+var mapCharToToken = map[byte]TokenType{
+	'(': TokenLParen,
+	')': TokenRParen,
+	'+': TokenPlus,
+	'-': TokenMinus,
+	'*': TokenStar,
+	'/': TokenSlash, // REAL division
+	',': TokenComma,
+	'&': TokenAmpersand, // logical AND
+}
+
+// TODO(daniel): are keywords case-sensitive (i.e. must they be all upper-case)?
+var mapIdentToToken = map[string]TokenType{
+	"DIV": TokenDiv, // INTEGER division
+	"MOD": TokenMod,
+	"OR":  TokenOr,
+}
 
 type Range struct {
 	FromRow, FromCol int

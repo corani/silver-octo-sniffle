@@ -6,9 +6,9 @@ print( -34 + 35 )
 ```tsv
 test/test_005.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
 test/test_005.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
-test/test_005.in:1:8:	sub	"-"	0	(1, 8) -> (1, 9)
+test/test_005.in:1:8:	minus	"-"	0	(1, 8) -> (1, 9)
 test/test_005.in:1:9:	number	"34"	34	(1, 9) -> (1, 11)
-test/test_005.in:1:12:	add	"+"	0	(1, 12) -> (1, 13)
+test/test_005.in:1:12:	plus	"+"	0	(1, 12) -> (1, 13)
 test/test_005.in:1:14:	number	"35"	35	(1, 14) -> (1, 16)
 test/test_005.in:1:17:	rparen	")"	0	(1, 17) -> (1, 18)
 test/test_005.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
@@ -18,8 +18,8 @@ test/test_005.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 (module
   (expr2stmt
     (print [void]
-      (add [i64]
-        (sub [i64]
+      (plus [i64]
+        (minus [i64]
           (number [i64] 0)
           (number [i64] 34)
         )

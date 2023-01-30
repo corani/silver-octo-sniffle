@@ -7,9 +7,9 @@ print( 34 + 35 + 42000 )
 test/test_002.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
 test/test_002.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
 test/test_002.in:1:8:	number	"34"	34	(1, 8) -> (1, 10)
-test/test_002.in:1:11:	add	"+"	0	(1, 11) -> (1, 12)
+test/test_002.in:1:11:	plus	"+"	0	(1, 11) -> (1, 12)
 test/test_002.in:1:13:	number	"35"	35	(1, 13) -> (1, 15)
-test/test_002.in:1:16:	add	"+"	0	(1, 16) -> (1, 17)
+test/test_002.in:1:16:	plus	"+"	0	(1, 16) -> (1, 17)
 test/test_002.in:1:18:	number	"42000"	42000	(1, 18) -> (1, 23)
 test/test_002.in:1:24:	rparen	")"	0	(1, 24) -> (1, 25)
 test/test_002.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
@@ -19,8 +19,8 @@ test/test_002.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 (module
   (expr2stmt
     (print [void]
-      (add [i64]
-        (add [i64]
+      (plus [i64]
+        (plus [i64]
           (number [i64] 34)
           (number [i64] 35)
         )
