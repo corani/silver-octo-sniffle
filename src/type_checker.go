@@ -62,3 +62,7 @@ func (c *typeChecker) VisitNumberExpr(e *NumberExpr) {
 func (c *typeChecker) VisitStringExpr(e *StringExpr) {
 	// nop
 }
+
+func (c *typeChecker) VisitBooleanExpr(e *BooleanExpr) {
+	// nop
+}

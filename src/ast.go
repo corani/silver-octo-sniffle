@@ -9,6 +9,7 @@ const (
 	TypeInt64
 	TypeFloat64
 	TypeString
+	TypeBoolean
 )
 
 func (t Type) String() string {
@@ -21,6 +22,8 @@ func (t Type) String() string {
 		return "f64"
 	case TypeString:
 		return "string"
+	case TypeBoolean:
+		return "boolean"
 	default:
 		return fmt.Sprintf("undefined=%d", int(t))
 	}
@@ -33,6 +36,7 @@ type Visitor interface {
 	VisitBinaryExpr(*BinaryExpr)
 	VisitNumberExpr(*NumberExpr)
 	VisitStringExpr(*StringExpr)
+	VisitBooleanExpr(*BooleanExpr)
 }
 
 type Node interface {
@@ -102,6 +106,24 @@ func (n *StringExpr) Type() Type {
 
 func (n *StringExpr) Visit(v Visitor) {
 	v.VisitStringExpr(n)
+}
+
+type BooleanExpr struct {
+	token Token
+}
+
+var _ Expr = (*BooleanExpr)(nil)
+
+func (n *BooleanExpr) Token() Token {
+	return n.token
+}
+
+func (n *BooleanExpr) Type() Type {
+	return TypeBoolean
+}
+
+func (n *BooleanExpr) Visit(v Visitor) {
+	v.VisitBooleanExpr(n)
 }
 
 type BinaryExpr struct {

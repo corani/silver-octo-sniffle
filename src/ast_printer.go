@@ -88,3 +88,11 @@ func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
 func (p *astPrinter) VisitStringExpr(n *StringExpr) {
 	p.printf("(string %q)", n.token.Text)
 }
+
+func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
+	if n.token.Number != 0 {
+		p.printf("(boolean true)")
+	} else {
+		p.printf("(boolean false)")
+	}
+}

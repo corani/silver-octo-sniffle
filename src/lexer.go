@@ -126,6 +126,13 @@ func lex(name string, bs []byte) (Tokens, error) {
 		case TokenString:
 			// slice off the enclosing quotes.
 			txt = string(bs[starti+1 : i-1])
+		case TokenBoolean:
+			txt = text()
+			num = 0
+
+			if txt == "TRUE" {
+				num = 1
+			}
 		default:
 			txt = text()
 		}

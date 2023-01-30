@@ -129,6 +129,14 @@ func (g *generator) VisitStringExpr(n *StringExpr) {
 	g.currentValue = g.currentBlock.NewGetElementPtr(str.ContentType, str, zero, zero)
 }
 
+func (g *generator) VisitBooleanExpr(n *BooleanExpr) {
+	if n.token.Number != 0 {
+		g.currentValue = constant.True
+	} else {
+		g.currentValue = constant.False
+	}
+}
+
 func (g *generator) visitAndReturnValue(n Node) value.Value {
 	n.Visit(g)
 
@@ -175,6 +183,15 @@ func (g *generator) callPrint(args []Expr) {
 			str := g.visitAndReturnValue(arg)
 
 			g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
+		case TypeBoolean:
+			boolean := g.visitAndReturnValue(arg)
+
+			// TODO(daniel): maybe generate an IF condition to print string literals instead of
+			// integer 0 / 1?
+			format := g.internString("%d\n\000")
+			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+			g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, boolean)
 		default:
 			panic(fmt.Sprintf("don't know how to print type: %s", arg.Type()))
 		}

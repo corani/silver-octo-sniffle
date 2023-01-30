@@ -11,6 +11,7 @@ const (
 	TokenInvalid   TokenType = ""
 	TokenNumber    TokenType = "number"
 	TokenString    TokenType = "string"
+	TokenBoolean   TokenType = "boolean"
 	TokenLParen    TokenType = "lparen"
 	TokenRParen    TokenType = "rparen"
 	TokenPlus      TokenType = "plus"
@@ -39,9 +40,11 @@ var mapCharToToken = map[byte]TokenType{
 
 // TODO(daniel): are keywords case-sensitive (i.e. must they be all upper-case)?
 var mapIdentToToken = map[string]TokenType{
-	"DIV": TokenDiv, // INTEGER division
-	"MOD": TokenMod,
-	"OR":  TokenOr,
+	"DIV":   TokenDiv, // INTEGER division
+	"MOD":   TokenMod,
+	"OR":    TokenOr,
+	"TRUE":  TokenBoolean,
+	"FALSE": TokenBoolean,
 }
 
 func checkKeyword(s string) TokenType {
