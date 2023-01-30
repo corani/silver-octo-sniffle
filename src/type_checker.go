@@ -48,6 +48,14 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 	switch {
 	case e.token.Type == TokenSlash:
 		e.typ = TypeFloat64
+	case e.token.isRelation():
+		e.typ = TypeBoolean
+	case e.token.Type == TokenAnd || e.token.Type == TokenOr:
+		if e.args[0].Type() != TypeBoolean || e.args[1].Type() != TypeBoolean {
+			panic(fmt.Sprintf("can only %s boolean values", e.token.Type))
+		}
+
+		e.typ = TypeBoolean
 	case e.args[0].Type() != e.args[1].Type():
 		e.typ = TypeFloat64
 	default:

@@ -9,7 +9,7 @@ test/test_016.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
 test/test_016.in:1:7:	number	"11"	11	(1, 7) -> (1, 9)
 test/test_016.in:1:9:	slash	"/"	0	(1, 9) -> (1, 10)
 test/test_016.in:1:10:	number	"3"	3	(1, 10) -> (1, 11)
-test/test_016.in:1:11:	star	"*"	0	(1, 11) -> (1, 12)
+test/test_016.in:1:11:	asterisk	"*"	0	(1, 11) -> (1, 12)
 test/test_016.in:1:12:	number	"3"	3	(1, 12) -> (1, 13)
 test/test_016.in:1:13:	rparen	")"	0	(1, 13) -> (1, 14)
 test/test_016.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
@@ -19,7 +19,7 @@ test/test_016.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 (module
   (expr2stmt
     (print [void]
-      (star [f64]
+      (asterisk [f64]
         (slash [f64]
           (number [i64] 11)
           (number [i64] 3)

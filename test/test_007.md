@@ -11,7 +11,7 @@ test/test_007.in:1:9:	number	"34"	34	(1, 9) -> (1, 11)
 test/test_007.in:1:12:	plus	"+"	0	(1, 12) -> (1, 13)
 test/test_007.in:1:14:	number	"35"	35	(1, 14) -> (1, 16)
 test/test_007.in:1:16:	rparen	")"	0	(1, 16) -> (1, 17)
-test/test_007.in:1:18:	star	"*"	0	(1, 18) -> (1, 19)
+test/test_007.in:1:18:	asterisk	"*"	0	(1, 18) -> (1, 19)
 test/test_007.in:1:20:	number	"33"	33	(1, 20) -> (1, 22)
 test/test_007.in:1:23:	rparen	")"	0	(1, 23) -> (1, 24)
 test/test_007.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
@@ -21,7 +21,7 @@ test/test_007.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 (module
   (expr2stmt
     (print [void]
-      (star [i64]
+      (asterisk [i64]
         (plus [i64]
           (number [i64] 34)
           (number [i64] 35)

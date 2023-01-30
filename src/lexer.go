@@ -71,6 +71,30 @@ func lex(name string, bs []byte) (Tokens, error) {
 			}
 
 			tokenType = TokenString
+		case bs[i] == '.':
+			// NOTE(daniel): special case for ranges.
+			next()
+
+			if peek('.') {
+				tokenType = TokenDotDot
+			} else {
+				tokenType = TokenDot
+			}
+		case bs[i] == '<' || bs[i] == '>':
+			// NOTE(daniel): special case for relationships.
+			next()
+			peek('=')
+
+			switch text() {
+			case "<":
+				tokenType = TokenLT
+			case "<=":
+				tokenType = TokenLE
+			case ">=":
+				tokenType = TokenGE
+			case ">":
+				tokenType = TokenGT
+			}
 		case bs[i] == '(':
 			// NOTE(daniel): special case for comments.
 			// TODO(daniel): do we want to store comments in the token stream, either as

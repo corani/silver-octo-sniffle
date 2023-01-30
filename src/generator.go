@@ -74,9 +74,8 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	left := g.visitAndReturnValue(n.args[0])
 	right := g.visitAndReturnValue(n.args[1])
 
-	// TODO(daniel): is automatic conversion a thing?
-	// TODO(daniel): this assumes only `I32` and `Double` types. Do we need support for `String`
-	// and `Boolean`?
+	// TODO(daniel): is automatic conversion a thing? Alternatively we could generate AST nodes
+	// during type checking.
 	switch n.token.Type {
 	case TokenMinus:
 		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
@@ -94,7 +93,7 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 			// REAL addition
 			g.currentValue = g.currentBlock.NewFAdd(g.anyToReal(left), g.anyToReal(right))
 		}
-	case TokenStar:
+	case TokenAsterisk:
 		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
 			// INTEGER multiplication
 			g.currentValue = g.currentBlock.NewMul(left, right)
@@ -105,16 +104,56 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	case TokenSlash:
 		// REAL division
 		g.currentValue = g.currentBlock.NewFDiv(g.anyToReal(left), g.anyToReal(right))
-	case TokenDiv:
+	case TokenIDiv:
 		// INTEGER division
 		g.currentValue = g.currentBlock.NewSDiv(g.anyToInteger(left), g.anyToInteger(right))
 	case TokenMod:
 		// INTEGER modulus
 		g.currentValue = g.currentBlock.NewSRem(g.anyToInteger(left), g.anyToInteger(right))
-	case TokenAmpersand:
+	case TokenAnd:
 		// logical AND
+		g.currentValue = g.currentBlock.NewAnd(left, right)
 	case TokenOr:
 		// logical OR
+		g.currentValue = g.currentBlock.NewOr(left, right)
+	case TokenEQ:
+		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+			g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, left, right)
+		} else {
+			// TODO(daniel): do we need "ordered" or "unordered" float compares?
+			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUEQ, g.anyToReal(left), g.anyToReal(right))
+		}
+	case TokenNE:
+		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+			g.currentValue = g.currentBlock.NewICmp(enum.IPredNE, left, right)
+		} else {
+			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUNE, g.anyToReal(left), g.anyToReal(right))
+		}
+	case TokenLT:
+		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+			// TODO(daniel): "signed" or "unsigned" integer compares?
+			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLT, left, right)
+		} else {
+			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULT, g.anyToReal(left), g.anyToReal(right))
+		}
+	case TokenLE:
+		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLE, left, right)
+		} else {
+			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULE, g.anyToReal(left), g.anyToReal(right))
+		}
+	case TokenGE:
+		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGE, left, right)
+		} else {
+			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGE, g.anyToReal(left), g.anyToReal(right))
+		}
+	case TokenGT:
+		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGT, left, right)
+		} else {
+			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGT, g.anyToReal(left), g.anyToReal(right))
+		}
 	default:
 		panic(fmt.Sprintf("unsupported token type: %+v", n.token))
 	}
