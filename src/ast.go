@@ -32,6 +32,7 @@ type Visitor interface {
 	VisitCallExpr(*CallExpr)
 	VisitBinaryExpr(*BinaryExpr)
 	VisitNumberExpr(*NumberExpr)
+	VisitStringExpr(*StringExpr)
 }
 
 type Node interface {
@@ -83,6 +84,24 @@ func (n *NumberExpr) Type() Type {
 
 func (n *NumberExpr) Visit(v Visitor) {
 	v.VisitNumberExpr(n)
+}
+
+type StringExpr struct {
+	token Token
+}
+
+var _ Expr = (*StringExpr)(nil)
+
+func (n *StringExpr) Token() Token {
+	return n.token
+}
+
+func (n *StringExpr) Type() Type {
+	return TypeString
+}
+
+func (n *StringExpr) Visit(v Visitor) {
+	v.VisitStringExpr(n)
 }
 
 type BinaryExpr struct {

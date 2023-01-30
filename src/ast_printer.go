@@ -84,3 +84,7 @@ func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
 func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
 	p.printf("(number [%v] %d)", n.typ, n.token.Number)
 }
+
+func (p *astPrinter) VisitStringExpr(n *StringExpr) {
+	p.printf("(string %q)", n.token.Text)
+}

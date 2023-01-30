@@ -58,3 +58,7 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 func (c *typeChecker) VisitNumberExpr(e *NumberExpr) {
 	e.typ = TypeInt64
 }
+
+func (c *typeChecker) VisitStringExpr(e *StringExpr) {
+	// nop
+}

@@ -10,6 +10,7 @@ type TokenType string
 const (
 	TokenInvalid   TokenType = ""
 	TokenNumber    TokenType = "number"
+	TokenString    TokenType = "string"
 	TokenLParen    TokenType = "lparen"
 	TokenRParen    TokenType = "rparen"
 	TokenPlus      TokenType = "plus"

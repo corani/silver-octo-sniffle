@@ -48,7 +48,7 @@ func lex(name string, bs []byte) (Tokens, error) {
 
 		switch {
 		case numeric(bs[i]):
-			// TODO(daniel): support REAL numbers.
+			// TODO(daniel): support REAL and HEX numbers.
 			for numeric(bs[i]) {
 				next()
 			}
@@ -60,8 +60,19 @@ func lex(name string, bs []byte) (Tokens, error) {
 			}
 
 			tokenType = checkKeyword(text())
+		case bs[i] == '"':
+			// NOTE(daniel): special case for strings.
+			next()
+
+			// TODO(daniel): handle escape characters?
+			// TODO(daniel): this accepts multi-line strings. Are those a thing?
+			for !peek('"') {
+				next()
+			}
+
+			tokenType = TokenString
 		case bs[i] == '(':
-			// NOTE(daniel): special case, to handle skipping over comments.
+			// NOTE(daniel): special case for comments.
 			// TODO(daniel): do we want to store comments in the token stream, either as
 			// separate tokens or as annotations on e.g. the next token? Storing them would
 			// allow us to use them in the parser or generator, e.g. for compiler directives.
@@ -98,21 +109,32 @@ func lex(name string, bs []byte) (Tokens, error) {
 		}
 
 		// NOTE(daniel): add the identified token.
-		var num int
+		var (
+			txt string
+			num int
+		)
 
-		if tokenType == TokenNumber {
-			if i, err := strconv.Atoi(text()); err != nil {
+		switch tokenType {
+		case TokenNumber:
+			txt = text()
+
+			if i, err := strconv.Atoi(txt); err != nil {
 				return result, err
 			} else {
 				num = i
 			}
+		case TokenString:
+			// slice off the enclosing quotes.
+			txt = string(bs[starti+1 : i-1])
+		default:
+			txt = text()
 		}
 
 		result = append(result, Token{
 			Type:   tokenType,
 			File:   name,
 			Range:  Range{startr, startc, row, col},
-			Text:   text(),
+			Text:   txt,
 			Number: num,
 		})
 	}

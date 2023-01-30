@@ -136,25 +136,30 @@ func (p *Parser) parseTerm() (Expr, error) {
 }
 
 func (p *Parser) parseFactor() (Expr, error) {
-	// factor := '(' expr ')' | number
-	if p.currentType() != TokenLParen {
+	// factor := '(' expr ')' | number | string
+	switch p.currentType() {
+	case TokenNumber, TokenMinus:
 		return p.parseNumberExpr()
-	}
+	case TokenString:
+		return p.parseStringExpr()
+	case TokenLParen:
+		if _, err := p.require(TokenLParen); err != nil {
+			return nil, err
+		}
 
-	if _, err := p.require(TokenLParen); err != nil {
-		return nil, err
-	}
+		expr, err := p.parseExpr()
+		if err != nil {
+			return expr, err
+		}
 
-	expr, err := p.parseExpr()
-	if err != nil {
-		return expr, err
-	}
+		if _, err := p.require(TokenRParen); err != nil {
+			return nil, err
+		}
 
-	if _, err := p.require(TokenRParen); err != nil {
-		return nil, err
+		return expr, nil
+	default:
+		panic(fmt.Sprintf("unexpected token in factor: %v", p.currentType()))
 	}
-
-	return expr, nil
 }
 
 func (p *Parser) parseNumberExpr() (Expr, error) {
@@ -190,6 +195,15 @@ func (p *Parser) parseNumberExpr() (Expr, error) {
 		token: op,
 		args:  []Expr{zero, num},
 	}, nil
+}
+
+func (p *Parser) parseStringExpr() (Expr, error) {
+	t, err := p.require(TokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	return &StringExpr{token: t}, nil
 }
 
 func (p *Parser) require(exp TokenType) (Token, error) {

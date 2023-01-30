@@ -74,7 +74,8 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	right := g.visitAndReturnValue(n.args[1])
 
 	// TODO(daniel): is automatic conversion a thing?
-	// TODO(daniel): this assumes only `I32` and `Double` types.
+	// TODO(daniel): this assumes only `I32` and `Double` types. Do we need support for `String`
+	// and `Boolean`?
 	switch n.token.Type {
 	case TokenMinus:
 		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
@@ -120,6 +121,12 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 
 func (g *generator) VisitNumberExpr(n *NumberExpr) {
 	g.currentValue = constant.NewInt(types.I32, int64(n.token.Number))
+}
+
+func (g *generator) VisitStringExpr(n *StringExpr) {
+	str := g.internString(n.token.Text)
+
+	g.currentValue = g.currentBlock.NewGetElementPtr(str.ContentType, str, zero, zero)
 }
 
 func (g *generator) visitAndReturnValue(n Node) value.Value {
