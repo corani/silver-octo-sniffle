@@ -1,0 +1,2 @@
+print(~TRUE)
+print(~FALSE)

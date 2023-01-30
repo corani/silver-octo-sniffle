@@ -20,6 +20,7 @@ const (
 	TokenSlash     TokenType = "slash"
 	TokenComma     TokenType = "comma"
 	TokenAmpersand TokenType = "ampersand"
+	TokenTilde     TokenType = "tilde"
 	TokenIdent     TokenType = "ident"
 	TokenDiv       TokenType = "div"
 	TokenMod       TokenType = "mod"
@@ -36,6 +37,7 @@ var mapCharToToken = map[byte]TokenType{
 	'/': TokenSlash, // REAL division
 	',': TokenComma,
 	'&': TokenAmpersand, // logical AND
+	'~': TokenTilde,     // logical NOT
 }
 
 // TODO(daniel): are keywords case-sensitive (i.e. must they be all upper-case)?

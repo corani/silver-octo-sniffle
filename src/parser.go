@@ -136,7 +136,7 @@ func (p *Parser) parseTerm() (Expr, error) {
 }
 
 func (p *Parser) parseFactor() (Expr, error) {
-	// factor := '(' expr ')' | number | string | boolean
+	// factor := number | string | boolean | '(' expr ')' | '~' factor
 	switch p.currentType() {
 	case TokenNumber, TokenMinus:
 		return p.parseNumberExpr()
@@ -144,6 +144,8 @@ func (p *Parser) parseFactor() (Expr, error) {
 		return p.parseStringExpr()
 	case TokenBoolean:
 		return p.parseBooleanExpr()
+	case TokenTilde:
+		return p.parseNotExpr()
 	case TokenLParen:
 		if _, err := p.require(TokenLParen); err != nil {
 			return nil, err
@@ -215,6 +217,23 @@ func (p *Parser) parseBooleanExpr() (Expr, error) {
 	}
 
 	return &BooleanExpr{token: t}, nil
+}
+
+func (p *Parser) parseNotExpr() (Expr, error) {
+	t, err := p.require(TokenTilde)
+	if err != nil {
+		return nil, err
+	}
+
+	expr, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	return &NotExpr{
+		token: t,
+		expr:  expr,
+	}, nil
 }
 
 func (p *Parser) require(exp TokenType) (Token, error) {

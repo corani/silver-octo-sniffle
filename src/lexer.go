@@ -94,6 +94,7 @@ func lex(name string, bs []byte) (Tokens, error) {
 		default:
 			if t, ok := mapCharToToken[bs[i]]; ok {
 				next()
+
 				tokenType = t
 			} else {
 				// skip whitespace.

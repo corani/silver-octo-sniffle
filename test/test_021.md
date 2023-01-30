@@ -17,8 +17,8 @@ test/test_021.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 (module
   (expr2stmt
     (print [void]
-      (boolean true)
-      (boolean false)
+      #true
+      #false
     )
   )
 )

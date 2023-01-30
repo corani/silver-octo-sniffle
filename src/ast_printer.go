@@ -91,8 +91,18 @@ func (p *astPrinter) VisitStringExpr(n *StringExpr) {
 
 func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
 	if n.token.Number != 0 {
-		p.printf("(boolean true)")
+		p.printf("#true")
 	} else {
-		p.printf("(boolean false)")
+		p.printf("#false")
 	}
+}
+
+func (p *astPrinter) VisitNotExpr(n *NotExpr) {
+	p.printf("(not [%v]", n.Type())
+	p.indent++
+
+	n.expr.Visit(p)
+
+	p.indent--
+	p.printf(")")
 }

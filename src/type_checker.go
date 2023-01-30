@@ -66,3 +66,11 @@ func (c *typeChecker) VisitStringExpr(e *StringExpr) {
 func (c *typeChecker) VisitBooleanExpr(e *BooleanExpr) {
 	// nop
 }
+
+func (c *typeChecker) VisitNotExpr(e *NotExpr) {
+	e.expr.Visit(c)
+
+	if e.expr.Type() != TypeBoolean {
+		panic(fmt.Sprintf("`~` not supported for type %v", e.expr.Type()))
+	}
+}

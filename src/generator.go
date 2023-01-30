@@ -6,6 +6,7 @@ import (
 
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
+	"github.com/llir/llvm/ir/enum"
 	"github.com/llir/llvm/ir/types"
 	"github.com/llir/llvm/ir/value"
 )
@@ -135,6 +136,13 @@ func (g *generator) VisitBooleanExpr(n *BooleanExpr) {
 	} else {
 		g.currentValue = constant.False
 	}
+}
+
+func (g *generator) VisitNotExpr(n *NotExpr) {
+	val := g.visitAndReturnValue(n.expr)
+
+	// TODO(daniel): is this how you do it?
+	g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, val, constant.NewInt(types.I1, 0))
 }
 
 func (g *generator) visitAndReturnValue(n Node) value.Value {
