@@ -160,7 +160,12 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 }
 
 func (g *generator) VisitNumberExpr(n *NumberExpr) {
-	g.currentValue = constant.NewInt(types.I32, int64(n.token.Number))
+	switch n.Type() {
+	case TypeInt64:
+		g.currentValue = constant.NewInt(types.I32, int64(n.token.Int))
+	case TypeFloat64:
+		g.currentValue = constant.NewFloat(types.Double, n.token.Real)
+	}
 }
 
 func (g *generator) VisitStringExpr(n *StringExpr) {
@@ -170,7 +175,7 @@ func (g *generator) VisitStringExpr(n *StringExpr) {
 }
 
 func (g *generator) VisitBooleanExpr(n *BooleanExpr) {
-	if n.token.Number != 0 {
+	if n.token.Int != 0 {
 		g.currentValue = constant.True
 	} else {
 		g.currentValue = constant.False

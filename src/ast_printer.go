@@ -82,7 +82,12 @@ func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
 }
 
 func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
-	p.printf("(number [%v] %d)", n.typ, n.token.Number)
+	switch n.Type() {
+	case TypeInt64:
+		p.printf("(number [%v] %d)", n.typ, n.token.Int)
+	case TypeFloat64:
+		p.printf("(number [%v] %f)", n.typ, n.token.Real)
+	}
 }
 
 func (p *astPrinter) VisitStringExpr(n *StringExpr) {
@@ -90,7 +95,7 @@ func (p *astPrinter) VisitStringExpr(n *StringExpr) {
 }
 
 func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
-	if n.token.Number != 0 {
+	if n.token.Int != 0 {
 		p.printf("#true")
 	} else {
 		p.printf("#false")

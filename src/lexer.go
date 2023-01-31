@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func lex(name string, bs []byte) (Tokens, error) {
@@ -47,15 +48,31 @@ func lex(name string, bs []byte) (Tokens, error) {
 		var tokenType TokenType
 
 		switch {
-		case numeric(bs[i]):
-			// TODO(daniel): support REAL and HEX numbers.
-			for numeric(bs[i]) {
+		case isNumeric(bs[i]):
+			for isHex(bs[i]) {
 				next()
 			}
 
-			tokenType = TokenNumber
-		case alpha(bs[i]):
-			for alphanumeric(bs[i]) {
+			if strings.ContainsAny(text(), "ABCDEF") {
+				if !peek('H') {
+					return result, fmt.Errorf("expected 'H' after hex digits: %q", text())
+				}
+
+				tokenType = TokenInteger
+			} else if peek('.') {
+				for isNumeric(bs[i]) {
+					next()
+				}
+
+				// TODO(daniel): support scale factor.
+				tokenType = TokenReal
+			} else {
+				peek('H')
+
+				tokenType = TokenInteger
+			}
+		case isAlpha(bs[i]):
+			for isAlphaNumeric(bs[i]) {
 				next()
 			}
 
@@ -135,39 +152,53 @@ func lex(name string, bs []byte) (Tokens, error) {
 
 		// NOTE(daniel): add the identified token.
 		var (
-			txt string
-			num int
+			txt  string
+			inum int
+			fnum float64
 		)
 
 		switch tokenType {
-		case TokenNumber:
+		case TokenInvalid:
+			return result, fmt.Errorf("%s:%d:%d: read invalid token", name, startr, startc)
+		case TokenInteger:
 			txt = text()
 
-			if i, err := strconv.Atoi(txt); err != nil {
+			i, err := decodeInteger(txt)
+			if err != nil {
 				return result, err
-			} else {
-				num = i
 			}
+
+			inum = i
+		case TokenReal:
+			txt = text()
+
+			f, err := decodeReal(txt)
+			if err != nil {
+				return result, err
+			}
+
+			fnum = f
 		case TokenString:
 			// slice off the enclosing quotes.
 			txt = string(bs[starti+1 : i-1])
 		case TokenBoolean:
 			txt = text()
-			num = 0
+			inum = 0
 
 			if txt == "TRUE" {
-				num = 1
+				inum = 1
 			}
 		default:
 			txt = text()
 		}
 
 		result = append(result, Token{
-			Type:   tokenType,
-			File:   name,
-			Range:  Range{startr, startc, row, col},
-			Text:   txt,
-			Number: num,
+			Type:  tokenType,
+			File:  name,
+			Range: Range{startr, startc, row, col},
+			Text:  txt,
+			Int:   inum,
+			Real:  fnum,
 		})
 	}
 
@@ -177,24 +208,48 @@ func lex(name string, bs []byte) (Tokens, error) {
 	return result, nil
 }
 
-func eof(name string, row, col int) Token {
-	return Token{
-		Type:   TokenEOF,
-		File:   name,
-		Range:  Range{row, col, row, col},
-		Text:   "",
-		Number: 0,
+func decodeInteger(txt string) (int, error) {
+	base := 10
+
+	// NOTE(daniel): decode hex digits.
+	if strings.HasSuffix(txt, "H") {
+		base = 16
+		txt = strings.TrimRight(txt, "H")
+	}
+
+	if i, err := strconv.ParseInt(txt, base, 64); err != nil {
+		return 0, err
+	} else {
+		return int(i), nil
 	}
 }
 
-func alpha(b byte) bool {
+func decodeReal(txt string) (float64, error) {
+	return strconv.ParseFloat(txt, 64)
+}
+
+func eof(name string, row, col int) Token {
+	return Token{
+		Type:  TokenEOF,
+		File:  name,
+		Range: Range{row, col, row, col},
+		Text:  "",
+		Int:   0,
+	}
+}
+
+func isAlpha(b byte) bool {
 	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z')
 }
 
-func numeric(b byte) bool {
+func isNumeric(b byte) bool {
 	return (b >= '0' && b <= '9')
 }
 
-func alphanumeric(b byte) bool {
-	return alpha(b) || numeric(b)
+func isHex(b byte) bool {
+	return isNumeric(b) || (b >= 'A' && b <= 'F')
+}
+
+func isAlphaNumeric(b byte) bool {
+	return isAlpha(b) || isNumeric(b)
 }

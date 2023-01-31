@@ -9,7 +9,8 @@ type TokenType string
 
 const (
 	TokenInvalid   TokenType = ""
-	TokenNumber    TokenType = "number"
+	TokenInteger   TokenType = "integer"
+	TokenReal      TokenType = "real"
 	TokenString    TokenType = "string"
 	TokenBoolean   TokenType = "boolean"
 	TokenNil       TokenType = "nil"
@@ -115,15 +116,16 @@ func (t Tokens) String() string {
 }
 
 type Token struct {
-	Type   TokenType
-	File   string
-	Range  Range
-	Text   string
-	Number int
+	Type  TokenType
+	File  string
+	Range Range
+	Text  string
+	Int   int
+	Real  float64
 }
 
 func (t Token) String() string {
-	return fmt.Sprintf("%s:%d:%d:\t%v\t%q\t%d\t%v", t.File, t.Range.FromRow, t.Range.FromCol, t.Type, t.Text, t.Number, t.Range)
+	return fmt.Sprintf("%s:%d:%d:\t%v\t%q\t%d\t%v", t.File, t.Range.FromRow, t.Range.FromCol, t.Type, t.Text, t.Int, t.Range)
 }
 
 func (t Token) isRelation() bool {
@@ -136,4 +138,8 @@ func (t Token) isRelation() bool {
 	}
 
 	return false
+}
+
+func (t Token) isNumber() bool {
+	return t.Type == TokenInteger || t.Type == TokenReal
 }

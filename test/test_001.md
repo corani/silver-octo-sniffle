@@ -6,7 +6,7 @@ print(42)
 ```tsv
 test/test_001.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
 test/test_001.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
-test/test_001.in:1:7:	number	"42"	42	(1, 7) -> (1, 9)
+test/test_001.in:1:7:	integer	"42"	42	(1, 7) -> (1, 9)
 test/test_001.in:1:9:	rparen	")"	0	(1, 9) -> (1, 10)
 test/test_001.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 ```

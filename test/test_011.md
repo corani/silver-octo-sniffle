@@ -6,9 +6,9 @@ print(11 DIV 3)
 ```tsv
 test/test_011.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
 test/test_011.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
-test/test_011.in:1:7:	number	"11"	11	(1, 7) -> (1, 9)
+test/test_011.in:1:7:	integer	"11"	11	(1, 7) -> (1, 9)
 test/test_011.in:1:10:	idiv	"DIV"	0	(1, 10) -> (1, 13)
-test/test_011.in:1:14:	number	"3"	3	(1, 14) -> (1, 15)
+test/test_011.in:1:14:	integer	"3"	3	(1, 14) -> (1, 15)
 test/test_011.in:1:15:	rparen	")"	0	(1, 15) -> (1, 16)
 test/test_011.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
 ```

@@ -162,7 +162,7 @@ func (p *Parser) parseTerm() (Expr, error) {
 func (p *Parser) parseFactor() (Expr, error) {
 	// factor := number | string | boolean | '(' expr ')' | '~' factor
 	switch p.currentType() {
-	case TokenNumber, TokenMinus:
+	case TokenInteger, TokenReal, TokenMinus:
 		return p.parseNumberExpr()
 	case TokenString:
 		return p.parseStringLiteral()
@@ -186,12 +186,15 @@ func (p *Parser) parseFactor() (Expr, error) {
 
 		return expr, nil
 	default:
-		panic(fmt.Sprintf("unexpected token in factor: %v", p.currentType()))
+		panic(fmt.Sprintf("unexpected token in factor: %q", p.currentType()))
 	}
 }
 
 func (p *Parser) parseNumberExpr() (Expr, error) {
-	var op Token
+	var (
+		op Token
+		t  Token
+	)
 
 	switch p.currentType() {
 	case TokenMinus:
@@ -202,9 +205,13 @@ func (p *Parser) parseNumberExpr() (Expr, error) {
 		_, _ = p.require(TokenPlus)
 	}
 
-	t, err := p.require(TokenNumber)
-	if err != nil {
-		return nil, err
+	switch p.currentType() {
+	case TokenInteger:
+		t, _ = p.require(TokenInteger)
+	case TokenReal:
+		t, _ = p.require(TokenReal)
+	default:
+		return nil, fmt.Errorf("expected number, got %v", p.currentType())
 	}
 
 	num := &NumberExpr{token: t}
@@ -216,7 +223,7 @@ func (p *Parser) parseNumberExpr() (Expr, error) {
 	// NOTE(daniel): There is no negate for integers in LLVM IR, so we treat
 	// `-x` as `0 - x`. That means we don't need generator code either.
 	zero := &NumberExpr{token: t}
-	zero.token.Number = 0
+	zero.token.Int = 0
 	zero.token.Text = ""
 
 	return &BinaryExpr{

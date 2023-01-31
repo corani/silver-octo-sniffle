@@ -64,7 +64,12 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 }
 
 func (c *typeChecker) VisitNumberExpr(e *NumberExpr) {
-	e.typ = TypeInt64
+	switch e.token.Type {
+	case TokenInteger:
+		e.typ = TypeInt64
+	case TokenReal:
+		e.typ = TypeFloat64
+	}
 }
 
 func (c *typeChecker) VisitStringExpr(e *StringExpr) {
