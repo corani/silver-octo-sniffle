@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strconv"
 	"strings"
@@ -54,11 +55,14 @@ func lex(name string, bs []byte) (Tokens, error) {
 			}
 
 			if strings.ContainsAny(text(), "ABCDEF") {
-				if !peek('H') {
-					return result, fmt.Errorf("expected 'H' after hex digits: %q", text())
+				switch {
+				case peek('H'):
+					tokenType = TokenInteger
+				case peek('X'):
+					tokenType = TokenString
+				default:
+					return result, fmt.Errorf("expected 'H' or 'X' after hex digits: %q", text())
 				}
-
-				tokenType = TokenInteger
 			} else if peek('.') {
 				for isNumeric(bs[i]) {
 					next()
@@ -66,6 +70,8 @@ func lex(name string, bs []byte) (Tokens, error) {
 
 				// TODO(daniel): support scale factor.
 				tokenType = TokenReal
+			} else if peek('X') {
+				tokenType = TokenString
 			} else {
 				peek('H')
 
@@ -179,8 +185,14 @@ func lex(name string, bs []byte) (Tokens, error) {
 
 			fnum = f
 		case TokenString:
-			// slice off the enclosing quotes.
-			txt = string(bs[starti+1 : i-1])
+			txt = text()
+
+			t, err := decodeString(txt)
+			if err != nil {
+				return result, err
+			}
+
+			txt = t
 		case TokenBoolean:
 			txt = text()
 			inum = 0
@@ -214,7 +226,7 @@ func decodeInteger(txt string) (int, error) {
 	// NOTE(daniel): decode hex digits.
 	if strings.HasSuffix(txt, "H") {
 		base = 16
-		txt = strings.TrimRight(txt, "H")
+		txt = strings.TrimSuffix(txt, "H")
 	}
 
 	if i, err := strconv.ParseInt(txt, base, 64); err != nil {
@@ -226,6 +238,28 @@ func decodeInteger(txt string) (int, error) {
 
 func decodeReal(txt string) (float64, error) {
 	return strconv.ParseFloat(txt, 64)
+}
+
+func decodeString(txt string) (string, error) {
+	if strings.HasPrefix(txt, "\"") {
+		// slice off the enclosing quotes.
+		txt = strings.TrimPrefix(txt, "\"")
+		txt = strings.TrimSuffix(txt, "\"")
+
+		return txt, nil
+	} else if strings.HasSuffix(txt, "X") {
+		// decode hex string
+		txt = strings.TrimSuffix(txt, "X")
+
+		bs, err := hex.DecodeString(txt)
+		if err != nil {
+			return "", err
+		}
+
+		return string(bs), nil
+	} else {
+		return "", fmt.Errorf("read invalid string: %q", txt)
+	}
 }
 
 func eof(name string, row, col int) Token {
