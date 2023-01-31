@@ -1,24 +1,25 @@
-# test/test_025.in
+# test/test_025.md
+## Source
 ```
 print(TRUE & FALSE);
 print(TRUE OR FALSE)
 ```
 ## Tokens
 ```tsv
-test/test_025.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
-test/test_025.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
-test/test_025.in:1:7:	boolean	"TRUE"	true	0	0.000000	(1, 7) -> (1, 11)
-test/test_025.in:1:12:	ampersand	"&"	false	0	0.000000	(1, 12) -> (1, 13)
-test/test_025.in:1:14:	boolean	"FALSE"	false	0	0.000000	(1, 14) -> (1, 19)
-test/test_025.in:1:19:	rparen	")"	false	0	0.000000	(1, 19) -> (1, 20)
-test/test_025.in:1:20:	semicolon	";"	false	0	0.000000	(1, 20) -> (1, 21)
-test/test_025.in:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
-test/test_025.in:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
-test/test_025.in:2:6:	boolean	"TRUE"	true	0	0.000000	(2, 6) -> (2, 10)
-test/test_025.in:2:11:	or	"OR"	false	0	0.000000	(2, 11) -> (2, 13)
-test/test_025.in:2:14:	boolean	"FALSE"	false	0	0.000000	(2, 14) -> (2, 19)
-test/test_025.in:2:19:	rparen	")"	false	0	0.000000	(2, 19) -> (2, 20)
-test/test_025.in:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
+test/test_025.md:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_025.md:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_025.md:1:7:	boolean	"TRUE"	true	0	0.000000	(1, 7) -> (1, 11)
+test/test_025.md:1:12:	ampersand	"&"	false	0	0.000000	(1, 12) -> (1, 13)
+test/test_025.md:1:14:	boolean	"FALSE"	false	0	0.000000	(1, 14) -> (1, 19)
+test/test_025.md:1:19:	rparen	")"	false	0	0.000000	(1, 19) -> (1, 20)
+test/test_025.md:1:20:	semicolon	";"	false	0	0.000000	(1, 20) -> (1, 21)
+test/test_025.md:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
+test/test_025.md:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
+test/test_025.md:2:6:	boolean	"TRUE"	true	0	0.000000	(2, 6) -> (2, 10)
+test/test_025.md:2:11:	or	"OR"	false	0	0.000000	(2, 11) -> (2, 13)
+test/test_025.md:2:14:	boolean	"FALSE"	false	0	0.000000	(2, 14) -> (2, 19)
+test/test_025.md:2:19:	rparen	")"	false	0	0.000000	(2, 19) -> (2, 20)
+test/test_025.md:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
 ```
 ## AST
 ```scheme

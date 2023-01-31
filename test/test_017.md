@@ -1,15 +1,16 @@
-# test/test_017.in
+# test/test_017.md
+## Source
 ```
 (* this is a comment *)
 print(1)
 ```
 ## Tokens
 ```tsv
-test/test_017.in:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
-test/test_017.in:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
-test/test_017.in:2:6:	integer	"1"	false	1	0.000000	(2, 6) -> (2, 7)
-test/test_017.in:2:7:	rparen	")"	false	0	0.000000	(2, 7) -> (2, 8)
-test/test_017.in:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
+test/test_017.md:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
+test/test_017.md:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
+test/test_017.md:2:6:	integer	"1"	false	1	0.000000	(2, 6) -> (2, 7)
+test/test_017.md:2:7:	rparen	")"	false	0	0.000000	(2, 7) -> (2, 8)
+test/test_017.md:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
 ```
 ## AST
 ```scheme

@@ -1,16 +1,17 @@
-# test/test_032.in
+# test/test_032.md
+## Source
 ```
 print(0.69E+2+420.E-3)
 ```
 ## Tokens
 ```tsv
-test/test_032.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
-test/test_032.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
-test/test_032.in:1:7:	real	"0.69E+2"	false	0	69.000000	(1, 7) -> (1, 14)
-test/test_032.in:1:14:	plus	"+"	false	0	0.000000	(1, 14) -> (1, 15)
-test/test_032.in:1:15:	real	"420.E-3"	false	0	0.420000	(1, 15) -> (1, 22)
-test/test_032.in:1:22:	rparen	")"	false	0	0.000000	(1, 22) -> (1, 23)
-test/test_032.in:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
+test/test_032.md:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_032.md:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_032.md:1:7:	real	"0.69E+2"	false	0	69.000000	(1, 7) -> (1, 14)
+test/test_032.md:1:14:	plus	"+"	false	0	0.000000	(1, 14) -> (1, 15)
+test/test_032.md:1:15:	real	"420.E-3"	false	0	0.420000	(1, 15) -> (1, 22)
+test/test_032.md:1:22:	rparen	")"	false	0	0.000000	(1, 22) -> (1, 23)
+test/test_032.md:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
 ```
 ## AST
 ```scheme

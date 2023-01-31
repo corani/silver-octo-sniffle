@@ -1,2 +1,0 @@
-print(TRUE & FALSE);
-print(TRUE OR FALSE)

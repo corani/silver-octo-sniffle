@@ -1,16 +1,17 @@
-# test/test_011.in
+# test/test_011.md
+## Source
 ```
 print(11 DIV 3)
 ```
 ## Tokens
 ```tsv
-test/test_011.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
-test/test_011.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
-test/test_011.in:1:7:	integer	"11"	false	11	0.000000	(1, 7) -> (1, 9)
-test/test_011.in:1:10:	div	"DIV"	false	0	0.000000	(1, 10) -> (1, 13)
-test/test_011.in:1:14:	integer	"3"	false	3	0.000000	(1, 14) -> (1, 15)
-test/test_011.in:1:15:	rparen	")"	false	0	0.000000	(1, 15) -> (1, 16)
-test/test_011.in:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
+test/test_011.md:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_011.md:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_011.md:1:7:	integer	"11"	false	11	0.000000	(1, 7) -> (1, 9)
+test/test_011.md:1:10:	div	"DIV"	false	0	0.000000	(1, 10) -> (1, 13)
+test/test_011.md:1:14:	integer	"3"	false	3	0.000000	(1, 14) -> (1, 15)
+test/test_011.md:1:15:	rparen	")"	false	0	0.000000	(1, 15) -> (1, 16)
+test/test_011.md:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
 ```
 ## AST
 ```scheme

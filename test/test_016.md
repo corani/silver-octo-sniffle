@@ -1,18 +1,19 @@
-# test/test_016.in
+# test/test_016.md
+## Source
 ```
 print(11/3*3)
 ```
 ## Tokens
 ```tsv
-test/test_016.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
-test/test_016.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
-test/test_016.in:1:7:	integer	"11"	false	11	0.000000	(1, 7) -> (1, 9)
-test/test_016.in:1:9:	slash	"/"	false	0	0.000000	(1, 9) -> (1, 10)
-test/test_016.in:1:10:	integer	"3"	false	3	0.000000	(1, 10) -> (1, 11)
-test/test_016.in:1:11:	asterisk	"*"	false	0	0.000000	(1, 11) -> (1, 12)
-test/test_016.in:1:12:	integer	"3"	false	3	0.000000	(1, 12) -> (1, 13)
-test/test_016.in:1:13:	rparen	")"	false	0	0.000000	(1, 13) -> (1, 14)
-test/test_016.in:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
+test/test_016.md:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_016.md:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_016.md:1:7:	integer	"11"	false	11	0.000000	(1, 7) -> (1, 9)
+test/test_016.md:1:9:	slash	"/"	false	0	0.000000	(1, 9) -> (1, 10)
+test/test_016.md:1:10:	integer	"3"	false	3	0.000000	(1, 10) -> (1, 11)
+test/test_016.md:1:11:	asterisk	"*"	false	0	0.000000	(1, 11) -> (1, 12)
+test/test_016.md:1:12:	integer	"3"	false	3	0.000000	(1, 12) -> (1, 13)
+test/test_016.md:1:13:	rparen	")"	false	0	0.000000	(1, 13) -> (1, 14)
+test/test_016.md:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
 ```
 ## AST
 ```scheme

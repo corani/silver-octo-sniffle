@@ -1,22 +1,23 @@
-# test/test_022.in
+# test/test_022.md
+## Source
 ```
 print(~TRUE);
 print(~FALSE)
 ```
 ## Tokens
 ```tsv
-test/test_022.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
-test/test_022.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
-test/test_022.in:1:7:	tilde	"~"	false	0	0.000000	(1, 7) -> (1, 8)
-test/test_022.in:1:8:	boolean	"TRUE"	true	0	0.000000	(1, 8) -> (1, 12)
-test/test_022.in:1:12:	rparen	")"	false	0	0.000000	(1, 12) -> (1, 13)
-test/test_022.in:1:13:	semicolon	";"	false	0	0.000000	(1, 13) -> (1, 14)
-test/test_022.in:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
-test/test_022.in:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
-test/test_022.in:2:6:	tilde	"~"	false	0	0.000000	(2, 6) -> (2, 7)
-test/test_022.in:2:7:	boolean	"FALSE"	false	0	0.000000	(2, 7) -> (2, 12)
-test/test_022.in:2:12:	rparen	")"	false	0	0.000000	(2, 12) -> (2, 13)
-test/test_022.in:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
+test/test_022.md:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_022.md:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_022.md:1:7:	tilde	"~"	false	0	0.000000	(1, 7) -> (1, 8)
+test/test_022.md:1:8:	boolean	"TRUE"	true	0	0.000000	(1, 8) -> (1, 12)
+test/test_022.md:1:12:	rparen	")"	false	0	0.000000	(1, 12) -> (1, 13)
+test/test_022.md:1:13:	semicolon	";"	false	0	0.000000	(1, 13) -> (1, 14)
+test/test_022.md:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
+test/test_022.md:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
+test/test_022.md:2:6:	tilde	"~"	false	0	0.000000	(2, 6) -> (2, 7)
+test/test_022.md:2:7:	boolean	"FALSE"	false	0	0.000000	(2, 7) -> (2, 12)
+test/test_022.md:2:12:	rparen	")"	false	0	0.000000	(2, 12) -> (2, 13)
+test/test_022.md:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
 ```
 ## AST
 ```scheme

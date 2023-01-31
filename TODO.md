@@ -28,13 +28,15 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] support scale factor in REAL literals.
 - [x] better printing of boolean values.
 - [x] support statement sequences (separated by `;`).
-- [ ] get "golden tests" input from the code block in the markdown file.
+- [x] get "golden tests" input from the code block in the markdown file.
+- [x] remove dedicated "golden test" runner and rely on unit-tests.
 - [ ] require a `MODULE` instead of allowing naked statements.
 - [ ] support `IF` / `THEN` / `ELSIF` / `ELSE`.
 - [ ] basic variable and assignment support
 - [ ] make `print` a real procedure.
+- [ ] don't panic on compilation errors.
 - [ ] better error reporting.
 - [ ] better command line arguments.
-- [ ] remove dedicated "golden test" runner and rely on unit-tests.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
+- [ ] update "golden test" files in-place, so any additional content doesn't get overwritten.
 - [ ] ...

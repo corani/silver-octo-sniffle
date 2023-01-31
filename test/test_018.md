@@ -1,4 +1,5 @@
-# test/test_018.in
+# test/test_018.md
+## Source
 ```
 (*
   multi-line comments
@@ -8,11 +9,11 @@ print(1)
 ```
 ## Tokens
 ```tsv
-test/test_018.in:5:0:	ident	"print"	false	0	0.000000	(5, 0) -> (5, 5)
-test/test_018.in:5:5:	lparen	"("	false	0	0.000000	(5, 5) -> (5, 6)
-test/test_018.in:5:6:	integer	"1"	false	1	0.000000	(5, 6) -> (5, 7)
-test/test_018.in:5:7:	rparen	")"	false	0	0.000000	(5, 7) -> (5, 8)
-test/test_018.in:6:0:	eof	""	false	0	0.000000	(6, 0) -> (6, 0)
+test/test_018.md:5:0:	ident	"print"	false	0	0.000000	(5, 0) -> (5, 5)
+test/test_018.md:5:5:	lparen	"("	false	0	0.000000	(5, 5) -> (5, 6)
+test/test_018.md:5:6:	integer	"1"	false	1	0.000000	(5, 6) -> (5, 7)
+test/test_018.md:5:7:	rparen	")"	false	0	0.000000	(5, 7) -> (5, 8)
+test/test_018.md:6:0:	eof	""	false	0	0.000000	(6, 0) -> (6, 0)
 ```
 ## AST
 ```scheme

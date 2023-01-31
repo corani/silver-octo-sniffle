@@ -1,14 +1,15 @@
-# test/test_028.in
+# test/test_028.md
+## Source
 ```
 print(33.42)
 ```
 ## Tokens
 ```tsv
-test/test_028.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
-test/test_028.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
-test/test_028.in:1:7:	real	"33.42"	false	0	33.420000	(1, 7) -> (1, 12)
-test/test_028.in:1:12:	rparen	")"	false	0	0.000000	(1, 12) -> (1, 13)
-test/test_028.in:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
+test/test_028.md:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_028.md:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_028.md:1:7:	real	"33.42"	false	0	33.420000	(1, 7) -> (1, 12)
+test/test_028.md:1:12:	rparen	")"	false	0	0.000000	(1, 12) -> (1, 13)
+test/test_028.md:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
 ```
 ## AST
 ```scheme

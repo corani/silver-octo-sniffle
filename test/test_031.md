@@ -1,14 +1,15 @@
-# test/test_031.in
+# test/test_031.md
+## Source
 ```
 print(48656C6C6F2C20776F726C6421X)
 ```
 ## Tokens
 ```tsv
-test/test_031.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
-test/test_031.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
-test/test_031.in:1:7:	string	"Hello, world!"	false	0	0.000000	(1, 7) -> (1, 34)
-test/test_031.in:1:34:	rparen	")"	false	0	0.000000	(1, 34) -> (1, 35)
-test/test_031.in:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
+test/test_031.md:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_031.md:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_031.md:1:7:	string	"Hello, world!"	false	0	0.000000	(1, 7) -> (1, 34)
+test/test_031.md:1:34:	rparen	")"	false	0	0.000000	(1, 34) -> (1, 35)
+test/test_031.md:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
 ```
 ## AST
 ```scheme

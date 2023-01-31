@@ -1,34 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"flag"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-func do(srcName string, w io.Writer, outTokens bool, outAST bool, run bool) {
-	bs, err := os.ReadFile(srcName)
-	if err != nil {
-		panic(err)
-	}
-
+func do(srcName string, bs []byte) (Tokens, Node, string, string) {
 	tokens, err := lex(srcName, bs)
 	if err != nil {
 		panic(err)
-	}
-
-	if outTokens || outAST || run {
-		fmt.Fprintf(w, "# %s\n", srcName)
-		fmt.Fprintln(w, "```")
-		fmt.Fprint(w, string(bs))
-		fmt.Fprintln(w, "```")
-	}
-
-	if outTokens {
-		fmt.Fprintln(w, tokens)
 	}
 
 	ast, err := parse(tokens)
@@ -37,10 +21,6 @@ func do(srcName string, w io.Writer, outTokens bool, outAST bool, run bool) {
 	}
 
 	typeCheck(ast)
-
-	if outAST {
-		printAST(w, ast)
-	}
 
 	baseName := strings.TrimSuffix(filepath.Base(srcName), filepath.Ext(srcName))
 
@@ -59,38 +39,25 @@ func do(srcName string, w io.Writer, outTokens bool, outAST bool, run bool) {
 	}
 	defer out.Close()
 
-	fmt.Fprintln(w, "## IR")
-	fmt.Fprintln(w, "```llvm")
-	generateIR(io.MultiWriter(out, w), ast)
-	fmt.Fprintln(w, "```")
+	var ir bytes.Buffer
+
+	generateIR(io.MultiWriter(&ir, out), ast)
 
 	if err := compile(llName, outName); err != nil {
 		panic(err)
 	}
 
-	if run {
-		fmt.Fprintln(w, "## Run")
-		fmt.Fprintln(w, "```bash")
-
-		absName, err := filepath.Abs(outName)
-		if err != nil {
-			panic(err)
-		}
-
-		if err := execute(w, absName); err != nil {
-			panic(err)
-		}
-
-		fmt.Fprintln(w, "```")
-	}
+	return tokens, ast, ir.String(), outName
 }
 
 func main() {
 	srcName := flag.String("src", "", "source file")
-	outTokens := flag.Bool("tokens", false, "print tokens")
-	outAST := flag.Bool("ast", false, "print AST")
-	run := flag.Bool("run", false, "run output")
 	flag.Parse()
 
-	do(*srcName, os.Stdout, *outTokens, *outAST, *run)
+	bs, err := os.ReadFile(*srcName)
+	if err != nil {
+		panic(err)
+	}
+
+	do(*srcName, bs)
 }

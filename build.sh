@@ -10,8 +10,7 @@ function print_usage {
     echo "  -h          prints this help"
     echo "  -b          build program"
     echo "  -i          install tools"
-    echo "  -tu         run unit tests"
-    echo "  -tg         verify golden tests"
+    echo "  -t          run unit tests"
     echo "  -tr         record golden tests"
     echo "  -l          run golangci-lint"
 }
@@ -74,33 +73,10 @@ function go_unit_test {
     fi
 }
 
-# TODO(daniel): get rid of these, as the golden tests are included in the
-# unit tests. Only question is how to record the tests. Maybe by providing
-# a test flag for that?
-function go_golden_test_verify {
-    echo "[INFO] verifying golden tests..."
-
-    mkdir -p gen 
-
-    for INPUT in $(find test -name "*.in" | sort); do
-        OUTPUT=${INPUT/%in/act}
-        EXPECTED=${INPUT/%in/md}
-        echo "[CMD] bin/compiler -src ${INPUT}"
-        bin/compiler -src "${INPUT}" -tokens -ast -run > ${OUTPUT}
-        diff -ayw --suppress-common-lines ${OUTPUT} ${EXPECTED}
-    done
-}
-
 function go_golden_test_record {
     echo "[INFO] recording golden tests..."
 
-    mkdir -p gen 
-
-    for INPUT in $(find test -name "*.in" | sort); do
-        OUTPUT=${INPUT/%in/md}
-        echo "[CMD] bin/compiler -src ${INPUT}"
-        bin/compiler -src "${INPUT}" -tokens -ast -run > ${OUTPUT}
-    done
+    do_echo go test -v ./src/... -update
 }
 
 function run_golangci {
@@ -136,13 +112,9 @@ while [ "$#" -gt "0" ]; do
     -i)
         go_install_tools
         ;;
-    -tu)
+    -t)
         go_build
         go_unit_test
-        ;;
-    -tg)
-        go_build
-        go_golden_test_verify
         ;;
     -tr)
         go_build

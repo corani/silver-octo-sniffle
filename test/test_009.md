@@ -1,20 +1,21 @@
-# test/test_009.in
+# test/test_009.md
+## Source
 ```
 print(33);
 print(34)
 ```
 ## Tokens
 ```tsv
-test/test_009.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
-test/test_009.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
-test/test_009.in:1:7:	integer	"33"	false	33	0.000000	(1, 7) -> (1, 9)
-test/test_009.in:1:9:	rparen	")"	false	0	0.000000	(1, 9) -> (1, 10)
-test/test_009.in:1:10:	semicolon	";"	false	0	0.000000	(1, 10) -> (1, 11)
-test/test_009.in:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
-test/test_009.in:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
-test/test_009.in:2:6:	integer	"34"	false	34	0.000000	(2, 6) -> (2, 8)
-test/test_009.in:2:8:	rparen	")"	false	0	0.000000	(2, 8) -> (2, 9)
-test/test_009.in:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
+test/test_009.md:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_009.md:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_009.md:1:7:	integer	"33"	false	33	0.000000	(1, 7) -> (1, 9)
+test/test_009.md:1:9:	rparen	")"	false	0	0.000000	(1, 9) -> (1, 10)
+test/test_009.md:1:10:	semicolon	";"	false	0	0.000000	(1, 10) -> (1, 11)
+test/test_009.md:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
+test/test_009.md:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
+test/test_009.md:2:6:	integer	"34"	false	34	0.000000	(2, 6) -> (2, 8)
+test/test_009.md:2:8:	rparen	")"	false	0	0.000000	(2, 8) -> (2, 9)
+test/test_009.md:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
 ```
 ## AST
 ```scheme
