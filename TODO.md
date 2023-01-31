@@ -1,0 +1,40 @@
+# TODO
+
+The goal is to implement a working Oberon compiler. The checklist below will grow as I go along.
+
+- [x] (temporary) built-in `print`.
+- [x] support simple integers.
+- [x] print tokens, AST and IR.
+- [x] "golden tests" runner.
+- [x] support binary `+` / `-`.
+- [x] support unary `+` / `-`.
+- [x] support binary `*` / `/`.
+- [x] support grouping `(...)`.
+- [x] wrap statements in dummy module.
+- [x] separate statements and expressions.
+- [x] basic type checking.
+- [x] support `REAL` outcome of divisions.
+- [x] replace `print` statement with call expression (still built-in).
+- [x] run "golden tests" as unit tests.
+- [x] support integer `DIV` / `MOD`.
+- [x] skip comments in lexer.
+- [x] support string literals.
+- [x] support boolean literals `TRUE` / `FALSE`.
+- [x] support logical "not" `~`.
+- [x] support relational operators `=` / `#` / `<` / `<=` / `>=` / `>`.
+- [x] support REAL literals.
+- [x] support hex integer literals.
+- [x] support hex string literals.
+- [x] support scale factor in REAL literals.
+- [ ] better printing of boolean values.
+- [ ] support statement sequences (separated by `;`).
+- [ ] get "golden tests" input from the code block in the markdown file.
+- [ ] require a `MODULE` instead of allowing naked statements.
+- [ ] support `IF` / `THEN` / `ELSIF` / `ELSE`.
+- [ ] basic variable and assignment support
+- [ ] make `print` a real procedure.
+- [ ] better error reporting.
+- [ ] better command line arguments.
+- [ ] remove dedicated "golden test" runner and rely on unit-tests.
+- [ ] add "golden tests" for error conditions (e.g. invalid code).
+- [ ] ...

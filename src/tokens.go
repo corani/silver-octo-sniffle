@@ -34,6 +34,7 @@ const (
 	TokenCaret     TokenType = "caret"
 	TokenBar       TokenType = "bar"
 	TokenIdent     TokenType = "ident"
+	TokenAssign    TokenType = "assign"
 	TokenDIV       TokenType = "div"
 	TokenMOD       TokenType = "mod"
 	TokenOR        TokenType = "or"
@@ -74,7 +75,6 @@ const (
 )
 
 var mapCharToToken = map[byte]TokenType{
-	'(': TokenLParen,
 	')': TokenRParen,
 	'{': TokenLBrace,
 	'}': TokenRBrace,
@@ -87,7 +87,6 @@ var mapCharToToken = map[byte]TokenType{
 	',': TokenComma,
 	'&': TokenAmpersand, // logical AND
 	'~': TokenTilde,     // logical NOT
-	':': TokenColon,
 	';': TokenSemicolon,
 	'=': TokenEQ,
 	'#': TokenNE,

@@ -141,6 +141,12 @@ func lex(name string, bs []byte) (Tokens, error) {
 			} else {
 				tokenType = TokenLParen
 			}
+		case peek(':'): // colon or assignment
+			if peek('=') {
+				tokenType = TokenAssign
+			} else {
+				tokenType = TokenColon
+			}
 		case peek('\n') || peek('\r') || peek('\t') || peek(' '): // whitespace
 			continue
 		default:
