@@ -109,7 +109,7 @@ func (p *Parser) parseExpr() (Expr, error) {
 
 func (p *Parser) parseSimpleExpr() (Expr, error) {
 	// simpleExpr := term { '+' | '-' | 'OR' term }
-	addOperators := []TokenType{TokenPlus, TokenMinus, TokenOr}
+	addOperators := []TokenType{TokenPlus, TokenMinus, TokenOR}
 
 	lhs, err := p.parseTerm()
 	if err != nil {
@@ -135,7 +135,7 @@ func (p *Parser) parseSimpleExpr() (Expr, error) {
 
 func (p *Parser) parseTerm() (Expr, error) {
 	// term := factor { '*' | '/' | 'DIV' | 'MUL' | '&' factor }
-	mulOperators := []TokenType{TokenAsterisk, TokenSlash, TokenIDiv, TokenMod, TokenAnd}
+	mulOperators := []TokenType{TokenAsterisk, TokenSlash, TokenDIV, TokenMOD, TokenAmpersand}
 
 	lhs, err := p.parseFactor()
 	if err != nil {
@@ -168,7 +168,7 @@ func (p *Parser) parseFactor() (Expr, error) {
 		return p.parseStringLiteral()
 	case TokenBoolean:
 		return p.parseBooleanLiteral()
-	case TokenNot:
+	case TokenTilde:
 		return p.parseNotExpr()
 	case TokenLParen:
 		if _, err := p.require(TokenLParen); err != nil {
@@ -251,7 +251,7 @@ func (p *Parser) parseBooleanLiteral() (Expr, error) {
 }
 
 func (p *Parser) parseNotExpr() (Expr, error) {
-	t, err := p.require(TokenNot)
+	t, err := p.require(TokenTilde)
 	if err != nil {
 		return nil, err
 	}

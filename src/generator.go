@@ -104,16 +104,16 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	case TokenSlash:
 		// REAL division
 		g.currentValue = g.currentBlock.NewFDiv(g.anyToReal(left), g.anyToReal(right))
-	case TokenIDiv:
+	case TokenDIV:
 		// INTEGER division
 		g.currentValue = g.currentBlock.NewSDiv(g.anyToInteger(left), g.anyToInteger(right))
-	case TokenMod:
+	case TokenMOD:
 		// INTEGER modulus
 		g.currentValue = g.currentBlock.NewSRem(g.anyToInteger(left), g.anyToInteger(right))
-	case TokenAnd:
+	case TokenAmpersand:
 		// logical AND
 		g.currentValue = g.currentBlock.NewAnd(left, right)
-	case TokenOr:
+	case TokenOR:
 		// logical OR
 		g.currentValue = g.currentBlock.NewOr(left, right)
 	case TokenEQ:

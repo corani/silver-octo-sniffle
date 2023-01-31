@@ -13,7 +13,7 @@ const (
 	TokenReal      TokenType = "real"
 	TokenString    TokenType = "string"
 	TokenBoolean   TokenType = "boolean"
-	TokenNil       TokenType = "nil"
+	TokenNIL       TokenType = "nil"
 	TokenLParen    TokenType = "lparen"
 	TokenRParen    TokenType = "rparen"
 	TokenLBrace    TokenType = "lbrace"
@@ -25,8 +25,8 @@ const (
 	TokenAsterisk  TokenType = "asterisk"
 	TokenSlash     TokenType = "slash"
 	TokenComma     TokenType = "comma"
-	TokenAnd       TokenType = "and"
-	TokenNot       TokenType = "not"
+	TokenAmpersand TokenType = "ampersand"
+	TokenTilde     TokenType = "tilde"
 	TokenColon     TokenType = "colon"
 	TokenSemicolon TokenType = "semicolon"
 	TokenDot       TokenType = "dot"
@@ -34,9 +34,9 @@ const (
 	TokenCaret     TokenType = "caret"
 	TokenBar       TokenType = "bar"
 	TokenIdent     TokenType = "ident"
-	TokenIDiv      TokenType = "idiv"
-	TokenMod       TokenType = "mod"
-	TokenOr        TokenType = "or"
+	TokenDIV       TokenType = "div"
+	TokenMOD       TokenType = "mod"
+	TokenOR        TokenType = "or"
 	TokenEQ        TokenType = "eq"
 	TokenNE        TokenType = "ne"
 	TokenLT        TokenType = "lt"
@@ -45,6 +45,31 @@ const (
 	TokenGT        TokenType = "gt"
 	TokenIN        TokenType = "in"
 	TokenIS        TokenType = "is"
+	TokenMODULE    TokenType = "module"
+	TokenBEGIN     TokenType = "begin"
+	TokenEND       TokenType = "end"
+	TokenIMPORT    TokenType = "import"
+	TokenCONST     TokenType = "const"
+	TokenTYPE      TokenType = "type"
+	TokenVAR       TokenType = "var"
+	TokenARRAY     TokenType = "array"
+	TokenOF        TokenType = "of"
+	TokenRECORD    TokenType = "record"
+	TokenPOINTER   TokenType = "pointer"
+	TokenTO        TokenType = "to"
+	TokenPROCEDURE TokenType = "procedure"
+	TokenRETURN    TokenType = "return"
+	TokenIF        TokenType = "if"
+	TokenTHEN      TokenType = "then"
+	TokenELSIF     TokenType = "elsif"
+	TokenELSE      TokenType = "else"
+	TokenCASE      TokenType = "case"
+	TokenWHILE     TokenType = "while"
+	TokenDO        TokenType = "do"
+	TokenREPEAT    TokenType = "repeat"
+	TokenUNTIL     TokenType = "until"
+	TokenFOR       TokenType = "for"
+	TokenBY        TokenType = "by"
 	TokenEOF       TokenType = "eof"
 )
 
@@ -60,8 +85,8 @@ var mapCharToToken = map[byte]TokenType{
 	'*': TokenAsterisk, // multiplication, set intersection
 	'/': TokenSlash,    // REAL division, symmetric set difference
 	',': TokenComma,
-	'&': TokenAnd, // logical AND
-	'~': TokenNot, // logical NOT
+	'&': TokenAmpersand, // logical AND
+	'~': TokenTilde,     // logical NOT
 	':': TokenColon,
 	';': TokenSemicolon,
 	'=': TokenEQ,
@@ -72,14 +97,39 @@ var mapCharToToken = map[byte]TokenType{
 
 // TODO(daniel): are keywords case-sensitive (i.e. must they be all upper-case)?
 var mapIdentToToken = map[string]TokenType{
-	"DIV":   TokenIDiv, // INTEGER division
-	"MOD":   TokenMod,
-	"OR":    TokenOr,
-	"TRUE":  TokenBoolean,
-	"FALSE": TokenBoolean,
-	"NIL":   TokenNil,
-	"IN":    TokenIN,
-	"IS":    TokenIS,
+	"DIV":       TokenDIV, // INTEGER division
+	"MOD":       TokenMOD,
+	"OR":        TokenOR,
+	"TRUE":      TokenBoolean,
+	"FALSE":     TokenBoolean,
+	"NIL":       TokenNIL,
+	"IN":        TokenIN,
+	"IS":        TokenIS,
+	"MODULE":    TokenMODULE,
+	"BEGIN":     TokenBEGIN,
+	"END":       TokenEND,
+	"IMPORT":    TokenIMPORT,
+	"CONST":     TokenCONST,
+	"TYPE":      TokenTYPE,
+	"VAR":       TokenVAR,
+	"ARRAY":     TokenARRAY,
+	"OF":        TokenOF,
+	"RECORD":    TokenRECORD,
+	"POINTER":   TokenPOINTER,
+	"TO":        TokenTO,
+	"PROCEDURE": TokenPROCEDURE,
+	"RETURN":    TokenRETURN,
+	"IF":        TokenIF,
+	"THEN":      TokenTHEN,
+	"ELSIF":     TokenELSIF,
+	"ELSE":      TokenELSE,
+	"CASE":      TokenCASE,
+	"WHILE":     TokenWHILE,
+	"DO":        TokenDO,
+	"REPEAT":    TokenREPEAT,
+	"UNTIL":     TokenUNTIL,
+	"FOR":       TokenFOR,
+	"BY":        TokenBY,
 }
 
 func checkKeyword(s string) TokenType {
