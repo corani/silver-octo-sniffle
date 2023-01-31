@@ -30,6 +30,12 @@ func (p *Parser) parseModule() (Node, error) {
 		}
 
 		node.stmts = append(node.stmts, stmt)
+
+		if p.currentType() != TokenEOF {
+			if _, err := p.require(TokenSemicolon); err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	return node, nil

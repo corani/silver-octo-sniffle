@@ -1,6 +1,6 @@
 # test/test_022.in
 ```
-print(~TRUE)
+print(~TRUE);
 print(~FALSE)
 ```
 ## Tokens
@@ -10,6 +10,7 @@ test/test_022.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
 test/test_022.in:1:7:	tilde	"~"	false	0	0.000000	(1, 7) -> (1, 8)
 test/test_022.in:1:8:	boolean	"TRUE"	true	0	0.000000	(1, 8) -> (1, 12)
 test/test_022.in:1:12:	rparen	")"	false	0	0.000000	(1, 12) -> (1, 13)
+test/test_022.in:1:13:	semicolon	";"	false	0	0.000000	(1, 13) -> (1, 14)
 test/test_022.in:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
 test/test_022.in:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
 test/test_022.in:2:6:	tilde	"~"	false	0	0.000000	(2, 6) -> (2, 7)

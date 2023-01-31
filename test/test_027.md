@@ -1,8 +1,8 @@
 # test/test_027.in
 ```
-print(1>2)
-print(2/2>2/1)
-print(2>=2)
+print(1>2);
+print(2/2>2/1);
+print(2>=2);
 print(2/1>=2/1)
 ```
 ## Tokens
@@ -13,6 +13,7 @@ test/test_027.in:1:7:	integer	"1"	false	1	0.000000	(1, 7) -> (1, 8)
 test/test_027.in:1:8:	gt	">"	false	0	0.000000	(1, 8) -> (1, 9)
 test/test_027.in:1:9:	integer	"2"	false	2	0.000000	(1, 9) -> (1, 10)
 test/test_027.in:1:10:	rparen	")"	false	0	0.000000	(1, 10) -> (1, 11)
+test/test_027.in:1:11:	semicolon	";"	false	0	0.000000	(1, 11) -> (1, 12)
 test/test_027.in:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
 test/test_027.in:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
 test/test_027.in:2:6:	integer	"2"	false	2	0.000000	(2, 6) -> (2, 7)
@@ -23,12 +24,14 @@ test/test_027.in:2:10:	integer	"2"	false	2	0.000000	(2, 10) -> (2, 11)
 test/test_027.in:2:11:	slash	"/"	false	0	0.000000	(2, 11) -> (2, 12)
 test/test_027.in:2:12:	integer	"1"	false	1	0.000000	(2, 12) -> (2, 13)
 test/test_027.in:2:13:	rparen	")"	false	0	0.000000	(2, 13) -> (2, 14)
+test/test_027.in:2:14:	semicolon	";"	false	0	0.000000	(2, 14) -> (2, 15)
 test/test_027.in:3:0:	ident	"print"	false	0	0.000000	(3, 0) -> (3, 5)
 test/test_027.in:3:5:	lparen	"("	false	0	0.000000	(3, 5) -> (3, 6)
 test/test_027.in:3:6:	integer	"2"	false	2	0.000000	(3, 6) -> (3, 7)
 test/test_027.in:3:7:	ge	">="	false	0	0.000000	(3, 7) -> (3, 9)
 test/test_027.in:3:9:	integer	"2"	false	2	0.000000	(3, 9) -> (3, 10)
 test/test_027.in:3:10:	rparen	")"	false	0	0.000000	(3, 10) -> (3, 11)
+test/test_027.in:3:11:	semicolon	";"	false	0	0.000000	(3, 11) -> (3, 12)
 test/test_027.in:4:0:	ident	"print"	false	0	0.000000	(4, 0) -> (4, 5)
 test/test_027.in:4:5:	lparen	"("	false	0	0.000000	(4, 5) -> (4, 6)
 test/test_027.in:4:6:	integer	"2"	false	2	0.000000	(4, 6) -> (4, 7)

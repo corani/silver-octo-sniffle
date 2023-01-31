@@ -1,2 +1,2 @@
-print(TRUE & FALSE)
+print(TRUE & FALSE);
 print(TRUE OR FALSE)

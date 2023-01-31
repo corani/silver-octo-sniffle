@@ -1,6 +1,6 @@
 # test/test_024.in
 ```
-print(1#2)
+print(1#2);
 print(3/2#6/4)
 
 ```
@@ -12,6 +12,7 @@ test/test_024.in:1:7:	integer	"1"	false	1	0.000000	(1, 7) -> (1, 8)
 test/test_024.in:1:8:	ne	"#"	false	0	0.000000	(1, 8) -> (1, 9)
 test/test_024.in:1:9:	integer	"2"	false	2	0.000000	(1, 9) -> (1, 10)
 test/test_024.in:1:10:	rparen	")"	false	0	0.000000	(1, 10) -> (1, 11)
+test/test_024.in:1:11:	semicolon	";"	false	0	0.000000	(1, 11) -> (1, 12)
 test/test_024.in:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
 test/test_024.in:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
 test/test_024.in:2:6:	integer	"3"	false	3	0.000000	(2, 6) -> (2, 7)
