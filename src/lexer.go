@@ -68,7 +68,20 @@ func lex(name string, bs []byte) (Tokens, error) {
 					next()
 				}
 
-				// TODO(daniel): support scale factor.
+				// NOTE(daniel): scan exponent.
+				if peek('E') {
+					switch bs[i] {
+					case '+', '-':
+						next()
+					default:
+						return result, fmt.Errorf("expected '+' or '-' after exponent in real: %q", text())
+					}
+
+					for isNumeric(bs[i]) {
+						next()
+					}
+				}
+
 				tokenType = TokenReal
 			} else if peek('X') {
 				tokenType = TokenString
