@@ -18,8 +18,10 @@ func lex(name string, bs []byte) (Tokens, error) {
 		startr := row
 		startc := col
 
+		// NOTE(daniel): some helper functions:
+
 		// increment the cursor.
-		next := func() {
+		accept := func() {
 			if i < len(bs) && bs[i] == '\n' {
 				row++
 				col = 0
@@ -33,7 +35,7 @@ func lex(name string, bs []byte) (Tokens, error) {
 		// if the current char matches, increment the cursor.
 		peek := func(c byte) bool {
 			if i < len(bs) && bs[i] == c {
-				next()
+				accept()
 
 				return true
 			}
@@ -46,15 +48,21 @@ func lex(name string, bs []byte) (Tokens, error) {
 			return string(bs[starti:i])
 		}
 
+		while := func(fn func(byte) bool) {
+			for fn(bs[i]) {
+				accept()
+			}
+		}
+
+		// NOTE(daniel): identify token.
 		var tokenType TokenType
 
 		switch {
-		case isNumeric(bs[i]):
-			for isHex(bs[i]) {
-				next()
-			}
+		case isNumeric(bs[i]): // number
+			while(isHex)
 
 			if strings.ContainsAny(text(), "ABCDEF") {
+				// definitely hex digits, so they must be prefixed with 'H' or 'X'.
 				switch {
 				case peek('H'):
 					tokenType = TokenInteger
@@ -64,62 +72,47 @@ func lex(name string, bs []byte) (Tokens, error) {
 					return result, fmt.Errorf("expected 'H' or 'X' after hex digits: %q", text())
 				}
 			} else if peek('.') {
-				for isNumeric(bs[i]) {
-					next()
-				}
+				// it's a real number.
+				while(isNumeric)
 
 				// NOTE(daniel): scan exponent.
 				if peek('E') {
-					switch bs[i] {
-					case '+', '-':
-						next()
-					default:
-						return result, fmt.Errorf("expected '+' or '-' after exponent in real: %q", text())
+					if !peek('+') && !peek('-') {
+						return result, fmt.Errorf("expected '+' or '-' after real exponent: %q", text())
 					}
 
-					for isNumeric(bs[i]) {
-						next()
-					}
+					while(isNumeric)
 				}
 
 				tokenType = TokenReal
 			} else if peek('X') {
 				tokenType = TokenString
 			} else {
-				peek('H')
+				// otherwise assume it's an integer number.
+				peek('H') // accept optional 'H' qualifier.
 
 				tokenType = TokenInteger
 			}
-		case isAlpha(bs[i]):
-			for isAlphaNumeric(bs[i]) {
-				next()
-			}
+		case isAlpha(bs[i]): // identifier or keyword
+			while(isAlphaNumeric)
 
 			tokenType = checkKeyword(text())
-		case bs[i] == '"':
-			// NOTE(daniel): special case for strings.
-			next()
-
+		case peek('"'): // string
 			// TODO(daniel): handle escape characters?
 			// TODO(daniel): this accepts multi-line strings. Are those a thing?
 			for !peek('"') {
-				next()
+				accept()
 			}
 
 			tokenType = TokenString
-		case bs[i] == '.':
-			// NOTE(daniel): special case for ranges.
-			next()
-
+		case peek('.'): // dot or range
 			if peek('.') {
 				tokenType = TokenDotDot
 			} else {
 				tokenType = TokenDot
 			}
-		case bs[i] == '<' || bs[i] == '>':
-			// NOTE(daniel): special case for relationships.
-			next()
-			peek('=')
+		case peek('<') || peek('>'): // relationship
+			peek('=') // accept following '='
 
 			switch text() {
 			case "<":
@@ -131,19 +124,16 @@ func lex(name string, bs []byte) (Tokens, error) {
 			case ">":
 				tokenType = TokenGT
 			}
-		case bs[i] == '(':
-			// NOTE(daniel): special case for comments.
+		case peek('('): // parenthesis or comment
 			// TODO(daniel): do we want to store comments in the token stream, either as
 			// separate tokens or as annotations on e.g. the next token? Storing them would
 			// allow us to use them in the parser or generator, e.g. for compiler directives.
 			// But on the other hand, we'd have to thread them through the whole pipeline.
-			next()
-
 			if peek('*') {
 				// TODO(daniel): handle nested comments?
 				for !peek(')') {
 					for !peek('*') {
-						next()
+						accept()
 					}
 				}
 
@@ -151,84 +141,29 @@ func lex(name string, bs []byte) (Tokens, error) {
 			} else {
 				tokenType = TokenLParen
 			}
+		case peek('\n') || peek('\r') || peek('\t') || peek(' '): // whitespace
+			continue
 		default:
 			if t, ok := mapCharToToken[bs[i]]; ok {
-				next()
+				accept()
 
 				tokenType = t
 			} else {
-				// skip whitespace.
-				switch bs[i] {
-				case '\n', '\r', '\t', ' ':
-					next()
-
-					continue
-				default:
-					return result, fmt.Errorf("unknown character '%c'", bs[i])
-				}
+				return result, fmt.Errorf("unknown character '%c'", bs[i])
 			}
 		}
 
 		// NOTE(daniel): add the identified token.
-		var (
-			txt  string
-			inum int
-			fnum float64
-		)
-
-		switch tokenType {
-		case TokenInvalid:
-			return result, fmt.Errorf("%s:%d:%d: read invalid token", name, startr, startc)
-		case TokenInteger:
-			txt = text()
-
-			i, err := decodeInteger(txt)
-			if err != nil {
-				return result, err
-			}
-
-			inum = i
-		case TokenReal:
-			txt = text()
-
-			f, err := decodeReal(txt)
-			if err != nil {
-				return result, err
-			}
-
-			fnum = f
-		case TokenString:
-			txt = text()
-
-			t, err := decodeString(txt)
-			if err != nil {
-				return result, err
-			}
-
-			txt = t
-		case TokenBoolean:
-			txt = text()
-			inum = 0
-
-			if txt == "TRUE" {
-				inum = 1
-			}
-		default:
-			txt = text()
+		token, err := makeToken(text(), tokenType, name, Range{startr, startc, row, col})
+		if err != nil {
+			return result, fmt.Errorf("%s:%d:%d: %w", name, startr, startc, err)
 		}
 
-		result = append(result, Token{
-			Type:  tokenType,
-			File:  name,
-			Range: Range{startr, startc, row, col},
-			Text:  txt,
-			Int:   inum,
-			Real:  fnum,
-		})
+		result = append(result, token)
 	}
 
 	// NOTE(daniel): add EOF token as a terminator.
-	result = append(result, eof(name, row, col))
+	result = append(result, makeEOF(name, row, col))
 
 	return result, nil
 }
@@ -275,7 +210,55 @@ func decodeString(txt string) (string, error) {
 	}
 }
 
-func eof(name string, row, col int) Token {
+func makeToken(txt string, tokenType TokenType, name string, loc Range) (Token, error) {
+	var (
+		ival int
+		fval float64
+		bval bool
+	)
+
+	switch tokenType {
+	case TokenInvalid:
+		return Token{}, fmt.Errorf("read invalid token")
+	case TokenInteger:
+		i, err := decodeInteger(txt)
+		if err != nil {
+			return Token{}, err
+		}
+
+		ival = i
+	case TokenReal:
+		f, err := decodeReal(txt)
+		if err != nil {
+			return Token{}, err
+		}
+
+		fval = f
+	case TokenString:
+		t, err := decodeString(txt)
+		if err != nil {
+			return Token{}, err
+		}
+
+		txt = t
+	case TokenBoolean:
+		if txt == "TRUE" {
+			bval = true
+		}
+	}
+
+	return Token{
+		Type:  tokenType,
+		File:  name,
+		Range: loc,
+		Text:  txt,
+		Bool:  bval,
+		Int:   ival,
+		Real:  fval,
+	}, nil
+}
+
+func makeEOF(name string, row, col int) Token {
 	return Token{
 		Type:  TokenEOF,
 		File:  name,

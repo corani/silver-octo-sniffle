@@ -175,7 +175,7 @@ func (g *generator) VisitStringExpr(n *StringExpr) {
 }
 
 func (g *generator) VisitBooleanExpr(n *BooleanExpr) {
-	if n.token.Int != 0 {
+	if n.token.Bool {
 		g.currentValue = constant.True
 	} else {
 		g.currentValue = constant.False

@@ -120,12 +120,13 @@ type Token struct {
 	File  string
 	Range Range
 	Text  string
+	Bool  bool
 	Int   int
 	Real  float64
 }
 
 func (t Token) String() string {
-	return fmt.Sprintf("%s:%d:%d:\t%v\t%q\t%d\t%v", t.File, t.Range.FromRow, t.Range.FromCol, t.Type, t.Text, t.Int, t.Range)
+	return fmt.Sprintf("%s:%d:%d:\t%v\t%q\t%v\t%d\t%f\t%v", t.File, t.Range.FromRow, t.Range.FromCol, t.Type, t.Text, t.Bool, t.Int, t.Real, t.Range)
 }
 
 func (t Token) isRelation() bool {

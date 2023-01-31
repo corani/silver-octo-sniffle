@@ -4,13 +4,13 @@ print(TRUE, FALSE)
 ```
 ## Tokens
 ```tsv
-test/test_021.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
-test/test_021.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
-test/test_021.in:1:7:	boolean	"TRUE"	1	(1, 7) -> (1, 11)
-test/test_021.in:1:11:	comma	","	0	(1, 11) -> (1, 12)
-test/test_021.in:1:13:	boolean	"FALSE"	0	(1, 13) -> (1, 18)
-test/test_021.in:1:18:	rparen	")"	0	(1, 18) -> (1, 19)
-test/test_021.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
+test/test_021.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_021.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_021.in:1:7:	boolean	"TRUE"	true	0	0.000000	(1, 7) -> (1, 11)
+test/test_021.in:1:11:	comma	","	false	0	0.000000	(1, 11) -> (1, 12)
+test/test_021.in:1:13:	boolean	"FALSE"	false	0	0.000000	(1, 13) -> (1, 18)
+test/test_021.in:1:18:	rparen	")"	false	0	0.000000	(1, 18) -> (1, 19)
+test/test_021.in:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
 ```
 ## AST
 ```scheme

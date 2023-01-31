@@ -7,11 +7,11 @@ print("
 ```
 ## Tokens
 ```tsv
-test/test_020.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
-test/test_020.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
-test/test_020.in:1:7:	string	"\n    multi-line\n    strings?\n"	0	(1, 7) -> (4, 1)
-test/test_020.in:4:1:	rparen	")"	0	(4, 1) -> (4, 2)
-test/test_020.in:5:0:	eof	""	0	(5, 0) -> (5, 0)
+test/test_020.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_020.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_020.in:1:7:	string	"\n    multi-line\n    strings?\n"	false	0	0.000000	(1, 7) -> (4, 1)
+test/test_020.in:4:1:	rparen	")"	false	0	0.000000	(4, 1) -> (4, 2)
+test/test_020.in:5:0:	eof	""	false	0	0.000000	(5, 0) -> (5, 0)
 ```
 ## AST
 ```scheme

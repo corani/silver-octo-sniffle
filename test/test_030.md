@@ -4,13 +4,13 @@ print(33H, 0AEH)
 ```
 ## Tokens
 ```tsv
-test/test_030.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
-test/test_030.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
-test/test_030.in:1:7:	integer	"33H"	51	(1, 7) -> (1, 10)
-test/test_030.in:1:10:	comma	","	0	(1, 10) -> (1, 11)
-test/test_030.in:1:12:	integer	"0AEH"	174	(1, 12) -> (1, 16)
-test/test_030.in:1:16:	rparen	")"	0	(1, 16) -> (1, 17)
-test/test_030.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
+test/test_030.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_030.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_030.in:1:7:	integer	"33H"	false	51	0.000000	(1, 7) -> (1, 10)
+test/test_030.in:1:10:	comma	","	false	0	0.000000	(1, 10) -> (1, 11)
+test/test_030.in:1:12:	integer	"0AEH"	false	174	0.000000	(1, 12) -> (1, 16)
+test/test_030.in:1:16:	rparen	")"	false	0	0.000000	(1, 16) -> (1, 17)
+test/test_030.in:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
 ```
 ## AST
 ```scheme

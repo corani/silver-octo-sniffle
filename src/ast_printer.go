@@ -95,7 +95,7 @@ func (p *astPrinter) VisitStringExpr(n *StringExpr) {
 }
 
 func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
-	if n.token.Int != 0 {
+	if n.token.Bool {
 		p.printf("#true")
 	} else {
 		p.printf("#false")

@@ -4,12 +4,12 @@ print(-42)
 ```
 ## Tokens
 ```tsv
-test/test_004.in:1:1:	ident	"print"	0	(1, 1) -> (1, 6)
-test/test_004.in:1:6:	lparen	"("	0	(1, 6) -> (1, 7)
-test/test_004.in:1:7:	minus	"-"	0	(1, 7) -> (1, 8)
-test/test_004.in:1:8:	integer	"42"	42	(1, 8) -> (1, 10)
-test/test_004.in:1:10:	rparen	")"	0	(1, 10) -> (1, 11)
-test/test_004.in:2:0:	eof	""	0	(2, 0) -> (2, 0)
+test/test_004.in:1:1:	ident	"print"	false	0	0.000000	(1, 1) -> (1, 6)
+test/test_004.in:1:6:	lparen	"("	false	0	0.000000	(1, 6) -> (1, 7)
+test/test_004.in:1:7:	minus	"-"	false	0	0.000000	(1, 7) -> (1, 8)
+test/test_004.in:1:8:	integer	"42"	false	42	0.000000	(1, 8) -> (1, 10)
+test/test_004.in:1:10:	rparen	")"	false	0	0.000000	(1, 10) -> (1, 11)
+test/test_004.in:2:0:	eof	""	false	0	0.000000	(2, 0) -> (2, 0)
 ```
 ## AST
 ```scheme
