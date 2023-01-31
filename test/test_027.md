@@ -92,7 +92,8 @@ test/test_027.in:5:0:	eof	""	false	0	0.000000	(5, 0) -> (5, 0)
 ```
 ## IR
 ```llvm
-@0 = global [4 x i8] c"%d\0A\00"
+@0 = global [5 x i8] c"TRUE\00"
+@1 = global [6 x i8] c"FALSE\00"
 
 declare i32 @puts(i8* %str)
 
@@ -105,37 +106,81 @@ declare i32 @printf(i8* %format, ...)
 define i32 @main() {
 entry:
 	%0 = icmp sgt i32 1, 2
-	%1 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%2 = call i32 (i8*, ...) @printf(i8* %1, i1 %0)
-	%3 = sitofp i32 2 to double
-	%4 = sitofp i32 2 to double
-	%5 = fdiv double %3, %4
-	%6 = sitofp i32 2 to double
-	%7 = sitofp i32 1 to double
-	%8 = fdiv double %6, %7
-	%9 = fcmp ugt double %5, %8
-	%10 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%11 = call i32 (i8*, ...) @printf(i8* %10, i1 %9)
-	%12 = icmp sge i32 2, 2
-	%13 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%14 = call i32 (i8*, ...) @printf(i8* %13, i1 %12)
-	%15 = sitofp i32 2 to double
-	%16 = sitofp i32 1 to double
-	%17 = fdiv double %15, %16
-	%18 = sitofp i32 2 to double
-	%19 = sitofp i32 1 to double
-	%20 = fdiv double %18, %19
-	%21 = fcmp uge double %17, %20
-	%22 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%23 = call i32 (i8*, ...) @printf(i8* %22, i1 %21)
+	br i1 %0, label %1, label %3
+
+1:
+	%2 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	br label %5
+
+3:
+	%4 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	br label %5
+
+5:
+	%6 = phi i8* [ %2, %1 ], [ %4, %3 ]
+	%7 = call i32 @puts(i8* %6)
+	%8 = sitofp i32 2 to double
+	%9 = sitofp i32 2 to double
+	%10 = fdiv double %8, %9
+	%11 = sitofp i32 2 to double
+	%12 = sitofp i32 1 to double
+	%13 = fdiv double %11, %12
+	%14 = fcmp ugt double %10, %13
+	br i1 %14, label %15, label %17
+
+15:
+	%16 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	br label %19
+
+17:
+	%18 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	br label %19
+
+19:
+	%20 = phi i8* [ %16, %15 ], [ %18, %17 ]
+	%21 = call i32 @puts(i8* %20)
+	%22 = icmp sge i32 2, 2
+	br i1 %22, label %23, label %25
+
+23:
+	%24 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	br label %27
+
+25:
+	%26 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	br label %27
+
+27:
+	%28 = phi i8* [ %24, %23 ], [ %26, %25 ]
+	%29 = call i32 @puts(i8* %28)
+	%30 = sitofp i32 2 to double
+	%31 = sitofp i32 1 to double
+	%32 = fdiv double %30, %31
+	%33 = sitofp i32 2 to double
+	%34 = sitofp i32 1 to double
+	%35 = fdiv double %33, %34
+	%36 = fcmp uge double %32, %35
+	br i1 %36, label %37, label %39
+
+37:
+	%38 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	br label %41
+
+39:
+	%40 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	br label %41
+
+41:
+	%42 = phi i8* [ %38, %37 ], [ %40, %39 ]
+	%43 = call i32 @puts(i8* %42)
 	ret i32 0
 }
 
 ```
 ## Run
 ```bash
-0
-0
-1
-1
+FALSE
+FALSE
+TRUE
+TRUE
 ```

@@ -29,6 +29,7 @@ func generateIR(writer io.Writer, root Node) {
 
 type generator struct {
 	currentModule *ir.Module
+	currentFunc   *ir.Func
 	currentBlock  *ir.Block
 	currentValue  value.Value
 	stdlib        map[string]*ir.Func
@@ -46,8 +47,8 @@ func (g *generator) Generate(root Node) *ir.Module {
 }
 
 func (g *generator) VisitModule(n *Module) {
-	main := g.currentModule.NewFunc("main", types.I32)
-	g.currentBlock = main.NewBlock("entry")
+	g.currentFunc = g.currentModule.NewFunc("main", types.I32)
+	g.currentBlock = g.currentFunc.NewBlock("entry")
 
 	for _, stmt := range n.stmts {
 		stmt.Visit(g)
@@ -218,36 +219,66 @@ func (g *generator) callPrint(args []Expr) {
 		// NOTE(daniel): we could probably do something smarter here, but for now this works.
 		switch arg.Type() {
 		case TypeInt64:
-			number := g.visitAndReturnValue(arg)
-
-			format := g.internString("%d\n\000")
-			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-			g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+			g.printInteger(arg)
 		case TypeFloat64:
-			number := g.visitAndReturnValue(arg)
-
-			format := g.internString("%f\n\000")
-			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-			g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+			g.printReal(arg)
 		case TypeString:
-			str := g.visitAndReturnValue(arg)
-
-			g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
+			g.printString(arg)
 		case TypeBoolean:
-			boolean := g.visitAndReturnValue(arg)
-
-			// TODO(daniel): maybe generate an IF condition to print string literals instead of
-			// integer 0 / 1?
-			format := g.internString("%d\n\000")
-			formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-			g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, boolean)
+			g.printBoolean(arg)
 		default:
 			panic(fmt.Sprintf("don't know how to print type: %s", arg.Type()))
 		}
 	}
+}
+
+func (g *generator) printInteger(arg Expr) {
+	number := g.visitAndReturnValue(arg)
+
+	format := g.internString("%d\n\000")
+	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+}
+
+func (g *generator) printReal(arg Expr) {
+	number := g.visitAndReturnValue(arg)
+
+	format := g.internString("%f\n\000")
+	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+}
+
+func (g *generator) printString(arg Expr) {
+	str := g.visitAndReturnValue(arg)
+
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
+}
+
+func (g *generator) printBoolean(arg Expr) {
+	TRUE := g.internString("TRUE\000")
+	FALSE := g.internString("FALSE\000")
+
+	boolean := g.visitAndReturnValue(arg)
+
+	trueBlk := g.currentFunc.NewBlock("")
+	falseBlk := g.currentFunc.NewBlock("")
+	endBlk := g.currentFunc.NewBlock("")
+
+	g.currentBlock.NewCondBr(boolean, trueBlk, falseBlk)
+
+	g.currentBlock = trueBlk
+	truePtr := g.currentBlock.NewGetElementPtr(TRUE.ContentType, TRUE, zero, zero)
+	g.currentBlock.NewBr(endBlk)
+
+	g.currentBlock = falseBlk
+	falsePtr := g.currentBlock.NewGetElementPtr(FALSE.ContentType, FALSE, zero, zero)
+	g.currentBlock.NewBr(endBlk)
+
+	g.currentBlock = endBlk
+	strptr := g.currentBlock.NewPhi(ir.NewIncoming(truePtr, trueBlk), ir.NewIncoming(falsePtr, falseBlk))
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], strptr)
 }
 
 func (g *generator) generateStdlib() {

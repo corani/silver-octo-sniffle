@@ -52,7 +52,8 @@ test/test_023.in:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
 ```
 ## IR
 ```llvm
-@0 = global [4 x i8] c"%d\0A\00"
+@0 = global [5 x i8] c"TRUE\00"
+@1 = global [6 x i8] c"FALSE\00"
 
 declare i32 @puts(i8* %str)
 
@@ -65,23 +66,45 @@ declare i32 @printf(i8* %format, ...)
 define i32 @main() {
 entry:
 	%0 = icmp eq i32 1, 2
-	%1 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%2 = call i32 (i8*, ...) @printf(i8* %1, i1 %0)
-	%3 = sitofp i32 3 to double
-	%4 = sitofp i32 2 to double
-	%5 = fdiv double %3, %4
-	%6 = sitofp i32 6 to double
-	%7 = sitofp i32 4 to double
-	%8 = fdiv double %6, %7
-	%9 = fcmp ueq double %5, %8
-	%10 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%11 = call i32 (i8*, ...) @printf(i8* %10, i1 %9)
+	br i1 %0, label %1, label %3
+
+1:
+	%2 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	br label %5
+
+3:
+	%4 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	br label %5
+
+5:
+	%6 = phi i8* [ %2, %1 ], [ %4, %3 ]
+	%7 = call i32 @puts(i8* %6)
+	%8 = sitofp i32 3 to double
+	%9 = sitofp i32 2 to double
+	%10 = fdiv double %8, %9
+	%11 = sitofp i32 6 to double
+	%12 = sitofp i32 4 to double
+	%13 = fdiv double %11, %12
+	%14 = fcmp ueq double %10, %13
+	br i1 %14, label %15, label %17
+
+15:
+	%16 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	br label %19
+
+17:
+	%18 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	br label %19
+
+19:
+	%20 = phi i8* [ %16, %15 ], [ %18, %17 ]
+	%21 = call i32 @puts(i8* %20)
 	ret i32 0
 }
 
 ```
 ## Run
 ```bash
-0
-1
+FALSE
+TRUE
 ```

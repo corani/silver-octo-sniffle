@@ -26,7 +26,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] support hex integer literals.
 - [x] support hex string literals.
 - [x] support scale factor in REAL literals.
-- [ ] better printing of boolean values.
+- [x] better printing of boolean values.
 - [ ] support statement sequences (separated by `;`).
 - [ ] get "golden tests" input from the code block in the markdown file.
 - [ ] require a `MODULE` instead of allowing naked statements.
