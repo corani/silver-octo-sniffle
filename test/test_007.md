@@ -1,6 +1,6 @@
 # test/test_007.md
 ## Source
-```
+```pascal
 MODULE ConstantIf;
 
 BEGIN

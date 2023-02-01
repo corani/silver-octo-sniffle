@@ -1,6 +1,6 @@
 # test/test_004.md
 ## Source
-```
+```pascal
 (* boolean operators *)
 print(~TRUE);
 print(~FALSE);

@@ -1,6 +1,6 @@
 # test/test_001.md
 ## Source
-```
+```pascal
 (* print simple literals *)
 print(42);
 print(33.42);

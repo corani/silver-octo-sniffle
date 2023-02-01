@@ -87,7 +87,7 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 	fmt.Fprintf(w, "# %s\n", srcName)
 
 	fmt.Fprintf(w, "## Source\n")
-	fmt.Fprintln(w, "```")
+	fmt.Fprintln(w, "```pascal")
 	fmt.Fprint(w, string(bs))
 	fmt.Fprintln(w, "```")
 

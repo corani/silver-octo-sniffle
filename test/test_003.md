@@ -1,6 +1,6 @@
 # test/test_003.md
 ## Source
-```
+```pascal
 (*
   multi-line comments
   should work

@@ -1,6 +1,6 @@
 # test/test_002.md
 ## Source
-```
+```pascal
 (* print binary operations *)
 print(-42);
 print( 34 + 35 + 42000 );

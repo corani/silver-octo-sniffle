@@ -1,6 +1,6 @@
 # test/test_005.md
 ## Source
-```
+```pascal
 (* comparisons *)
 print(1=2);
 print(3/2=6/4);
