@@ -1,6 +1,6 @@
 # test/test_006.md
 ## Source
-```
+```pascal
 (* test trailing semi-colon *)
 MODULE trailing;
 
