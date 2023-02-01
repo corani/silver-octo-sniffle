@@ -2,20 +2,31 @@
 ## Source
 ```
 (* test trailing semi-colon *)
-print(1);
+MODULE trailing;
+
+BEGIN
+  print(1);
+END trailing.
 ```
 ## Tokens
 ```tsv
-test/test_006.md:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
-test/test_006.md:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
-test/test_006.md:2:6:	integer	"1"	false	1	0.000000	(2, 6) -> (2, 7)
-test/test_006.md:2:7:	rparen	")"	false	0	0.000000	(2, 7) -> (2, 8)
-test/test_006.md:2:8:	semicolon	";"	false	0	0.000000	(2, 8) -> (2, 9)
-test/test_006.md:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
+test/test_006.md:2:0:	module	"MODULE"	false	0	0.000000	(2, 0) -> (2, 6)
+test/test_006.md:2:7:	ident	"trailing"	false	0	0.000000	(2, 7) -> (2, 15)
+test/test_006.md:2:15:	semicolon	";"	false	0	0.000000	(2, 15) -> (2, 16)
+test/test_006.md:4:0:	begin	"BEGIN"	false	0	0.000000	(4, 0) -> (4, 5)
+test/test_006.md:5:2:	ident	"print"	false	0	0.000000	(5, 2) -> (5, 7)
+test/test_006.md:5:7:	lparen	"("	false	0	0.000000	(5, 7) -> (5, 8)
+test/test_006.md:5:8:	integer	"1"	false	1	0.000000	(5, 8) -> (5, 9)
+test/test_006.md:5:9:	rparen	")"	false	0	0.000000	(5, 9) -> (5, 10)
+test/test_006.md:5:10:	semicolon	";"	false	0	0.000000	(5, 10) -> (5, 11)
+test/test_006.md:6:0:	end	"END"	false	0	0.000000	(6, 0) -> (6, 3)
+test/test_006.md:6:4:	ident	"trailing"	false	0	0.000000	(6, 4) -> (6, 12)
+test/test_006.md:6:12:	dot	"."	false	0	0.000000	(6, 12) -> (6, 13)
+test/test_006.md:7:0:	eof	""	false	0	0.000000	(7, 0) -> (7, 0)
 ```
 ## AST
 ```scheme
-(module
+(module "trailing"
   (stmts
     (expr2stmt
       (print [void]

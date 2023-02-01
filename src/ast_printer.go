@@ -36,7 +36,7 @@ func (p *astPrinter) printf(format string, args ...any) {
 }
 
 func (p *astPrinter) VisitModule(n *Module) {
-	p.printf("(module")
+	p.printf("(module %q", n.name)
 	p.indent++
 
 	n.stmts.Visit(p)

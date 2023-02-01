@@ -56,17 +56,15 @@ type Stmt interface {
 }
 
 type Module struct {
+	token Token
+	name  string
 	stmts Stmt
 }
 
 var _ Node = (*Module)(nil)
 
 func (n *Module) Token() Token {
-	if n.stmts == nil {
-		return Token{}
-	}
-
-	return n.stmts.Token()
+	return n.token
 }
 
 func (n *Module) Visit(v Visitor) {

@@ -32,11 +32,12 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] remove dedicated "golden test" runner and rely on unit-tests.
 - [x] reorganize "golden tests" to combine multiple tiny tests.
 - [x] make statement sequence a separate node.
+- [x] support basic `MODULE` structure (excluding imports and declarations) .
+- [x] don't panic on compilation errors.
 - [ ] require a `MODULE` instead of allowing naked statements.
 - [ ] support `IF` / `THEN` / `ELSIF` / `ELSE`.
 - [ ] basic variable and assignment support
 - [ ] make `print` a real procedure.
-- [ ] don't panic on compilation errors.
 - [ ] better error reporting.
 - [ ] better command line arguments.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).

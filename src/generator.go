@@ -13,7 +13,7 @@ import (
 
 var zero = constant.NewInt(types.I32, 0)
 
-func generateIR(writer io.Writer, root Node) {
+func generateIR(writer io.Writer, root Node) error {
 	g := &generator{
 		currentModule: ir.NewModule(),
 		currentBlock:  nil,
@@ -22,9 +22,14 @@ func generateIR(writer io.Writer, root Node) {
 		strings:       make(map[string]*ir.Global),
 	}
 
-	module := g.Generate(root)
+	module, err := g.Generate(root)
+	if err != nil {
+		return err
+	}
 
 	fmt.Fprintln(writer, module)
+
+	return nil
 }
 
 type generator struct {
@@ -34,25 +39,45 @@ type generator struct {
 	currentValue  value.Value
 	stdlib        map[string]*ir.Func
 	strings       map[string]*ir.Global
+	errors        []error
 }
 
 var _ Visitor = (*generator)(nil)
 
-func (g *generator) Generate(root Node) *ir.Module {
+func (g *generator) Generate(root Node) (*ir.Module, error) {
 	g.generateStdlib()
 
 	root.Visit(g)
 
-	return g.currentModule
+	return g.currentModule, g.Error()
+}
+
+// TODO(daniel): improve error reporting. Maybe with a callback?
+func (g *generator) Error() error {
+	if len(g.errors) == 0 {
+		return nil
+	}
+
+	txt := "type check errors"
+
+	for _, v := range g.errors {
+		txt = txt + ": " + v.Error()
+	}
+
+	return fmt.Errorf(txt)
 }
 
 func (g *generator) VisitModule(n *Module) {
-	g.currentFunc = g.currentModule.NewFunc("main", types.I32)
-	g.currentBlock = g.currentFunc.NewBlock("entry")
+	// TODO(daniel): is it correct that only the "main" module has statements, so that we can
+	// generate an entry-point from them?
+	if n.stmts != nil {
+		g.currentFunc = g.currentModule.NewFunc("main", types.I32)
+		g.currentBlock = g.currentFunc.NewBlock("entry")
 
-	n.stmts.Visit(g)
+		n.stmts.Visit(g)
 
-	g.currentBlock.NewRet(zero)
+		g.currentBlock.NewRet(zero)
+	}
 }
 
 func (g *generator) VisitStmtSequence(n *StmtSequence) {
@@ -71,7 +96,7 @@ func (g *generator) VisitCallExpr(n *CallExpr) {
 	case "print":
 		g.callPrint(n.args)
 	default:
-		panic(fmt.Sprintf("don't know how to call %q", n.token.Text))
+		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q", n.token.Text))
 	}
 }
 
@@ -160,7 +185,7 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGT, g.anyToReal(left), g.anyToReal(right))
 		}
 	default:
-		panic(fmt.Sprintf("unsupported token type: %+v", n.token))
+		g.errors = append(g.errors, fmt.Errorf("unsupported token type: %+v", n.token))
 	}
 }
 
@@ -231,7 +256,7 @@ func (g *generator) callPrint(args []Expr) {
 		case TypeBoolean:
 			g.printBoolean(arg)
 		default:
-			panic(fmt.Sprintf("don't know how to print type: %s", arg.Type()))
+			g.errors = append(g.errors, fmt.Errorf("don't know how to print type: %s", arg.Type()))
 		}
 	}
 }

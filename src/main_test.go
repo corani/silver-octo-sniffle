@@ -12,8 +12,50 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/russross/blackfriday/v2"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/text"
 )
+
+func getSpan(lines *text.Segments) (int, int) {
+	start := 0
+	end := 0
+
+	for i := 0; i < lines.Len(); i++ {
+		line := lines.At(i)
+
+		if start == 0 || start > line.Start {
+			start = line.Start
+		}
+
+		if end == 0 || end < line.Stop {
+			end = line.Stop
+		}
+	}
+
+	return start, end
+}
+
+func findSource(src []byte, node ast.Node) []byte {
+	if node.Kind() == ast.KindFencedCodeBlock {
+		code := node.(*ast.FencedCodeBlock)
+		start, end := getSpan(code.Lines())
+
+		return src[start:end]
+	}
+
+	if node.ChildCount() == 0 {
+		return nil
+	}
+
+	for child := node.FirstChild(); child.NextSibling() != nil; child = child.NextSibling() {
+		if v := findSource(src, child); v != nil {
+			return v
+		}
+	}
+
+	return nil
+}
 
 func readGoldenTest(t *testing.T, path string) ([]byte, []byte) {
 	t.Helper()
@@ -23,42 +65,24 @@ func readGoldenTest(t *testing.T, path string) ([]byte, []byte) {
 		t.Fatal(err)
 	}
 
-	parser := blackfriday.New()
+	parser := goldmark.DefaultParser()
+	root := parser.Parse(text.NewReader(exp))
 
-	var source string
+	source := findSource(exp, root)
+	if source == nil {
+		t.Fatal("couldn't find source")
+	}
 
-	root := parser.Parse(exp)
-	root.Walk(func(node *blackfriday.Node, _ bool) blackfriday.WalkStatus {
-		switch node.Type {
-		case blackfriday.Heading:
-			if node.HeadingID == "Source" {
-				return blackfriday.GoToNext
-			}
-
-			return blackfriday.SkipChildren
-		case blackfriday.Document, blackfriday.Paragraph:
-			return blackfriday.GoToNext
-		case blackfriday.Code:
-			source = string(node.Literal)
-			source = strings.TrimPrefix(source, "\n")
-			source = strings.TrimSuffix(source, "\n")
-			source = strings.TrimPrefix(source, "```")
-			source = strings.TrimSuffix(source, "```")
-			source = source + "\n"
-
-			return blackfriday.Terminate
-		default:
-			return blackfriday.SkipChildren
-		}
-	})
-
-	return exp, []byte(source)
+	return exp, source
 }
 
 func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 	t.Helper()
 
-	tokens, ast, ir, outName := do(srcName, bs)
+	result, err := do(srcName, bs)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	fmt.Fprintf(w, "# %s\n", srcName)
 
@@ -67,25 +91,25 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 	fmt.Fprint(w, string(bs))
 	fmt.Fprintln(w, "```")
 
-	fmt.Fprintln(w, tokens)
+	fmt.Fprintln(w, result.tokens)
 
-	printAST(w, ast)
+	printAST(w, result.ast)
 
 	fmt.Fprintln(w, "## IR")
 	fmt.Fprintln(w, "```llvm")
-	fmt.Fprint(w, ir)
+	fmt.Fprint(w, result.ir)
 	fmt.Fprintln(w, "```")
 
 	fmt.Fprintln(w, "## Run")
 	fmt.Fprintln(w, "```bash")
 
-	absName, err := filepath.Abs(outName)
+	absName, err := filepath.Abs(result.path)
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 
 	if err := execute(w, absName); err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 
 	fmt.Fprintln(w, "```")

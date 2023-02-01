@@ -17,24 +17,85 @@ func parse(tokens Tokens) (Node, error) {
 }
 
 func (p *Parser) parse() (Node, error) {
-	return p.parseModule()
-}
+	if p.currentType() == TokenMODULE {
+		return p.parseModule()
+	}
 
-func (p *Parser) parseModule() (Node, error) {
-	stmts, err := p.parseStmtSequence()
+	stmts, err := p.parseStmtSequence(TokenEOF)
 	if err != nil {
 		return nil, err
 	}
 
+	if _, err := p.require(TokenEOF); err != nil {
+		return nil, err
+	}
+
 	return &Module{
+		token: stmts.Token(),
+		name:  "",
 		stmts: stmts,
 	}, nil
 }
 
-func (p *Parser) parseStmtSequence() (Stmt, error) {
+func (p *Parser) parseModule() (Node, error) {
+	t, err := p.require(TokenMODULE)
+	if err != nil {
+		return nil, err
+	}
+
+	name, err := p.require(TokenIdent)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := p.require(TokenSemicolon); err != nil {
+		return nil, err
+	}
+
+	var stmts Node
+
+	if p.currentType() == TokenBEGIN {
+		p.index++
+
+		seq, err := p.parseStmtSequence(TokenEND)
+		if err != nil {
+			return nil, err
+		}
+
+		stmts = seq
+	}
+
+	if _, err := p.require(TokenEND); err != nil {
+		return nil, err
+	}
+
+	if v, err := p.require(TokenIdent); err != nil {
+		return nil, err
+	} else {
+		if v.Text != name.Text {
+			return nil, fmt.Errorf("unexpected identifier %q at end of module %q", v.Text, name.Text)
+		}
+	}
+
+	if _, err := p.require(TokenDot); err != nil {
+		return nil, err
+	}
+
+	if _, err := p.require(TokenEOF); err != nil {
+		return nil, err
+	}
+
+	return &Module{
+		token: t,
+		name:  name.Text,
+		stmts: stmts,
+	}, nil
+}
+
+func (p *Parser) parseStmtSequence(terminator TokenType) (Stmt, error) {
 	node := &StmtSequence{}
 
-	for p.currentType() != TokenEOF {
+	for p.currentType() != terminator {
 		stmt, err := p.parseStmt()
 		if err != nil {
 			return nil, err
@@ -42,7 +103,7 @@ func (p *Parser) parseStmtSequence() (Stmt, error) {
 
 		node.stmts = append(node.stmts, stmt)
 
-		if p.currentType() != TokenEOF {
+		if p.currentType() != terminator {
 			if _, err := p.require(TokenSemicolon); err != nil {
 				return nil, err
 			}
@@ -203,7 +264,7 @@ func (p *Parser) parseFactor() (Expr, error) {
 
 		return expr, nil
 	default:
-		panic(fmt.Sprintf("unexpected token in factor: %q", p.currentType()))
+		return nil, fmt.Errorf("unexpected token in factor: %q", p.currentType())
 	}
 }
 
@@ -292,7 +353,7 @@ func (p *Parser) require(exp TokenType) (Token, error) {
 		return token, nil
 	}
 
-	return Token{}, fmt.Errorf("unexpected token: %v (expected %v)", p.tokens[p.index], exp)
+	return Token{}, fmt.Errorf("unexpected token: %v (expected %v)", p.tokens[p.index].Type, exp)
 }
 
 func (p *Parser) expect(exp TokenType) bool {

@@ -38,7 +38,7 @@ test/test_004.md:6:0:	eof	""	false	0	0.000000	(6, 0) -> (6, 0)
 ```
 ## AST
 ```scheme
-(module
+(module ""
   (stmts
     (expr2stmt
       (print [void]

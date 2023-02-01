@@ -2,18 +2,37 @@ package main
 
 import "fmt"
 
-func typeCheck(root Node) {
+func typeCheck(root Node) error {
 	checker := &typeChecker{}
 
-	checker.Check(root)
+	return checker.Check(root)
 }
 
-type typeChecker struct{}
+type typeChecker struct {
+	errors []error
+}
 
 var _ Visitor = (*typeChecker)(nil)
 
-func (c *typeChecker) Check(root Node) {
+func (c *typeChecker) Check(root Node) error {
 	root.Visit(c)
+
+	return c.Error()
+}
+
+// TODO(daniel): improve error reporting. Maybe with a callback?
+func (c *typeChecker) Error() error {
+	if len(c.errors) == 0 {
+		return nil
+	}
+
+	txt := "type check errors"
+
+	for _, v := range c.errors {
+		txt = txt + ": " + v.Error()
+	}
+
+	return fmt.Errorf(txt)
 }
 
 func (c *typeChecker) VisitModule(m *Module) {
@@ -40,7 +59,7 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 	case "print":
 		e.typ = TypeVoid
 	default:
-		panic(fmt.Sprintf("don't know how to call %q", e.token.Text))
+		c.errors = append(c.errors, fmt.Errorf("don't know how to call %q", e.token.Text))
 	}
 }
 
@@ -56,7 +75,7 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 		e.typ = TypeBoolean
 	case e.token.Type == TokenAmpersand || e.token.Type == TokenOR:
 		if e.args[0].Type() != TypeBoolean || e.args[1].Type() != TypeBoolean {
-			panic(fmt.Sprintf("can only %s boolean values", e.token.Type))
+			c.errors = append(c.errors, fmt.Errorf("can only %s boolean values", e.token.Type))
 		}
 
 		e.typ = TypeBoolean
@@ -88,6 +107,6 @@ func (c *typeChecker) VisitNotExpr(e *NotExpr) {
 	e.expr.Visit(c)
 
 	if e.expr.Type() != TypeBoolean {
-		panic(fmt.Sprintf("`~` not supported for type %v", e.expr.Type()))
+		c.errors = append(c.errors, fmt.Errorf("`~` not supported for type %v", e.expr.Type()))
 	}
 }
