@@ -126,6 +126,14 @@ func TestMain(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	if info, err := os.Stat("bin"); err != nil {
+		if err := os.Mkdir("bin", 0775); err != nil {
+			t.Fatal(err)
+		}
+	} else if !info.IsDir() {
+		t.Fatal("`bin` exists but is not a directory")
+	}
+
 	_ = filepath.Walk("test", func(path string, info fs.FileInfo, err error) error {
 		if err != nil || !strings.HasSuffix(info.Name(), ".md") {
 			return err
