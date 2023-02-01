@@ -189,7 +189,3 @@ func (t Token) isRelation() bool {
 
 	return false
 }
-
-func (t Token) isNumber() bool {
-	return t.Type == TokenInteger || t.Type == TokenReal
-}

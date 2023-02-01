@@ -126,9 +126,7 @@ func TestMain(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// TODO(daniel): perhaps we should have only a single markdown file per
-	// test and extract the source code from the first code block.
-	filepath.Walk("test", func(path string, info fs.FileInfo, err error) error {
+	_ = filepath.Walk("test", func(path string, info fs.FileInfo, err error) error {
 		if err != nil || !strings.HasSuffix(info.Name(), ".md") {
 			return err
 		}
