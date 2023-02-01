@@ -39,6 +39,16 @@ func (p *astPrinter) VisitModule(n *Module) {
 	p.printf("(module")
 	p.indent++
 
+	n.stmts.Visit(p)
+
+	p.indent--
+	p.printf(")")
+}
+
+func (p *astPrinter) VisitStmtSequence(n *StmtSequence) {
+	p.printf("(stmts")
+	p.indent++
+
 	for _, stmt := range n.stmts {
 		stmt.Visit(p)
 	}

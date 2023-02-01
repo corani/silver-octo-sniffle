@@ -163,156 +163,158 @@ test/test_002.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 ## AST
 ```scheme
 (module
-  (expr2stmt
-    (print [void]
-      (minus [i64]
-        (number [i64] 0)
-        (number [i64] 42)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (plus [i64]
-        (plus [i64]
-          (number [i64] 34)
-          (number [i64] 35)
-        )
-        (number [i64] 42000)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (minus [i64]
-        (number [i64] 66)
-        (number [i64] 33)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (plus [i64]
+  (stmts
+    (expr2stmt
+      (print [void]
         (minus [i64]
           (number [i64] 0)
-          (number [i64] 34)
+          (number [i64] 42)
         )
-        (number [i64] 35)
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (plus [i64]
+    (expr2stmt
+      (print [void]
         (plus [i64]
-          (number [i64] 34)
+          (plus [i64]
+            (number [i64] 34)
+            (number [i64] 35)
+          )
+          (number [i64] 42000)
+        )
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (minus [i64]
+          (number [i64] 66)
+          (number [i64] 33)
+        )
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (plus [i64]
+          (minus [i64]
+            (number [i64] 0)
+            (number [i64] 34)
+          )
           (number [i64] 35)
         )
-        (number [i64] 42000)
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (asterisk [i64]
+    (expr2stmt
+      (print [void]
         (plus [i64]
-          (number [i64] 34)
-          (number [i64] 35)
+          (plus [i64]
+            (number [i64] 34)
+            (number [i64] 35)
+          )
+          (number [i64] 42000)
         )
-        (number [i64] 33)
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (slash [f64]
-        (plus [i64]
-          (number [i64] 34)
-          (number [i64] 35)
+    (expr2stmt
+      (print [void]
+        (asterisk [i64]
+          (plus [i64]
+            (number [i64] 34)
+            (number [i64] 35)
+          )
+          (number [i64] 33)
         )
-        (number [i64] 33)
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (div [i64]
-        (number [i64] 11)
-        (number [i64] 3)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (mod [i64]
-        (number [i64] 11)
-        (number [i64] 3)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (slash [f64]
+    (expr2stmt
+      (print [void]
         (slash [f64]
+          (plus [i64]
+            (number [i64] 34)
+            (number [i64] 35)
+          )
+          (number [i64] 33)
+        )
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (div [i64]
           (number [i64] 11)
           (number [i64] 3)
         )
-        (number [i64] 2)
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (plus [f64]
-        (slash [f64]
+    (expr2stmt
+      (print [void]
+        (mod [i64]
           (number [i64] 11)
           (number [i64] 3)
         )
+      )
+    )
+    (expr2stmt
+      (print [void]
         (slash [f64]
-          (number [i64] 7)
+          (slash [f64]
+            (number [i64] 11)
+            (number [i64] 3)
+          )
           (number [i64] 2)
         )
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (minus [f64]
-        (slash [f64]
-          (number [i64] 11)
+    (expr2stmt
+      (print [void]
+        (plus [f64]
+          (slash [f64]
+            (number [i64] 11)
+            (number [i64] 3)
+          )
+          (slash [f64]
+            (number [i64] 7)
+            (number [i64] 2)
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (minus [f64]
+          (slash [f64]
+            (number [i64] 11)
+            (number [i64] 3)
+          )
+          (slash [f64]
+            (number [i64] 7)
+            (number [i64] 2)
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (asterisk [f64]
+          (slash [f64]
+            (number [i64] 11)
+            (number [i64] 3)
+          )
           (number [i64] 3)
         )
-        (slash [f64]
-          (number [i64] 7)
-          (number [i64] 2)
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (plus [f64]
+          (number [i64] 69)
+          (number [f64] 0.420000)
         )
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (asterisk [f64]
-        (slash [f64]
-          (number [i64] 11)
-          (number [i64] 3)
+    (expr2stmt
+      (print [void]
+        (plus [f64]
+          (number [f64] 69.000000)
+          (number [f64] 0.420000)
         )
-        (number [i64] 3)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (plus [f64]
-        (number [i64] 69)
-        (number [f64] 0.420000)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (plus [f64]
-        (number [f64] 69.000000)
-        (number [f64] 0.420000)
       )
     )
   )

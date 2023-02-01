@@ -49,36 +49,38 @@ test/test_001.md:8:0:	eof	""	false	0	0.000000	(8, 0) -> (8, 0)
 ## AST
 ```scheme
 (module
-  (expr2stmt
-    (print [void]
-      (number [i64] 42)
+  (stmts
+    (expr2stmt
+      (print [void]
+        (number [i64] 42)
+      )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (number [f64] 33.420000)
+    (expr2stmt
+      (print [void]
+        (number [f64] 33.420000)
+      )
     )
-  )
-  (expr2stmt
-    (print [void]
-      #true
-      #false
+    (expr2stmt
+      (print [void]
+        #true
+        #false
+      )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (string "Hello, world!")
+    (expr2stmt
+      (print [void]
+        (string "Hello, world!")
+      )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (number [i64] 51)
-      (number [i64] 174)
+    (expr2stmt
+      (print [void]
+        (number [i64] 51)
+        (number [i64] 174)
+      )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (string "Hello, world!")
+    (expr2stmt
+      (print [void]
+        (string "Hello, world!")
+      )
     )
   )
 )

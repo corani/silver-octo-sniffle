@@ -31,6 +31,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] get "golden tests" input from the code block in the markdown file.
 - [x] remove dedicated "golden test" runner and rely on unit-tests.
 - [x] reorganize "golden tests" to combine multiple tiny tests.
+- [x] make statement sequence a separate node.
 - [ ] require a `MODULE` instead of allowing naked statements.
 - [ ] support `IF` / `THEN` / `ELSIF` / `ELSE`.
 - [ ] basic variable and assignment support

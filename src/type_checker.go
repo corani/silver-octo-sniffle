@@ -17,7 +17,11 @@ func (c *typeChecker) Check(root Node) {
 }
 
 func (c *typeChecker) VisitModule(m *Module) {
-	for _, v := range m.stmts {
+	m.stmts.Visit(c)
+}
+
+func (c *typeChecker) VisitStmtSequence(s *StmtSequence) {
+	for _, v := range s.stmts {
 		v.Visit(c)
 	}
 }

@@ -50,11 +50,15 @@ func (g *generator) VisitModule(n *Module) {
 	g.currentFunc = g.currentModule.NewFunc("main", types.I32)
 	g.currentBlock = g.currentFunc.NewBlock("entry")
 
+	n.stmts.Visit(g)
+
+	g.currentBlock.NewRet(zero)
+}
+
+func (g *generator) VisitStmtSequence(n *StmtSequence) {
 	for _, stmt := range n.stmts {
 		stmt.Visit(g)
 	}
-
-	g.currentBlock.NewRet(zero)
 }
 
 func (g *generator) VisitExprStmt(n *ExprStmt) {

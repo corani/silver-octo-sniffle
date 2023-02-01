@@ -39,33 +39,35 @@ test/test_004.md:6:0:	eof	""	false	0	0.000000	(6, 0) -> (6, 0)
 ## AST
 ```scheme
 (module
-  (expr2stmt
-    (print [void]
-      (not [boolean]
-        #true
+  (stmts
+    (expr2stmt
+      (print [void]
+        (not [boolean]
+          #true
+        )
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (not [boolean]
-        #false
+    (expr2stmt
+      (print [void]
+        (not [boolean]
+          #false
+        )
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (ampersand [boolean]
-        #true
-        #false
+    (expr2stmt
+      (print [void]
+        (ampersand [boolean]
+          #true
+          #false
+        )
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (or [boolean]
-        #true
-        #false
+    (expr2stmt
+      (print [void]
+        (or [boolean]
+          #true
+          #false
+        )
       )
     )
   )

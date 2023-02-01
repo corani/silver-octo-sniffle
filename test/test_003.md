@@ -21,9 +21,11 @@ test/test_003.md:9:0:	eof	""	false	0	0.000000	(9, 0) -> (9, 0)
 ## AST
 ```scheme
 (module
-  (expr2stmt
-    (print [void]
-      (string "\n  multi-line strings\n  should work\n")
+  (stmts
+    (expr2stmt
+      (print [void]
+        (string "\n  multi-line strings\n  should work\n")
+      )
     )
   )
 )

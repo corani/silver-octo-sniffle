@@ -16,9 +16,11 @@ test/test_006.md:3:0:	eof	""	false	0	0.000000	(3, 0) -> (3, 0)
 ## AST
 ```scheme
 (module
-  (expr2stmt
-    (print [void]
-      (number [i64] 1)
+  (stmts
+    (expr2stmt
+      (print [void]
+        (number [i64] 1)
+      )
     )
   )
 )

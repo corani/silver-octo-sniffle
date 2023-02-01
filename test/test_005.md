@@ -129,134 +129,136 @@ test/test_005.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
 ## AST
 ```scheme
 (module
-  (expr2stmt
-    (print [void]
-      (eq [boolean]
-        (number [i64] 1)
-        (number [i64] 2)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (eq [boolean]
-        (slash [f64]
-          (number [i64] 3)
+  (stmts
+    (expr2stmt
+      (print [void]
+        (eq [boolean]
+          (number [i64] 1)
           (number [i64] 2)
         )
-        (slash [f64]
-          (number [i64] 6)
-          (number [i64] 4)
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (eq [boolean]
+          (slash [f64]
+            (number [i64] 3)
+            (number [i64] 2)
+          )
+          (slash [f64]
+            (number [i64] 6)
+            (number [i64] 4)
+          )
         )
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (ne [boolean]
-        (number [i64] 1)
-        (number [i64] 2)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (ne [boolean]
-        (slash [f64]
-          (number [i64] 3)
+    (expr2stmt
+      (print [void]
+        (ne [boolean]
+          (number [i64] 1)
           (number [i64] 2)
         )
-        (slash [f64]
-          (number [i64] 6)
-          (number [i64] 4)
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (ne [boolean]
+          (slash [f64]
+            (number [i64] 3)
+            (number [i64] 2)
+          )
+          (slash [f64]
+            (number [i64] 6)
+            (number [i64] 4)
+          )
         )
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (lt [boolean]
-        (number [i64] 1)
-        (number [i64] 2)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (lt [boolean]
-        (slash [f64]
-          (number [i64] 2)
+    (expr2stmt
+      (print [void]
+        (lt [boolean]
           (number [i64] 1)
-        )
-        (slash [f64]
-          (number [i64] 1)
-          (number [i64] 1)
-        )
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (le [boolean]
-        (number [i64] 1)
-        (number [i64] 1)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (le [boolean]
-        (slash [f64]
-          (number [i64] 1)
-          (number [i64] 1)
-        )
-        (slash [f64]
-          (number [i64] 1)
-          (number [i64] 1)
-        )
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (gt [boolean]
-        (number [i64] 1)
-        (number [i64] 2)
-      )
-    )
-  )
-  (expr2stmt
-    (print [void]
-      (gt [boolean]
-        (slash [f64]
-          (number [i64] 2)
           (number [i64] 2)
         )
-        (slash [f64]
-          (number [i64] 2)
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (lt [boolean]
+          (slash [f64]
+            (number [i64] 2)
+            (number [i64] 1)
+          )
+          (slash [f64]
+            (number [i64] 1)
+            (number [i64] 1)
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (le [boolean]
+          (number [i64] 1)
           (number [i64] 1)
         )
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (ge [boolean]
-        (number [i64] 2)
-        (number [i64] 2)
+    (expr2stmt
+      (print [void]
+        (le [boolean]
+          (slash [f64]
+            (number [i64] 1)
+            (number [i64] 1)
+          )
+          (slash [f64]
+            (number [i64] 1)
+            (number [i64] 1)
+          )
+        )
       )
     )
-  )
-  (expr2stmt
-    (print [void]
-      (ge [boolean]
-        (slash [f64]
-          (number [i64] 2)
+    (expr2stmt
+      (print [void]
+        (gt [boolean]
           (number [i64] 1)
+          (number [i64] 2)
         )
-        (slash [f64]
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (gt [boolean]
+          (slash [f64]
+            (number [i64] 2)
+            (number [i64] 2)
+          )
+          (slash [f64]
+            (number [i64] 2)
+            (number [i64] 1)
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (ge [boolean]
           (number [i64] 2)
-          (number [i64] 1)
+          (number [i64] 2)
+        )
+      )
+    )
+    (expr2stmt
+      (print [void]
+        (ge [boolean]
+          (slash [f64]
+            (number [i64] 2)
+            (number [i64] 1)
+          )
+          (slash [f64]
+            (number [i64] 2)
+            (number [i64] 1)
+          )
         )
       )
     )

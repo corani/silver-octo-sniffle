@@ -21,7 +21,18 @@ func (p *Parser) parse() (Node, error) {
 }
 
 func (p *Parser) parseModule() (Node, error) {
-	node := &Module{}
+	stmts, err := p.parseStmtSequence()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Module{
+		stmts: stmts,
+	}, nil
+}
+
+func (p *Parser) parseStmtSequence() (Stmt, error) {
+	node := &StmtSequence{}
 
 	for p.currentType() != TokenEOF {
 		stmt, err := p.parseStmt()
