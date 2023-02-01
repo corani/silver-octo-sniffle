@@ -166,16 +166,16 @@ func (p *Parser) parseIfTail(t Token) (Stmt, error) {
 			return nil, err
 		}
 	case TokenELSE:
-		p.require(TokenELSE)
+		_, _ = p.require(TokenELSE)
 
 		falseBlock, err = p.parseStmtSequence(TokenEND)
 		if err != nil {
 			return nil, err
 		}
 
-		p.require(TokenEND)
+		_, _ = p.require(TokenEND)
 	case TokenEND:
-		p.require(TokenEND)
+		_, _ = p.require(TokenEND)
 
 		falseBlock = &StmtSequence{}
 	default:
