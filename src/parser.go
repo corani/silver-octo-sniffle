@@ -92,10 +92,10 @@ func (p *Parser) parseModule() (Node, error) {
 	}, nil
 }
 
-func (p *Parser) parseStmtSequence(terminator TokenType) (Stmt, error) {
+func (p *Parser) parseStmtSequence(terminator ...TokenType) (Stmt, error) {
 	node := &StmtSequence{}
 
-	for p.currentType() != terminator {
+	for !p.tokenIs(terminator...) {
 		stmt, err := p.parseStmt()
 		if err != nil {
 			return nil, err
@@ -103,7 +103,7 @@ func (p *Parser) parseStmtSequence(terminator TokenType) (Stmt, error) {
 
 		node.stmts = append(node.stmts, stmt)
 
-		if p.currentType() != terminator {
+		if !p.tokenIs(terminator...) {
 			if _, err := p.require(TokenSemicolon); err != nil {
 				return nil, err
 			}
@@ -124,9 +124,70 @@ func (p *Parser) parseStmt() (Stmt, error) {
 		return &ExprStmt{
 			expr: expr,
 		}, nil
+	case TokenIF:
+		return p.parseIfStmt()
 	default:
-		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index])
+		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index].Type)
 	}
+}
+
+func (p *Parser) parseIfStmt() (Stmt, error) {
+	t, err := p.require(TokenIF)
+	if err != nil {
+		return nil, err
+	}
+
+	return p.parseIfTail(t)
+}
+
+func (p *Parser) parseIfTail(t Token) (Stmt, error) {
+	expr, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := p.require(TokenTHEN); err != nil {
+		return nil, err
+	}
+
+	var trueBlock, falseBlock Stmt
+
+	trueBlock, err = p.parseStmtSequence(TokenELSIF, TokenELSE, TokenEND)
+	if err != nil {
+		return nil, err
+	}
+
+	switch p.currentType() {
+	case TokenELSIF:
+		e, _ := p.require(TokenELSIF)
+
+		falseBlock, err = p.parseIfTail(e)
+		if err != nil {
+			return nil, err
+		}
+	case TokenELSE:
+		p.require(TokenELSE)
+
+		falseBlock, err = p.parseStmtSequence(TokenEND)
+		if err != nil {
+			return nil, err
+		}
+
+		p.require(TokenEND)
+	case TokenEND:
+		p.require(TokenEND)
+
+		falseBlock = &StmtSequence{}
+	default:
+		return nil, fmt.Errorf("expected ELSIF, ELSE or END after IF, got %v", p.currentType())
+	}
+
+	return &IfStmt{
+		token:      t,
+		expr:       expr,
+		trueBlock:  trueBlock,
+		falseBlock: falseBlock,
+	}, nil
 }
 
 func (p *Parser) parseCallExpr() (Expr, error) {

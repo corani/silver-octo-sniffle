@@ -32,6 +32,7 @@ func (t Type) String() string {
 type Visitor interface {
 	VisitModule(*Module)
 	VisitStmtSequence(*StmtSequence)
+	VisitIfStmt(*IfStmt)
 	VisitExprStmt(*ExprStmt)
 	VisitCallExpr(*CallExpr)
 	VisitBinaryExpr(*BinaryExpr)
@@ -75,7 +76,7 @@ type StmtSequence struct {
 	stmts []Stmt
 }
 
-var _ Node = (*StmtSequence)(nil)
+var _ Stmt = (*StmtSequence)(nil)
 
 func (n *StmtSequence) Token() Token {
 	if len(n.stmts) == 0 {
@@ -87,6 +88,23 @@ func (n *StmtSequence) Token() Token {
 
 func (n *StmtSequence) Visit(v Visitor) {
 	v.VisitStmtSequence(n)
+}
+
+type IfStmt struct {
+	token      Token
+	expr       Expr
+	trueBlock  Stmt
+	falseBlock Stmt
+}
+
+var _ Stmt = (*IfStmt)(nil)
+
+func (n *IfStmt) Token() Token {
+	return n.token
+}
+
+func (n *IfStmt) Visit(v Visitor) {
+	v.VisitIfStmt(n)
 }
 
 type NumberExpr struct {

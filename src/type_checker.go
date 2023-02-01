@@ -45,6 +45,16 @@ func (c *typeChecker) VisitStmtSequence(s *StmtSequence) {
 	}
 }
 
+func (c *typeChecker) VisitIfStmt(s *IfStmt) {
+	s.expr.Visit(c)
+	if s.expr.Type() != TypeBoolean {
+		c.errors = append(c.errors, fmt.Errorf("condition for IF must be boolean, got %v", s.expr.Type()))
+	}
+
+	s.trueBlock.Visit(c)
+	s.falseBlock.Visit(c)
+}
+
 func (c *typeChecker) VisitExprStmt(s *ExprStmt) {
 	s.expr.Visit(c)
 }

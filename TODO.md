@@ -34,12 +34,13 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] make statement sequence a separate node.
 - [x] support basic `MODULE` structure (excluding imports and declarations) .
 - [x] don't panic on compilation errors.
-- [ ] require a `MODULE` instead of allowing naked statements.
-- [ ] support `IF` / `THEN` / `ELSIF` / `ELSE`.
+- [x] support `IF` / `THEN` / `ELSIF` / `ELSE` with constant expressions.
+- [ ] support `IF` / `THEN` / `ELSIF` / `ELSE` with variables.
 - [ ] basic variable and assignment support
 - [ ] make `print` a real procedure.
 - [ ] better error reporting.
 - [ ] better command line arguments.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
 - [ ] update "golden test" files in-place, so any additional content doesn't get overwritten.
+- [ ] require a `MODULE` instead of allowing naked statements.
 - [ ] ...

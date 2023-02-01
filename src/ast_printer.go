@@ -57,6 +57,18 @@ func (p *astPrinter) VisitStmtSequence(n *StmtSequence) {
 	p.printf(")")
 }
 
+func (p *astPrinter) VisitIfStmt(n *IfStmt) {
+	p.printf("(if")
+	p.indent++
+
+	n.expr.Visit(p)
+	n.trueBlock.Visit(p)
+	n.falseBlock.Visit(p)
+
+	p.indent--
+	p.printf(")")
+}
+
 func (p *astPrinter) VisitExprStmt(n *ExprStmt) {
 	p.printf("(expr2stmt")
 	p.indent++

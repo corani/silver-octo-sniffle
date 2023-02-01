@@ -86,6 +86,26 @@ func (g *generator) VisitStmtSequence(n *StmtSequence) {
 	}
 }
 
+func (g *generator) VisitIfStmt(n *IfStmt) {
+	condition := g.visitAndReturnValue(n.expr)
+
+	trueBlk := g.currentFunc.NewBlock("")
+	falseBlk := g.currentFunc.NewBlock("")
+	endBlk := g.currentFunc.NewBlock("")
+
+	g.currentBlock.NewCondBr(condition, trueBlk, falseBlk)
+
+	g.currentBlock = trueBlk
+	n.trueBlock.Visit(g)
+	g.currentBlock.NewBr(endBlk)
+
+	g.currentBlock = falseBlk
+	n.falseBlock.Visit(g)
+	g.currentBlock.NewBr(endBlk)
+
+	g.currentBlock = endBlk
+}
+
 func (g *generator) VisitExprStmt(n *ExprStmt) {
 	// NOTE(daniel): ignore the result.
 	n.expr.Visit(g)
