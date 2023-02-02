@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"sort"
 	"strings"
 )
 
@@ -44,20 +43,8 @@ func (p *astPrinter) VisitModule(n *Module) {
 		p.printf("(vars")
 		p.indent++
 
-		var keys []Token
-
-		for k := range n.vars {
-			keys = append(keys, k)
-		}
-
-		sort.Slice(keys, func(i, j int) bool {
-			return keys[i].Text < keys[j].Text
-		})
-
-		for _, k := range keys {
-			v := n.vars[k]
-
-			p.printf("(%v (type %v))", k.Text, v.Text)
+		for _, decl := range n.vars {
+			p.printf("(%v [%v])", decl.token.Text, decl.typ)
 		}
 
 		p.indent--

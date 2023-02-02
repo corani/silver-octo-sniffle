@@ -65,7 +65,13 @@ type Visitor interface {
 	VisitNotExpr(*NotExpr)
 }
 
-type Vars map[Token]Token
+type VarDecl struct {
+	token    Token
+	typToken Token
+	typ      Type
+}
+
+type VarDecls []VarDecl
 
 type Node interface {
 	Token() Token
@@ -85,7 +91,7 @@ type Module struct {
 	token Token
 	name  string
 	stmts Stmt
-	vars  Vars
+	vars  VarDecls
 }
 
 var _ Node = (*Module)(nil)

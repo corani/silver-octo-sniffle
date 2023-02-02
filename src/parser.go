@@ -54,7 +54,7 @@ func (p *Parser) parseModule() (Node, error) {
 
 	var (
 		stmts Node
-		vars  map[Token]Token
+		vars  VarDecls
 	)
 
 	if p.expect(TokenCONST) {
@@ -111,8 +111,8 @@ func (p *Parser) parseModule() (Node, error) {
 	}, nil
 }
 
-func (p *Parser) parseVars() (Vars, error) {
-	vars := make(Vars)
+func (p *Parser) parseVars() (VarDecls, error) {
+	var vars VarDecls
 
 	for p.currentType() == TokenIdent {
 		varIdents, err := p.parseIdentList()
@@ -134,7 +134,10 @@ func (p *Parser) parseVars() (Vars, error) {
 		}
 
 		for _, varIdent := range varIdents {
-			vars[varIdent] = typeIdent
+			vars = append(vars, VarDecl{
+				token:    varIdent,
+				typToken: typeIdent,
+			})
 		}
 	}
 

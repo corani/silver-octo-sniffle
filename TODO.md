@@ -36,6 +36,9 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] don't panic on compilation errors.
 - [x] support `IF` / `THEN` / `ELSIF` / `ELSE` with constant expressions.
 - [x] basic global variable and assignment support.
+- [ ] improve AST and type information for variables.
+- [ ] support global scalar type aliases.
+- [ ] support global constants.
 - [ ] basic local variable and assignment support.
 - [ ] make `print` a real procedure.
 - [ ] better error reporting.
