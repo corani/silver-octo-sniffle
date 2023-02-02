@@ -71,9 +71,9 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 ```scheme
 (module "GlobalVars"
   (vars
-    (res (type BOOLEAN))
-    (x (type INTEGER))
-    (y (type INTEGER))
+    (x [i64])
+    (y [i64])
+    (res [boolean])
   )
   (stmts
     (assign x
@@ -110,11 +110,11 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 ```
 ## IR
 ```llvm
-@res = global i1 false
-@x = global i32 0
-@y = global i32 0
-@0 = global [5 x i8] c"Equal"
-@1 = global [9 x i8] c"Not Equal"
+@0 = global i32 0
+@1 = global i32 0
+@2 = global i1 false
+@3 = global [5 x i8] c"Equal"
+@4 = global [9 x i8] c"Not Equal"
 
 declare i32 @puts(i8* %str)
 
@@ -126,22 +126,22 @@ declare i32 @printf(i8* %format, ...)
 
 define i32 @main() {
 entry:
-	store i32 1, i32* @x
-	store i32 2, i32* @y
-	%0 = load i32, i32* @x
-	%1 = load i32, i32* @y
+	store i32 1, i32* @0
+	store i32 2, i32* @1
+	%0 = load i32, i32* @0
+	%1 = load i32, i32* @1
 	%2 = icmp eq i32 %0, %1
-	store i1 %2, i1* @res
-	%3 = load i1, i1* @res
+	store i1 %2, i1* @2
+	%3 = load i1, i1* @2
 	br i1 %3, label %4, label %7
 
 4:
-	%5 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%5 = getelementptr [5 x i8], [5 x i8]* @3, i32 0, i32 0
 	%6 = call i32 @puts(i8* %5)
 	br label %10
 
 7:
-	%8 = getelementptr [9 x i8], [9 x i8]* @1, i32 0, i32 0
+	%8 = getelementptr [9 x i8], [9 x i8]* @4, i32 0, i32 0
 	%9 = call i32 @puts(i8* %8)
 	br label %10
 

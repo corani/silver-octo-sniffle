@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"sort"
 
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
@@ -71,29 +70,14 @@ func (g *generator) Error() error {
 }
 
 func (g *generator) VisitModule(n *Module) {
-	if n.vars != nil {
-		var keys []Token
-
-		for k := range n.vars {
-			keys = append(keys, k)
-		}
-
-		sort.Slice(keys, func(i, j int) bool {
-			return keys[i].Text < keys[j].Text
-		})
-
-		for _, k := range keys {
-			v := n.vars[k]
-
-			// TODO(daniel): don't switch on text.
-			switch v.Text {
-			case "INTEGER":
-				g.vars[k.Text] = g.currentModule.NewGlobalDef(k.Text, constant.NewInt(types.I32, 0))
-			case "REAL":
-				g.vars[k.Text] = g.currentModule.NewGlobalDef(k.Text, constant.NewFloat(types.Double, 0))
-			case "BOOLEAN":
-				g.vars[k.Text] = g.currentModule.NewGlobalDef(k.Text, constant.NewInt(types.I1, 0))
-			}
+	for _, decl := range n.vars {
+		switch decl.typ {
+		case TypeInt64:
+			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I32, 0))
+		case TypeFloat64:
+			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewFloat(types.Double, 0))
+		case TypeBoolean:
+			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I1, 0))
 		}
 	}
 
