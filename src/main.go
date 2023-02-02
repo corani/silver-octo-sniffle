@@ -24,18 +24,26 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 
 	ast, err := parse(tokens)
 	if err != nil {
-		return CompilationResult{}, err
+		return CompilationResult{
+			tokens: tokens,
+		}, err
 	}
 
 	if err := typeCheck(ast); err != nil {
-		return CompilationResult{}, err
+		return CompilationResult{
+			tokens: tokens,
+			ast:    ast,
+		}, err
 	}
 
 	baseName := strings.TrimSuffix(filepath.Base(srcName), filepath.Ext(srcName))
 
 	dir, err := os.MkdirTemp("", "")
 	if err != nil {
-		return CompilationResult{}, err
+		return CompilationResult{
+			tokens: tokens,
+			ast:    ast,
+		}, err
 	}
 	defer os.RemoveAll(dir)
 
@@ -44,18 +52,28 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 
 	out, err := os.Create(llName)
 	if err != nil {
-		return CompilationResult{}, err
+		return CompilationResult{
+			tokens: tokens,
+			ast:    ast,
+		}, err
 	}
 	defer out.Close()
 
 	var ir bytes.Buffer
 
 	if err := generateIR(io.MultiWriter(&ir, out), ast); err != nil {
-		return CompilationResult{}, err
+		return CompilationResult{
+			tokens: tokens,
+			ast:    ast,
+		}, err
 	}
 
 	if err := compile(llName, outName); err != nil {
-		return CompilationResult{}, err
+		return CompilationResult{
+			tokens: tokens,
+			ast:    ast,
+			ir:     ir.String(),
+		}, err
 	}
 
 	return CompilationResult{

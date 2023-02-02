@@ -52,17 +52,35 @@ func (p *Parser) parseModule() (Node, error) {
 		return nil, err
 	}
 
-	var stmts Node
+	var (
+		stmts Node
+		vars  map[Token]Token
+	)
 
-	if p.currentType() == TokenBEGIN {
-		p.index++
+	if p.expect(TokenCONST) {
+		panic("CONST is unimplemented")
+	}
 
-		seq, err := p.parseStmtSequence(TokenEND)
+	if p.expect(TokenTYPE) {
+		panic("TYPE is unimplemented")
+	}
+
+	if p.expect(TokenVAR) {
+		vars, err = p.parseVars()
 		if err != nil {
 			return nil, err
 		}
+	}
 
-		stmts = seq
+	for p.currentType() == TokenPROCEDURE {
+		panic("PROCEDURE is unimplemented")
+	}
+
+	if p.expect(TokenBEGIN) {
+		stmts, err = p.parseStmtSequence(TokenEND)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if _, err := p.require(TokenEND); err != nil {
@@ -89,7 +107,62 @@ func (p *Parser) parseModule() (Node, error) {
 		token: t,
 		name:  name.Text,
 		stmts: stmts,
+		vars:  vars,
 	}, nil
+}
+
+func (p *Parser) parseVars() (Vars, error) {
+	vars := make(Vars)
+
+	for p.currentType() == TokenIdent {
+		varIdents, err := p.parseIdentList()
+		if err != nil {
+			return nil, err
+		}
+
+		if _, err := p.require(TokenColon); err != nil {
+			return nil, err
+		}
+
+		typeIdent, err := p.parseType()
+		if err != nil {
+			return nil, err
+		}
+
+		if _, err := p.require(TokenSemicolon); err != nil {
+			return nil, err
+		}
+
+		for _, varIdent := range varIdents {
+			vars[varIdent] = typeIdent
+		}
+	}
+
+	return vars, nil
+}
+
+func (p *Parser) parseIdentList() ([]Token, error) {
+	var varIdents []Token
+
+	for {
+		varIdent, err := p.require(TokenIdent)
+		if err != nil {
+			return nil, err
+		}
+
+		varIdents = append(varIdents, varIdent)
+
+		if !p.expect(TokenComma) {
+			break
+		}
+	}
+
+	return varIdents, nil
+}
+
+func (p *Parser) parseType() (Token, error) {
+	// TODO(daniel): complex types.
+	return p.require(TokenIdent)
 }
 
 func (p *Parser) parseStmtSequence(terminator ...TokenType) (Stmt, error) {
@@ -116,19 +189,40 @@ func (p *Parser) parseStmtSequence(terminator ...TokenType) (Stmt, error) {
 func (p *Parser) parseStmt() (Stmt, error) {
 	switch p.currentType() {
 	case TokenIdent:
-		expr, err := p.parseCallExpr()
-		if err != nil {
-			return nil, err
-		}
+		ident, _ := p.require(TokenIdent)
 
-		return &ExprStmt{
-			expr: expr,
-		}, nil
+		switch p.currentType() {
+		case TokenAssign:
+			return p.parseAssignStmt(ident)
+		default:
+			expr, err := p.parseCallExpr(ident)
+			if err != nil {
+				return nil, err
+			}
+
+			return &ExprStmt{
+				expr: expr,
+			}, nil
+		}
 	case TokenIF:
 		return p.parseIfStmt()
 	default:
 		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index].Type)
 	}
+}
+
+func (p *Parser) parseAssignStmt(ident Token) (Stmt, error) {
+	p.consume(TokenAssign)
+
+	expr, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	return &AssignStmt{
+		token: ident,
+		expr:  expr,
+	}, nil
 }
 
 func (p *Parser) parseIfStmt() (Stmt, error) {
@@ -166,16 +260,16 @@ func (p *Parser) parseIfTail(t Token) (Stmt, error) {
 			return nil, err
 		}
 	case TokenELSE:
-		_, _ = p.require(TokenELSE)
+		p.consume(TokenELSE)
 
 		falseBlock, err = p.parseStmtSequence(TokenEND)
 		if err != nil {
 			return nil, err
 		}
 
-		_, _ = p.require(TokenEND)
+		p.consume(TokenEND)
 	case TokenEND:
-		_, _ = p.require(TokenEND)
+		p.consume(TokenEND)
 
 		falseBlock = &StmtSequence{}
 	default:
@@ -190,13 +284,11 @@ func (p *Parser) parseIfTail(t Token) (Stmt, error) {
 	}, nil
 }
 
-func (p *Parser) parseCallExpr() (Expr, error) {
+func (p *Parser) parseCallExpr(ident Token) (Expr, error) {
 	node := &CallExpr{
-		token: p.currentToken(),
+		token: ident,
 		args:  nil,
 	}
-
-	p.index++
 
 	if _, err := p.require(TokenLParen); err != nil {
 		return node, err
@@ -299,8 +391,10 @@ func (p *Parser) parseTerm() (Expr, error) {
 }
 
 func (p *Parser) parseFactor() (Expr, error) {
-	// factor := number | string | boolean | '(' expr ')' | '~' factor
+	// factor := designator [actualParameters] | number | string | boolean | '(' expr ')' | '~' factor
 	switch p.currentType() {
+	case TokenIdent:
+		return p.parseDesignator()
 	case TokenInteger, TokenReal, TokenMinus:
 		return p.parseNumberExpr()
 	case TokenString:
@@ -329,6 +423,14 @@ func (p *Parser) parseFactor() (Expr, error) {
 	}
 }
 
+func (p *Parser) parseDesignator() (Expr, error) {
+	ident, _ := p.require(TokenIdent)
+
+	return &DesignatorExpr{
+		token: ident,
+	}, nil
+}
+
 func (p *Parser) parseNumberExpr() (Expr, error) {
 	var (
 		op Token
@@ -341,7 +443,7 @@ func (p *Parser) parseNumberExpr() (Expr, error) {
 		op, _ = p.require(TokenMinus)
 	case TokenPlus:
 		// Unary Plus is a no-op so we ignore it.
-		_, _ = p.require(TokenPlus)
+		p.consume(TokenPlus)
 	}
 
 	switch p.currentType() {
@@ -425,6 +527,14 @@ func (p *Parser) expect(exp TokenType) bool {
 	}
 
 	return false
+}
+
+func (p *Parser) consume(exp TokenType) {
+	if p.currentType() != exp {
+		panic(fmt.Sprintf("tried to consume %v but got %v", exp, p.currentType()))
+	}
+
+	p.index++
 }
 
 func (p *Parser) currentToken() Token {

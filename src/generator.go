@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"sort"
 
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
@@ -20,6 +21,7 @@ func generateIR(writer io.Writer, root Node) error {
 		currentValue:  nil,
 		stdlib:        make(map[string]*ir.Func),
 		strings:       make(map[string]*ir.Global),
+		vars:          make(map[string]*ir.Global),
 	}
 
 	module, err := g.Generate(root)
@@ -39,6 +41,7 @@ type generator struct {
 	currentValue  value.Value
 	stdlib        map[string]*ir.Func
 	strings       map[string]*ir.Global
+	vars          map[string]*ir.Global
 	errors        []error
 }
 
@@ -68,6 +71,32 @@ func (g *generator) Error() error {
 }
 
 func (g *generator) VisitModule(n *Module) {
+	if n.vars != nil {
+		var keys []Token
+
+		for k := range n.vars {
+			keys = append(keys, k)
+		}
+
+		sort.Slice(keys, func(i, j int) bool {
+			return keys[i].Text < keys[j].Text
+		})
+
+		for _, k := range keys {
+			v := n.vars[k]
+
+			// TODO(daniel): don't switch on text.
+			switch v.Text {
+			case "INTEGER":
+				g.vars[k.Text] = g.currentModule.NewGlobalDef(k.Text, constant.NewInt(types.I32, 0))
+			case "REAL":
+				g.vars[k.Text] = g.currentModule.NewGlobalDef(k.Text, constant.NewFloat(types.Double, 0))
+			case "BOOLEAN":
+				g.vars[k.Text] = g.currentModule.NewGlobalDef(k.Text, constant.NewInt(types.I1, 0))
+			}
+		}
+	}
+
 	// TODO(daniel): is it correct that only the "main" module has statements, so that we can
 	// generate an entry-point from them?
 	if n.stmts != nil {
@@ -84,6 +113,12 @@ func (g *generator) VisitStmtSequence(n *StmtSequence) {
 	for _, stmt := range n.stmts {
 		stmt.Visit(g)
 	}
+}
+
+func (g *generator) VisitAssignStmt(n *AssignStmt) {
+	expr := g.visitAndReturnValue(n.expr)
+
+	g.currentBlock.NewStore(expr, g.vars[n.token.Text])
 }
 
 func (g *generator) VisitIfStmt(n *IfStmt) {
@@ -207,6 +242,12 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	default:
 		g.errors = append(g.errors, fmt.Errorf("unsupported token type: %+v", n.token))
 	}
+}
+
+func (g *generator) VisitDesignatorExpr(n *DesignatorExpr) {
+	v := g.vars[n.token.Text]
+
+	g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
 }
 
 func (g *generator) VisitNumberExpr(n *NumberExpr) {

@@ -2,6 +2,27 @@ package main
 
 import "fmt"
 
+type Kind int
+
+const (
+	KindUndefined Kind = iota
+	KindVar
+	KindConst
+)
+
+func (k Kind) String() string {
+	switch k {
+	case KindUndefined:
+		return "undefined"
+	case KindVar:
+		return "variable"
+	case KindConst:
+		return "constant"
+	default:
+		return fmt.Sprintf("undefined=%d", int(k))
+	}
+}
+
 type Type int
 
 const (
@@ -33,14 +54,18 @@ type Visitor interface {
 	VisitModule(*Module)
 	VisitStmtSequence(*StmtSequence)
 	VisitIfStmt(*IfStmt)
+	VisitAssignStmt(*AssignStmt)
 	VisitExprStmt(*ExprStmt)
 	VisitCallExpr(*CallExpr)
 	VisitBinaryExpr(*BinaryExpr)
+	VisitDesignatorExpr(*DesignatorExpr)
 	VisitNumberExpr(*NumberExpr)
 	VisitStringExpr(*StringExpr)
 	VisitBooleanExpr(*BooleanExpr)
 	VisitNotExpr(*NotExpr)
 }
+
+type Vars map[Token]Token
 
 type Node interface {
 	Token() Token
@@ -60,6 +85,7 @@ type Module struct {
 	token Token
 	name  string
 	stmts Stmt
+	vars  Vars
 }
 
 var _ Node = (*Module)(nil)
@@ -105,6 +131,41 @@ func (n *IfStmt) Token() Token {
 
 func (n *IfStmt) Visit(v Visitor) {
 	v.VisitIfStmt(n)
+}
+
+type AssignStmt struct {
+	token Token
+	expr  Expr
+}
+
+var _ Stmt = (*AssignStmt)(nil)
+
+func (n *AssignStmt) Token() Token {
+	return n.token
+}
+
+func (n *AssignStmt) Visit(v Visitor) {
+	v.VisitAssignStmt(n)
+}
+
+type DesignatorExpr struct {
+	token Token
+	typ   Type
+	kind  Kind
+}
+
+var _ Expr = (*DesignatorExpr)(nil)
+
+func (n *DesignatorExpr) Token() Token {
+	return n.token
+}
+
+func (n *DesignatorExpr) Type() Type {
+	return n.typ
+}
+
+func (n *DesignatorExpr) Visit(v Visitor) {
+	v.VisitDesignatorExpr(n)
 }
 
 type NumberExpr struct {
