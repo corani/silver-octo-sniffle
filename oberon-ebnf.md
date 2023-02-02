@@ -16,7 +16,8 @@ module = MODULE ident ";" [ImportList] DeclarationSequence
 ImportList = IMPORT import {"," import} ";".
 import = ident [":=" ident].
 DeclarationSequence = [CONST {ConstDeclaration ";"}]
-    [TYPE {TypeDeclaration ";"}] [VAR {VariableDeclaration ";"}]
+    [TYPE {TypeDeclaration ";"}]
+    [VAR {VariableDeclaration ";"}]
     {ProcedureDeclaration ";"}.
 ConstDeclaration = identdef "=" ConstExpression.
 ConstExpression = expression.

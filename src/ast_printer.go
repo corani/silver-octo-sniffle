@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 )
 
@@ -39,6 +40,30 @@ func (p *astPrinter) VisitModule(n *Module) {
 	p.printf("(module %q", n.name)
 	p.indent++
 
+	if n.vars != nil {
+		p.printf("(vars")
+		p.indent++
+
+		var keys []Token
+
+		for k := range n.vars {
+			keys = append(keys, k)
+		}
+
+		sort.Slice(keys, func(i, j int) bool {
+			return keys[i].Text < keys[j].Text
+		})
+
+		for _, k := range keys {
+			v := n.vars[k]
+
+			p.printf("(%v (type %v))", k.Text, v.Text)
+		}
+
+		p.indent--
+		p.printf(")")
+	}
+
 	n.stmts.Visit(p)
 
 	p.indent--
@@ -52,6 +77,16 @@ func (p *astPrinter) VisitStmtSequence(n *StmtSequence) {
 	for _, stmt := range n.stmts {
 		stmt.Visit(p)
 	}
+
+	p.indent--
+	p.printf(")")
+}
+
+func (p *astPrinter) VisitAssignStmt(n *AssignStmt) {
+	p.printf("(assign %v", n.token.Text)
+	p.indent++
+
+	n.expr.Visit(p)
 
 	p.indent--
 	p.printf(")")
@@ -103,12 +138,18 @@ func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
 	p.printf(")")
 }
 
+func (p *astPrinter) VisitDesignatorExpr(n *DesignatorExpr) {
+	p.printf("(%v [%v] %q)", n.kind, n.typ, n.token.Text)
+}
+
 func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
 	switch n.Type() {
 	case TypeInt64:
 		p.printf("(number [%v] %d)", n.typ, n.token.Int)
 	case TypeFloat64:
 		p.printf("(number [%v] %f)", n.typ, n.token.Real)
+	default:
+		p.printf("(number [%v] %q)", n.typ, n.token.Text)
 	}
 }
 

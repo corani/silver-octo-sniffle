@@ -3,12 +3,16 @@ package main
 import "fmt"
 
 func typeCheck(root Node) error {
-	checker := &typeChecker{}
+	checker := &typeChecker{
+		vars:   make(map[string]Type),
+		errors: nil,
+	}
 
 	return checker.Check(root)
 }
 
 type typeChecker struct {
+	vars   map[string]Type
 	errors []error
 }
 
@@ -36,12 +40,41 @@ func (c *typeChecker) Error() error {
 }
 
 func (c *typeChecker) VisitModule(m *Module) {
+	if m.vars != nil {
+		for k, v := range m.vars {
+			switch v.Text {
+			case "INTEGER":
+				c.vars[k.Text] = TypeInt64
+			case "REAL":
+				c.vars[k.Text] = TypeFloat64
+			case "BOOLEAN":
+				c.vars[k.Text] = TypeBoolean
+			default:
+				// TODO(daniel): support "CHAR", "SET", "ARRAY", "RECORD", "POINTER", ...
+				c.errors = append(c.errors, fmt.Errorf("unknown type %q for variable %q", v.Text, k.Text))
+			}
+		}
+	}
+
 	m.stmts.Visit(c)
 }
 
 func (c *typeChecker) VisitStmtSequence(s *StmtSequence) {
 	for _, v := range s.stmts {
 		v.Visit(c)
+	}
+}
+
+func (c *typeChecker) VisitAssignStmt(s *AssignStmt) {
+	s.expr.Visit(c)
+
+	if t, ok := c.vars[s.token.Text]; ok {
+		if s.expr.Type() != t {
+			c.errors = append(c.errors, fmt.Errorf("can't assign type %q to variable %q (which is of type %q)",
+				s.expr.Type(), s.token.Text, t))
+		}
+	} else {
+		c.errors = append(c.errors, fmt.Errorf("undefined identifier %q", s.token.Text))
 	}
 }
 
@@ -93,6 +126,15 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 		e.typ = TypeFloat64
 	default:
 		e.typ = e.args[0].Type()
+	}
+}
+
+func (c *typeChecker) VisitDesignatorExpr(e *DesignatorExpr) {
+	if t, ok := c.vars[e.token.Text]; ok {
+		e.typ = t
+		e.kind = KindVar
+	} else {
+		c.errors = append(c.errors, fmt.Errorf("undefined identifier %q", e.token.Text))
 	}
 }
 
