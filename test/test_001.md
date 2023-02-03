@@ -1,54 +1,64 @@
 # test/test_001.md
 ## Source
 ```pascal
-(* print simple literals *)
-print(42);
-print(33.42);
-print(TRUE, FALSE);
-print("Hello, world!");
-print(33H, 0AEH);
-print(48656C6C6F2C20776F726C6421X)
+MODULE SimpleLiterals;
+
+BEGIN
+    print(42);
+    print(33.42);
+    print(TRUE, FALSE);
+    print("Hello, world!");
+    print(33H, 0AEH);
+    print(48656C6C6F2C20776F726C6421X)
+END SimpleLiterals.
 ```
 ## Tokens
 ```tsv
-test/test_001.md:2:0:	ident	"print"	false	0	0.000000	(2, 0) -> (2, 5)
-test/test_001.md:2:5:	lparen	"("	false	0	0.000000	(2, 5) -> (2, 6)
-test/test_001.md:2:6:	integer	"42"	false	42	0.000000	(2, 6) -> (2, 8)
-test/test_001.md:2:8:	rparen	")"	false	0	0.000000	(2, 8) -> (2, 9)
-test/test_001.md:2:9:	semicolon	";"	false	0	0.000000	(2, 9) -> (2, 10)
-test/test_001.md:3:0:	ident	"print"	false	0	0.000000	(3, 0) -> (3, 5)
-test/test_001.md:3:5:	lparen	"("	false	0	0.000000	(3, 5) -> (3, 6)
-test/test_001.md:3:6:	real	"33.42"	false	0	33.420000	(3, 6) -> (3, 11)
-test/test_001.md:3:11:	rparen	")"	false	0	0.000000	(3, 11) -> (3, 12)
-test/test_001.md:3:12:	semicolon	";"	false	0	0.000000	(3, 12) -> (3, 13)
-test/test_001.md:4:0:	ident	"print"	false	0	0.000000	(4, 0) -> (4, 5)
-test/test_001.md:4:5:	lparen	"("	false	0	0.000000	(4, 5) -> (4, 6)
-test/test_001.md:4:6:	boolean	"TRUE"	true	0	0.000000	(4, 6) -> (4, 10)
-test/test_001.md:4:10:	comma	","	false	0	0.000000	(4, 10) -> (4, 11)
-test/test_001.md:4:12:	boolean	"FALSE"	false	0	0.000000	(4, 12) -> (4, 17)
-test/test_001.md:4:17:	rparen	")"	false	0	0.000000	(4, 17) -> (4, 18)
-test/test_001.md:4:18:	semicolon	";"	false	0	0.000000	(4, 18) -> (4, 19)
-test/test_001.md:5:0:	ident	"print"	false	0	0.000000	(5, 0) -> (5, 5)
-test/test_001.md:5:5:	lparen	"("	false	0	0.000000	(5, 5) -> (5, 6)
-test/test_001.md:5:6:	string	"Hello, world!"	false	0	0.000000	(5, 6) -> (5, 21)
-test/test_001.md:5:21:	rparen	")"	false	0	0.000000	(5, 21) -> (5, 22)
-test/test_001.md:5:22:	semicolon	";"	false	0	0.000000	(5, 22) -> (5, 23)
-test/test_001.md:6:0:	ident	"print"	false	0	0.000000	(6, 0) -> (6, 5)
-test/test_001.md:6:5:	lparen	"("	false	0	0.000000	(6, 5) -> (6, 6)
-test/test_001.md:6:6:	integer	"33H"	false	51	0.000000	(6, 6) -> (6, 9)
-test/test_001.md:6:9:	comma	","	false	0	0.000000	(6, 9) -> (6, 10)
-test/test_001.md:6:11:	integer	"0AEH"	false	174	0.000000	(6, 11) -> (6, 15)
-test/test_001.md:6:15:	rparen	")"	false	0	0.000000	(6, 15) -> (6, 16)
-test/test_001.md:6:16:	semicolon	";"	false	0	0.000000	(6, 16) -> (6, 17)
-test/test_001.md:7:0:	ident	"print"	false	0	0.000000	(7, 0) -> (7, 5)
-test/test_001.md:7:5:	lparen	"("	false	0	0.000000	(7, 5) -> (7, 6)
-test/test_001.md:7:6:	string	"Hello, world!"	false	0	0.000000	(7, 6) -> (7, 33)
-test/test_001.md:7:33:	rparen	")"	false	0	0.000000	(7, 33) -> (7, 34)
-test/test_001.md:8:0:	eof	""	false	0	0.000000	(8, 0) -> (8, 0)
+test/test_001.md:1:1:	module	"MODULE"	false	0	0.000000	(1, 1) -> (1, 7)
+test/test_001.md:1:8:	ident	"SimpleLiterals"	false	0	0.000000	(1, 8) -> (1, 22)
+test/test_001.md:1:22:	semicolon	";"	false	0	0.000000	(1, 22) -> (1, 23)
+test/test_001.md:3:0:	begin	"BEGIN"	false	0	0.000000	(3, 0) -> (3, 5)
+test/test_001.md:4:4:	ident	"print"	false	0	0.000000	(4, 4) -> (4, 9)
+test/test_001.md:4:9:	lparen	"("	false	0	0.000000	(4, 9) -> (4, 10)
+test/test_001.md:4:10:	integer	"42"	false	42	0.000000	(4, 10) -> (4, 12)
+test/test_001.md:4:12:	rparen	")"	false	0	0.000000	(4, 12) -> (4, 13)
+test/test_001.md:4:13:	semicolon	";"	false	0	0.000000	(4, 13) -> (4, 14)
+test/test_001.md:5:4:	ident	"print"	false	0	0.000000	(5, 4) -> (5, 9)
+test/test_001.md:5:9:	lparen	"("	false	0	0.000000	(5, 9) -> (5, 10)
+test/test_001.md:5:10:	real	"33.42"	false	0	33.420000	(5, 10) -> (5, 15)
+test/test_001.md:5:15:	rparen	")"	false	0	0.000000	(5, 15) -> (5, 16)
+test/test_001.md:5:16:	semicolon	";"	false	0	0.000000	(5, 16) -> (5, 17)
+test/test_001.md:6:4:	ident	"print"	false	0	0.000000	(6, 4) -> (6, 9)
+test/test_001.md:6:9:	lparen	"("	false	0	0.000000	(6, 9) -> (6, 10)
+test/test_001.md:6:10:	boolean	"TRUE"	true	0	0.000000	(6, 10) -> (6, 14)
+test/test_001.md:6:14:	comma	","	false	0	0.000000	(6, 14) -> (6, 15)
+test/test_001.md:6:16:	boolean	"FALSE"	false	0	0.000000	(6, 16) -> (6, 21)
+test/test_001.md:6:21:	rparen	")"	false	0	0.000000	(6, 21) -> (6, 22)
+test/test_001.md:6:22:	semicolon	";"	false	0	0.000000	(6, 22) -> (6, 23)
+test/test_001.md:7:4:	ident	"print"	false	0	0.000000	(7, 4) -> (7, 9)
+test/test_001.md:7:9:	lparen	"("	false	0	0.000000	(7, 9) -> (7, 10)
+test/test_001.md:7:10:	string	"Hello, world!"	false	0	0.000000	(7, 10) -> (7, 25)
+test/test_001.md:7:25:	rparen	")"	false	0	0.000000	(7, 25) -> (7, 26)
+test/test_001.md:7:26:	semicolon	";"	false	0	0.000000	(7, 26) -> (7, 27)
+test/test_001.md:8:4:	ident	"print"	false	0	0.000000	(8, 4) -> (8, 9)
+test/test_001.md:8:9:	lparen	"("	false	0	0.000000	(8, 9) -> (8, 10)
+test/test_001.md:8:10:	integer	"33H"	false	51	0.000000	(8, 10) -> (8, 13)
+test/test_001.md:8:13:	comma	","	false	0	0.000000	(8, 13) -> (8, 14)
+test/test_001.md:8:15:	integer	"0AEH"	false	174	0.000000	(8, 15) -> (8, 19)
+test/test_001.md:8:19:	rparen	")"	false	0	0.000000	(8, 19) -> (8, 20)
+test/test_001.md:8:20:	semicolon	";"	false	0	0.000000	(8, 20) -> (8, 21)
+test/test_001.md:9:4:	ident	"print"	false	0	0.000000	(9, 4) -> (9, 9)
+test/test_001.md:9:9:	lparen	"("	false	0	0.000000	(9, 9) -> (9, 10)
+test/test_001.md:9:10:	string	"Hello, world!"	false	0	0.000000	(9, 10) -> (9, 37)
+test/test_001.md:9:37:	rparen	")"	false	0	0.000000	(9, 37) -> (9, 38)
+test/test_001.md:10:0:	end	"END"	false	0	0.000000	(10, 0) -> (10, 3)
+test/test_001.md:10:4:	ident	"SimpleLiterals"	false	0	0.000000	(10, 4) -> (10, 18)
+test/test_001.md:10:18:	dot	"."	false	0	0.000000	(10, 18) -> (10, 19)
+test/test_001.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
 ```
 ## AST
 ```scheme
-(module ""
+(module "SimpleLiterals"
   (stmts
     (expr2stmt
       (print [void]

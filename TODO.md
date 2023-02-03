@@ -38,6 +38,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] basic global variable and assignment support.
 - [x] support global constant literals.
 - [x] support global constant expressions.
+- [x] require a `MODULE` instead of allowing naked statements.
 - [ ] improve AST and type information for variables.
 - [ ] basic local variable and assignment support.
 - [ ] make `print` a real procedure.
@@ -45,5 +46,4 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [ ] better command line arguments.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
 - [ ] update "golden test" files in-place, so any additional content doesn't get overwritten.
-- [ ] require a `MODULE` instead of allowing naked statements.
 - [ ] ...
