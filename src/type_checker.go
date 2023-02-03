@@ -129,43 +129,32 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 		v.Visit(c)
 	}
 
-	if len(e.args) != 2 {
-		c.errors = append(c.errors, fmt.Errorf("binary expression with %d arguments", len(e.args)))
-	}
-
 	switch {
 	case e.token.Type == TokenSlash:
 		e.typ = TypeFloat64
-
-		lhs := e.args[0].ConstValue()
-		rhs := e.args[1].ConstValue()
-
-		if lhs != nil && rhs != nil {
-			e.constValue = &Value{
-				typ:  e.Type(),
-				real: lhs.Real() / rhs.Real(),
-			}
-		}
 	case e.token.isRelation():
 		e.typ = TypeBoolean
-
-		// TODO(daniel): const evaluation
 	case e.token.Type == TokenAmpersand || e.token.Type == TokenOR:
 		if e.args[0].Type() != TypeBoolean || e.args[1].Type() != TypeBoolean {
 			c.errors = append(c.errors, fmt.Errorf("can only %s boolean values", e.token.Type))
 		}
 
 		e.typ = TypeBoolean
-
-		// TODO(daniel): const evaluation
 	case e.args[0].Type() != e.args[1].Type():
 		e.typ = TypeFloat64
-
-		// TODO(daniel): const evaluation
 	default:
 		e.typ = e.args[0].Type()
+	}
 
-		// TODO(daniel): const evaluation
+	if len(e.args) != 2 {
+		c.errors = append(c.errors, fmt.Errorf("binary expression with %d arguments", len(e.args)))
+	}
+
+	lhs := e.args[0].ConstValue()
+	rhs := e.args[1].ConstValue()
+
+	if lhs != nil && rhs != nil {
+		e.constValue = evaluateBinaryExpr(e.token.Type, e.Type(), lhs, rhs)
 	}
 }
 
@@ -183,58 +172,32 @@ func (c *typeChecker) VisitDesignatorExpr(e *DesignatorExpr) {
 }
 
 func (c *typeChecker) VisitNumberExpr(e *NumberExpr) {
-	switch e.token.Type {
-	case TokenInteger:
-		e.typ = TypeInt64
-		e.constValue = &Value{
-			typ:     e.Type(),
-			integer: e.token.Int,
-		}
-	case TokenReal:
-		e.typ = TypeFloat64
-		e.constValue = &Value{
-			typ:  e.Type(),
-			real: e.token.Real,
-		}
+	if v, err := evaluateNumberExpr(e.token); err != nil {
+		c.errors = append(c.errors, err)
+	} else {
+		e.constValue = v
+		e.typ = v.Type()
 	}
 }
 
 func (c *typeChecker) VisitStringExpr(e *StringExpr) {
-	e.constValue = &Value{
-		typ:    e.Type(),
-		String: e.token.Text,
-	}
+	e.constValue = evaluateStringExpr(e.token)
 }
 
 func (c *typeChecker) VisitBooleanExpr(e *BooleanExpr) {
-	var v bool
-
-	switch e.token.Text {
-	case "TRUE":
-		v = true
-	case "FALSE":
-		v = false
-	default:
-		c.errors = append(c.errors, fmt.Errorf("invalid boolean literal: %q", e.token.Text))
-	}
-
-	e.constValue = &Value{
-		typ:  e.Type(),
-		Bool: v,
+	if v, err := evaluateBooleanExpr(e.token); err != nil {
+		c.errors = append(c.errors, err)
+	} else {
+		e.constValue = v
 	}
 }
 
 func (c *typeChecker) VisitNotExpr(e *NotExpr) {
 	e.expr.Visit(c)
 
-	if e.expr.Type() != TypeBoolean {
-		c.errors = append(c.errors, fmt.Errorf("`~` not supported for type %v", e.expr.Type()))
-	}
-
-	if c := e.expr.ConstValue(); c != nil {
-		e.constValue = &Value{
-			typ:  e.Type(),
-			Bool: !c.Bool,
-		}
+	if v, err := evaluateNotExpr(e.expr); err != nil {
+		c.errors = append(c.errors, err)
+	} else {
+		e.constValue = v
 	}
 }
