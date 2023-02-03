@@ -40,10 +40,29 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] support global constant expressions.
 - [x] require a `MODULE` instead of allowing naked statements.
 - [ ] improve AST and type information for variables.
+- [ ] support procedure definitions.
+- [ ] support local procedure calls (i.e. in the same module).
+- [ ] support built-in `INC` and `DEC` procedures. 
+- [ ] support built-in `FLT` and `FLOOR` procedures.
+- [ ] support `CHAR` types. 
+- [ ] support built-in `ORD` and `CHR` procedures.
+- [ ] support `SET` types.
+- [ ] support built-in `INCL` and `EXCL` procedures. 
+- [ ] support `POINTER` types.
+- [ ] support `ARRAY` types.
+- [ ] support built-in `LEN` procedure.
+- [ ] support `RECORD` types.
+- [ ] support `PROCEDURE` types.
+- [ ] support `REPEAT` / `UNTIL` statement.
+- [ ] support `FOR` / `BY` / `DO` statement.
+- [ ] support `WHILE` / `DO` / `ELSIF` statement.
+- [ ] support `CASE` / `OF` statement.
 - [ ] basic local variable and assignment support.
 - [ ] make `print` a real procedure.
 - [ ] better error reporting.
 - [ ] better command line arguments.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
 - [ ] update "golden test" files in-place, so any additional content doesn't get overwritten.
+- [ ] a magic "C" call built-in module?
+- [ ] a standard library.
 - [ ] ...
