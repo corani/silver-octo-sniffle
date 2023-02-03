@@ -39,7 +39,25 @@ func (p *astPrinter) VisitModule(n *Module) {
 	p.printf("(module %q", n.name)
 	p.indent++
 
-	if n.vars != nil {
+	if len(n.consts) != 0 {
+		p.printf("(consts")
+		p.indent++
+
+		for _, decl := range n.consts {
+			p.printf("(%v [%v]", decl.token.Text, decl.typ)
+			p.indent++
+
+			decl.expr.Visit(p)
+
+			p.indent--
+			p.printf(")")
+		}
+
+		p.indent--
+		p.printf(")")
+	}
+
+	if len(n.vars) != 0 {
 		p.printf("(vars")
 		p.indent++
 

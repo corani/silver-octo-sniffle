@@ -5,15 +5,35 @@ import "fmt"
 type Parser struct {
 	tokens Tokens
 	index  int
+	errors []error
 }
 
 func parse(tokens Tokens) (Node, error) {
 	p := &Parser{
 		tokens: tokens,
 		index:  0,
+		errors: nil,
 	}
 
-	return p.parse()
+	if node, err := p.parse(); err != nil {
+		return node, err
+	} else {
+		return node, p.Error()
+	}
+}
+
+func (p *Parser) Error() error {
+	if len(p.errors) == 0 {
+		return nil
+	}
+
+	txt := "type check errors"
+
+	for _, v := range p.errors {
+		txt = txt + ": " + v.Error()
+	}
+
+	return fmt.Errorf(txt)
 }
 
 func (p *Parser) parse() (Node, error) {
@@ -53,16 +73,24 @@ func (p *Parser) parseModule() (Node, error) {
 	}
 
 	var (
-		stmts Node
-		vars  VarDecls
+		consts []ConstDecl
+		types  []TypeDecl
+		vars   []VarDecl
+		stmts  Node
 	)
 
 	if p.expect(TokenCONST) {
-		panic("CONST is unimplemented")
+		consts, err = p.parseConsts()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if p.expect(TokenTYPE) {
-		panic("TYPE is unimplemented")
+		types, err = p.parseTypes()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if p.expect(TokenVAR) {
@@ -73,7 +101,7 @@ func (p *Parser) parseModule() (Node, error) {
 	}
 
 	for p.currentType() == TokenPROCEDURE {
-		panic("PROCEDURE is unimplemented")
+		return nil, fmt.Errorf("PROCEDURE is unimplemented")
 	}
 
 	if p.expect(TokenBEGIN) {
@@ -104,15 +132,84 @@ func (p *Parser) parseModule() (Node, error) {
 	}
 
 	return &Module{
-		token: t,
-		name:  name.Text,
-		stmts: stmts,
-		vars:  vars,
+		token:  t,
+		name:   name.Text,
+		consts: consts,
+		types:  types,
+		vars:   vars,
+		stmts:  stmts,
 	}, nil
 }
 
-func (p *Parser) parseVars() (VarDecls, error) {
-	var vars VarDecls
+func (p *Parser) parseConsts() ([]ConstDecl, error) {
+	var consts []ConstDecl
+
+	for p.currentType() == TokenIdent {
+		t, _ := p.require(TokenIdent)
+
+		if _, err := p.require(TokenEQ); err != nil {
+			return nil, err
+		}
+
+		expr, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		if _, err := p.require(TokenSemicolon); err != nil {
+			return nil, err
+		}
+
+		consts = append(consts, ConstDecl{
+			token: t,
+			expr:  expr,
+		})
+	}
+
+	return consts, nil
+}
+
+func (p *Parser) parseTypes() ([]TypeDecl, error) {
+	var types []TypeDecl
+
+	for p.currentType() == TokenIdent {
+		t, _ := p.require(TokenIdent)
+
+		if _, err := p.require(TokenEQ); err != nil {
+			return nil, err
+		}
+
+		switch p.currentType() {
+		case TokenARRAY:
+			p.errors = append(p.errors, fmt.Errorf("ARRAY types are not implemented"))
+		case TokenRECORD:
+			p.errors = append(p.errors, fmt.Errorf("RECORD types are not implemented"))
+		case TokenPOINTER:
+			p.errors = append(p.errors, fmt.Errorf("POINTER types are not implemented"))
+		case TokenPROCEDURE:
+			p.errors = append(p.errors, fmt.Errorf("PROCEDURE types are not implemented"))
+		default:
+			return nil, fmt.Errorf("type declarations can only be `ARRAY`, `RECORD`, `POINTER` or `PROCEDURE`")
+		}
+
+		// TODO(daniel): the following is wrong!
+		typToken := p.currentToken()
+		for !p.expect(TokenSemicolon) {
+			p.index++
+		}
+
+		types = append(types, TypeDecl{
+			token:    t,
+			typToken: typToken,
+			typ:      TypeVoid,
+		})
+	}
+
+	return types, nil
+}
+
+func (p *Parser) parseVars() ([]VarDecl, error) {
+	var vars []VarDecl
 
 	for p.currentType() == TokenIdent {
 		varIdents, err := p.parseIdentList()

@@ -91,57 +91,57 @@ test/test_001.md:8:0:	eof	""	false	0	0.000000	(8, 0) -> (8, 0)
 @1 = global [4 x i8] c"%f\0A\00"
 @2 = global [5 x i8] c"TRUE\00"
 @3 = global [6 x i8] c"FALSE\00"
-@4 = global [13 x i8] c"Hello, world!"
+@4 = global [14 x i8] c"Hello, world!\00"
 
-declare i32 @puts(i8* %str)
+declare i64 @puts(i8* %str)
 
-declare i32 @rand()
+declare i64 @rand()
 
-declare i32 @sprintf(i8* %buf, i8* %format, ...)
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
-declare i32 @printf(i8* %format, ...)
+declare i64 @printf(i8* %format, ...)
 
-define i32 @main() {
+define i64 @main() {
 entry:
-	%0 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%1 = call i32 (i8*, ...) @printf(i8* %0, i32 42)
-	%2 = getelementptr [4 x i8], [4 x i8]* @1, i32 0, i32 0
-	%3 = call i32 (i8*, ...) @printf(i8* %2, double 0x4040B5C28F5C28F6)
+	%0 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%1 = call i64 (i8*, ...) @printf(i8* %0, i64 42)
+	%2 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%3 = call i64 (i8*, ...) @printf(i8* %2, double 0x4040B5C28F5C28F6)
 	br i1 true, label %4, label %6
 
 4:
-	%5 = getelementptr [5 x i8], [5 x i8]* @2, i32 0, i32 0
+	%5 = getelementptr [5 x i8], [5 x i8]* @2, i64 0, i64 0
 	br label %8
 
 6:
-	%7 = getelementptr [6 x i8], [6 x i8]* @3, i32 0, i32 0
+	%7 = getelementptr [6 x i8], [6 x i8]* @3, i64 0, i64 0
 	br label %8
 
 8:
 	%9 = phi i8* [ %5, %4 ], [ %7, %6 ]
-	%10 = call i32 @puts(i8* %9)
+	%10 = call i64 @puts(i8* %9)
 	br i1 false, label %11, label %13
 
 11:
-	%12 = getelementptr [5 x i8], [5 x i8]* @2, i32 0, i32 0
+	%12 = getelementptr [5 x i8], [5 x i8]* @2, i64 0, i64 0
 	br label %15
 
 13:
-	%14 = getelementptr [6 x i8], [6 x i8]* @3, i32 0, i32 0
+	%14 = getelementptr [6 x i8], [6 x i8]* @3, i64 0, i64 0
 	br label %15
 
 15:
 	%16 = phi i8* [ %12, %11 ], [ %14, %13 ]
-	%17 = call i32 @puts(i8* %16)
-	%18 = getelementptr [13 x i8], [13 x i8]* @4, i32 0, i32 0
-	%19 = call i32 @puts(i8* %18)
-	%20 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%21 = call i32 (i8*, ...) @printf(i8* %20, i32 51)
-	%22 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%23 = call i32 (i8*, ...) @printf(i8* %22, i32 174)
-	%24 = getelementptr [13 x i8], [13 x i8]* @4, i32 0, i32 0
-	%25 = call i32 @puts(i8* %24)
-	ret i32 0
+	%17 = call i64 @puts(i8* %16)
+	%18 = getelementptr [14 x i8], [14 x i8]* @4, i64 0, i64 0
+	%19 = call i64 @puts(i8* %18)
+	%20 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%21 = call i64 (i8*, ...) @printf(i8* %20, i64 51)
+	%22 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%23 = call i64 (i8*, ...) @printf(i8* %22, i64 174)
+	%24 = getelementptr [14 x i8], [14 x i8]* @4, i64 0, i64 0
+	%25 = call i64 @puts(i8* %24)
+	ret i64 0
 }
 
 ```

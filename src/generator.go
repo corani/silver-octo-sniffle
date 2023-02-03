@@ -11,7 +11,7 @@ import (
 	"github.com/llir/llvm/ir/value"
 )
 
-var zero = constant.NewInt(types.I32, 0)
+var zero = constant.NewInt(types.I64, 0)
 
 func generateIR(writer io.Writer, root Node) error {
 	g := &generator{
@@ -20,6 +20,7 @@ func generateIR(writer io.Writer, root Node) error {
 		currentValue:  nil,
 		stdlib:        make(map[string]*ir.Func),
 		strings:       make(map[string]*ir.Global),
+		consts:        make(map[string]Value),
 		vars:          make(map[string]*ir.Global),
 	}
 
@@ -40,6 +41,7 @@ type generator struct {
 	currentValue  value.Value
 	stdlib        map[string]*ir.Func
 	strings       map[string]*ir.Global
+	consts        map[string]Value
 	vars          map[string]*ir.Global
 	errors        []error
 }
@@ -70,10 +72,14 @@ func (g *generator) Error() error {
 }
 
 func (g *generator) VisitModule(n *Module) {
+	for _, decl := range n.consts {
+		g.consts[decl.token.Text] = decl.value
+	}
+
 	for _, decl := range n.vars {
 		switch decl.typ {
 		case TypeInt64:
-			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I32, 0))
+			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I64, 0))
 		case TypeFloat64:
 			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewFloat(types.Double, 0))
 		case TypeBoolean:
@@ -84,7 +90,7 @@ func (g *generator) VisitModule(n *Module) {
 	// TODO(daniel): is it correct that only the "main" module has statements, so that we can
 	// generate an entry-point from them?
 	if n.stmts != nil {
-		g.currentFunc = g.currentModule.NewFunc("main", types.I32)
+		g.currentFunc = g.currentModule.NewFunc("main", types.I64)
 		g.currentBlock = g.currentFunc.NewBlock("entry")
 
 		n.stmts.Visit(g)
@@ -147,7 +153,7 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	// during type checking.
 	switch n.token.Type {
 	case TokenMinus:
-		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+		if left.Type().Equal(types.I64) && right.Type().Equal(types.I64) {
 			// INTEGER subtraction
 			g.currentValue = g.currentBlock.NewSub(left, right)
 		} else {
@@ -155,7 +161,7 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 			g.currentValue = g.currentBlock.NewFSub(g.anyToReal(left), g.anyToReal(right))
 		}
 	case TokenPlus:
-		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+		if left.Type().Equal(types.I64) && right.Type().Equal(types.I64) {
 			// INTEGER addition
 			g.currentValue = g.currentBlock.NewAdd(left, right)
 		} else {
@@ -163,7 +169,7 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 			g.currentValue = g.currentBlock.NewFAdd(g.anyToReal(left), g.anyToReal(right))
 		}
 	case TokenAsterisk:
-		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+		if left.Type().Equal(types.I64) && right.Type().Equal(types.I64) {
 			// INTEGER multiplication
 			g.currentValue = g.currentBlock.NewMul(left, right)
 		} else {
@@ -186,39 +192,39 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 		// logical OR
 		g.currentValue = g.currentBlock.NewOr(left, right)
 	case TokenEQ:
-		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+		if left.Type().Equal(types.I64) && right.Type().Equal(types.I64) {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, left, right)
 		} else {
 			// TODO(daniel): do we need "ordered" or "unordered" float compares?
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUEQ, g.anyToReal(left), g.anyToReal(right))
 		}
 	case TokenNE:
-		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+		if left.Type().Equal(types.I64) && right.Type().Equal(types.I64) {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredNE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUNE, g.anyToReal(left), g.anyToReal(right))
 		}
 	case TokenLT:
-		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+		if left.Type().Equal(types.I64) && right.Type().Equal(types.I64) {
 			// TODO(daniel): "signed" or "unsigned" integer compares?
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLT, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULT, g.anyToReal(left), g.anyToReal(right))
 		}
 	case TokenLE:
-		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+		if left.Type().Equal(types.I64) && right.Type().Equal(types.I64) {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULE, g.anyToReal(left), g.anyToReal(right))
 		}
 	case TokenGE:
-		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+		if left.Type().Equal(types.I64) && right.Type().Equal(types.I64) {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGE, g.anyToReal(left), g.anyToReal(right))
 		}
 	case TokenGT:
-		if left.Type().Equal(types.I32) && right.Type().Equal(types.I32) {
+		if left.Type().Equal(types.I64) && right.Type().Equal(types.I64) {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGT, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGT, g.anyToReal(left), g.anyToReal(right))
@@ -229,22 +235,31 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 }
 
 func (g *generator) VisitDesignatorExpr(n *DesignatorExpr) {
-	v := g.vars[n.token.Text]
-
-	g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
+	if v, ok := g.consts[n.token.Text]; ok {
+		switch v.Type() {
+		case TypeInt64:
+			g.currentValue = constant.NewInt(types.I64, int64(v.Int()))
+		case TypeFloat64:
+			g.currentValue = constant.NewFloat(types.Double, v.Real())
+		case TypeBoolean:
+			g.currentValue = constant.NewBool(v.Bool)
+		}
+	} else if v, ok := g.vars[n.token.Text]; ok {
+		g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
+	}
 }
 
 func (g *generator) VisitNumberExpr(n *NumberExpr) {
 	switch n.Type() {
 	case TypeInt64:
-		g.currentValue = constant.NewInt(types.I32, int64(n.token.Int))
+		g.currentValue = constant.NewInt(types.I64, int64(n.token.Int))
 	case TypeFloat64:
 		g.currentValue = constant.NewFloat(types.Double, n.token.Real)
 	}
 }
 
 func (g *generator) VisitStringExpr(n *StringExpr) {
-	str := g.internString(n.token.Text)
+	str := g.internString(n.token.Text + "\000")
 
 	g.currentValue = g.currentBlock.NewGetElementPtr(str.ContentType, str, zero, zero)
 }
@@ -279,8 +294,8 @@ func (g *generator) anyToReal(v value.Value) value.Value {
 }
 
 func (g *generator) anyToInteger(v value.Value) value.Value {
-	if !v.Type().Equal(types.I32) {
-		v = g.currentBlock.NewFPToSI(v, types.I32)
+	if !v.Type().Equal(types.I64) {
+		v = g.currentBlock.NewFPToSI(v, types.I64)
 	}
 
 	return v
@@ -356,17 +371,17 @@ func (g *generator) printBoolean(arg Expr) {
 }
 
 func (g *generator) generateStdlib() {
-	g.stdlib["puts"] = g.currentModule.NewFunc("puts", types.I32,
+	g.stdlib["puts"] = g.currentModule.NewFunc("puts", types.I64,
 		ir.NewParam("str", types.I8Ptr))
-	g.stdlib["rand"] = g.currentModule.NewFunc("rand", types.I32)
+	g.stdlib["rand"] = g.currentModule.NewFunc("rand", types.I64)
 
-	sprintf := g.currentModule.NewFunc("sprintf", types.I32,
+	sprintf := g.currentModule.NewFunc("sprintf", types.I64,
 		ir.NewParam("buf", types.I8Ptr),
 		ir.NewParam("format", types.I8Ptr))
 	sprintf.Sig.Variadic = true
 	g.stdlib["sprintf"] = sprintf
 
-	printf := g.currentModule.NewFunc("printf", types.I32,
+	printf := g.currentModule.NewFunc("printf", types.I64,
 		ir.NewParam("format", types.I8Ptr))
 	printf.Sig.Variadic = true
 	g.stdlib["printf"] = printf
