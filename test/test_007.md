@@ -92,39 +92,39 @@ test/test_007.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
 ```llvm
 @0 = global [4 x i8] c"%d\0A\00"
 
-declare i32 @puts(i8* %str)
+declare i64 @puts(i8* %str)
 
-declare i32 @rand()
+declare i64 @rand()
 
-declare i32 @sprintf(i8* %buf, i8* %format, ...)
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
-declare i32 @printf(i8* %format, ...)
+declare i64 @printf(i8* %format, ...)
 
-define i32 @main() {
+define i64 @main() {
 entry:
-	%0 = icmp eq i32 1, 3
+	%0 = icmp eq i64 1, 3
 	br i1 %0, label %1, label %4
 
 1:
-	%2 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%3 = call i32 (i8*, ...) @printf(i8* %2, i32 3)
+	%2 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%3 = call i64 (i8*, ...) @printf(i8* %2, i64 3)
 	br label %6
 
 4:
-	%5 = icmp eq i32 1, 2
+	%5 = icmp eq i64 1, 2
 	br i1 %5, label %7, label %10
 
 6:
-	ret i32 0
+	ret i64 0
 
 7:
-	%8 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%9 = call i32 (i8*, ...) @printf(i8* %8, i32 2)
+	%8 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%9 = call i64 (i8*, ...) @printf(i8* %8, i64 2)
 	br label %13
 
 10:
-	%11 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%12 = call i32 (i8*, ...) @printf(i8* %11, i32 1)
+	%11 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%12 = call i64 (i8*, ...) @printf(i8* %11, i64 1)
 	br label %13
 
 13:

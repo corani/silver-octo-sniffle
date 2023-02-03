@@ -32,21 +32,21 @@ test/test_003.md:9:0:	eof	""	false	0	0.000000	(9, 0) -> (9, 0)
 ```
 ## IR
 ```llvm
-@0 = global [36 x i8] c"\0A  multi-line strings\0A  should work\0A"
+@0 = global [37 x i8] c"\0A  multi-line strings\0A  should work\0A\00"
 
-declare i32 @puts(i8* %str)
+declare i64 @puts(i8* %str)
 
-declare i32 @rand()
+declare i64 @rand()
 
-declare i32 @sprintf(i8* %buf, i8* %format, ...)
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
-declare i32 @printf(i8* %format, ...)
+declare i64 @printf(i8* %format, ...)
 
-define i32 @main() {
+define i64 @main() {
 entry:
-	%0 = getelementptr [36 x i8], [36 x i8]* @0, i32 0, i32 0
-	%1 = call i32 @puts(i8* %0)
-	ret i32 0
+	%0 = getelementptr [37 x i8], [37 x i8]* @0, i64 0, i64 0
+	%1 = call i64 @puts(i8* %0)
+	ret i64 0
 }
 
 ```

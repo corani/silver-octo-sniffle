@@ -78,73 +78,73 @@ test/test_004.md:6:0:	eof	""	false	0	0.000000	(6, 0) -> (6, 0)
 @0 = global [5 x i8] c"TRUE\00"
 @1 = global [6 x i8] c"FALSE\00"
 
-declare i32 @puts(i8* %str)
+declare i64 @puts(i8* %str)
 
-declare i32 @rand()
+declare i64 @rand()
 
-declare i32 @sprintf(i8* %buf, i8* %format, ...)
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
-declare i32 @printf(i8* %format, ...)
+declare i64 @printf(i8* %format, ...)
 
-define i32 @main() {
+define i64 @main() {
 entry:
 	%0 = icmp eq i1 true, false
 	br i1 %0, label %1, label %3
 
 1:
-	%2 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%2 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %5
 
 3:
-	%4 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%4 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %5
 
 5:
 	%6 = phi i8* [ %2, %1 ], [ %4, %3 ]
-	%7 = call i32 @puts(i8* %6)
+	%7 = call i64 @puts(i8* %6)
 	%8 = icmp eq i1 false, false
 	br i1 %8, label %9, label %11
 
 9:
-	%10 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%10 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %13
 
 11:
-	%12 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%12 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %13
 
 13:
 	%14 = phi i8* [ %10, %9 ], [ %12, %11 ]
-	%15 = call i32 @puts(i8* %14)
+	%15 = call i64 @puts(i8* %14)
 	%16 = and i1 true, false
 	br i1 %16, label %17, label %19
 
 17:
-	%18 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%18 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %21
 
 19:
-	%20 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%20 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %21
 
 21:
 	%22 = phi i8* [ %18, %17 ], [ %20, %19 ]
-	%23 = call i32 @puts(i8* %22)
+	%23 = call i64 @puts(i8* %22)
 	%24 = or i1 true, false
 	br i1 %24, label %25, label %27
 
 25:
-	%26 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%26 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %29
 
 27:
-	%28 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%28 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %29
 
 29:
 	%30 = phi i8* [ %26, %25 ], [ %28, %27 ]
-	%31 = call i32 @puts(i8* %30)
-	ret i32 0
+	%31 = call i64 @puts(i8* %30)
+	ret i64 0
 }
 
 ```

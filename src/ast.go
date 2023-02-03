@@ -50,6 +50,40 @@ func (t Type) String() string {
 	}
 }
 
+type Value struct {
+	typ     Type
+	integer int
+	real    float64
+	Bool    bool
+	String  string
+}
+
+func (v Value) Type() Type {
+	return v.typ
+}
+
+func (v Value) Int() int {
+	switch v.typ {
+	case TypeInt64:
+		return v.integer
+	case TypeFloat64:
+		return int(v.real)
+	default:
+		return 0
+	}
+}
+
+func (v Value) Real() float64 {
+	switch v.typ {
+	case TypeInt64:
+		return float64(v.integer)
+	case TypeFloat64:
+		return v.real
+	default:
+		return 0
+	}
+}
+
 type Visitor interface {
 	VisitModule(*Module)
 	VisitStmtSequence(*StmtSequence)
@@ -65,13 +99,24 @@ type Visitor interface {
 	VisitNotExpr(*NotExpr)
 }
 
-type VarDecl struct {
+type ConstDecl struct {
+	token Token
+	expr  Expr
+	typ   Type
+	value Value
+}
+
+type TypeDecl struct {
 	token    Token
 	typToken Token
 	typ      Type
 }
 
-type VarDecls []VarDecl
+type VarDecl struct {
+	token    Token
+	typToken Token
+	typ      Type
+}
 
 type Node interface {
 	Token() Token
@@ -81,6 +126,7 @@ type Node interface {
 type Expr interface {
 	Node
 	Type() Type
+	ConstValue() *Value
 }
 
 type Stmt interface {
@@ -88,10 +134,12 @@ type Stmt interface {
 }
 
 type Module struct {
-	token Token
-	name  string
-	stmts Stmt
-	vars  VarDecls
+	token  Token
+	name   string
+	stmts  Stmt
+	consts []ConstDecl
+	types  []TypeDecl
+	vars   []VarDecl
 }
 
 var _ Node = (*Module)(nil)
@@ -154,10 +202,25 @@ func (n *AssignStmt) Visit(v Visitor) {
 	v.VisitAssignStmt(n)
 }
 
+type ExprStmt struct {
+	expr Expr
+}
+
+var _ Stmt = (*ExprStmt)(nil)
+
+func (n *ExprStmt) Token() Token {
+	return n.expr.Token()
+}
+
+func (n *ExprStmt) Visit(v Visitor) {
+	v.VisitExprStmt(n)
+}
+
 type DesignatorExpr struct {
-	token Token
-	typ   Type
-	kind  Kind
+	token      Token
+	typ        Type
+	constValue *Value
+	kind       Kind
 }
 
 var _ Expr = (*DesignatorExpr)(nil)
@@ -170,13 +233,18 @@ func (n *DesignatorExpr) Type() Type {
 	return n.typ
 }
 
+func (n *DesignatorExpr) ConstValue() *Value {
+	return n.constValue
+}
+
 func (n *DesignatorExpr) Visit(v Visitor) {
 	v.VisitDesignatorExpr(n)
 }
 
 type NumberExpr struct {
-	token Token
-	typ   Type
+	token      Token
+	typ        Type
+	constValue *Value
 }
 
 var _ Expr = (*NumberExpr)(nil)
@@ -189,12 +257,17 @@ func (n *NumberExpr) Type() Type {
 	return n.typ
 }
 
+func (n *NumberExpr) ConstValue() *Value {
+	return n.constValue
+}
+
 func (n *NumberExpr) Visit(v Visitor) {
 	v.VisitNumberExpr(n)
 }
 
 type StringExpr struct {
-	token Token
+	token      Token
+	constValue *Value
 }
 
 var _ Expr = (*StringExpr)(nil)
@@ -207,12 +280,17 @@ func (n *StringExpr) Type() Type {
 	return TypeString
 }
 
+func (n *StringExpr) ConstValue() *Value {
+	return n.constValue
+}
+
 func (n *StringExpr) Visit(v Visitor) {
 	v.VisitStringExpr(n)
 }
 
 type BooleanExpr struct {
-	token Token
+	token      Token
+	constValue *Value
 }
 
 var _ Expr = (*BooleanExpr)(nil)
@@ -225,13 +303,18 @@ func (n *BooleanExpr) Type() Type {
 	return TypeBoolean
 }
 
+func (n *BooleanExpr) ConstValue() *Value {
+	return n.constValue
+}
+
 func (n *BooleanExpr) Visit(v Visitor) {
 	v.VisitBooleanExpr(n)
 }
 
 type NotExpr struct {
-	token Token
-	expr  Expr
+	token      Token
+	expr       Expr
+	constValue *Value
 }
 
 var _ Expr = (*NotExpr)(nil)
@@ -244,14 +327,19 @@ func (n *NotExpr) Type() Type {
 	return TypeBoolean
 }
 
+func (n *NotExpr) ConstValue() *Value {
+	return n.constValue
+}
+
 func (n *NotExpr) Visit(v Visitor) {
 	v.VisitNotExpr(n)
 }
 
 type BinaryExpr struct {
-	token Token
-	args  []Expr
-	typ   Type
+	token      Token
+	args       []Expr
+	typ        Type
+	constValue *Value
 }
 
 var _ Expr = (*BinaryExpr)(nil)
@@ -262,6 +350,10 @@ func (n *BinaryExpr) Token() Token {
 
 func (n *BinaryExpr) Type() Type {
 	return n.typ
+}
+
+func (n *BinaryExpr) ConstValue() *Value {
+	return n.constValue
 }
 
 func (n *BinaryExpr) Visit(v Visitor) {
@@ -284,20 +376,10 @@ func (n *CallExpr) Type() Type {
 	return n.typ
 }
 
+func (n *CallExpr) ConstValue() *Value {
+	return nil
+}
+
 func (n *CallExpr) Visit(v Visitor) {
 	v.VisitCallExpr(n)
-}
-
-type ExprStmt struct {
-	expr Expr
-}
-
-var _ Stmt = (*ExprStmt)(nil)
-
-func (n *ExprStmt) Token() Token {
-	return n.expr.Token()
-}
-
-func (n *ExprStmt) Visit(v Visitor) {
-	v.VisitExprStmt(n)
 }

@@ -325,90 +325,90 @@ test/test_002.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 @0 = global [4 x i8] c"%d\0A\00"
 @1 = global [4 x i8] c"%f\0A\00"
 
-declare i32 @puts(i8* %str)
+declare i64 @puts(i8* %str)
 
-declare i32 @rand()
+declare i64 @rand()
 
-declare i32 @sprintf(i8* %buf, i8* %format, ...)
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
-declare i32 @printf(i8* %format, ...)
+declare i64 @printf(i8* %format, ...)
 
-define i32 @main() {
+define i64 @main() {
 entry:
-	%0 = sub i32 0, 42
-	%1 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%2 = call i32 (i8*, ...) @printf(i8* %1, i32 %0)
-	%3 = add i32 34, 35
-	%4 = add i32 %3, 42000
-	%5 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%6 = call i32 (i8*, ...) @printf(i8* %5, i32 %4)
-	%7 = sub i32 66, 33
-	%8 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%9 = call i32 (i8*, ...) @printf(i8* %8, i32 %7)
-	%10 = sub i32 0, 34
-	%11 = add i32 %10, 35
-	%12 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%13 = call i32 (i8*, ...) @printf(i8* %12, i32 %11)
-	%14 = add i32 34, 35
-	%15 = add i32 %14, 42000
-	%16 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%17 = call i32 (i8*, ...) @printf(i8* %16, i32 %15)
-	%18 = add i32 34, 35
-	%19 = mul i32 %18, 33
-	%20 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%21 = call i32 (i8*, ...) @printf(i8* %20, i32 %19)
-	%22 = add i32 34, 35
-	%23 = sitofp i32 %22 to double
-	%24 = sitofp i32 33 to double
+	%0 = sub i64 0, 42
+	%1 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%2 = call i64 (i8*, ...) @printf(i8* %1, i64 %0)
+	%3 = add i64 34, 35
+	%4 = add i64 %3, 42000
+	%5 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%6 = call i64 (i8*, ...) @printf(i8* %5, i64 %4)
+	%7 = sub i64 66, 33
+	%8 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%9 = call i64 (i8*, ...) @printf(i8* %8, i64 %7)
+	%10 = sub i64 0, 34
+	%11 = add i64 %10, 35
+	%12 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%13 = call i64 (i8*, ...) @printf(i8* %12, i64 %11)
+	%14 = add i64 34, 35
+	%15 = add i64 %14, 42000
+	%16 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%17 = call i64 (i8*, ...) @printf(i8* %16, i64 %15)
+	%18 = add i64 34, 35
+	%19 = mul i64 %18, 33
+	%20 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%21 = call i64 (i8*, ...) @printf(i8* %20, i64 %19)
+	%22 = add i64 34, 35
+	%23 = sitofp i64 %22 to double
+	%24 = sitofp i64 33 to double
 	%25 = fdiv double %23, %24
-	%26 = getelementptr [4 x i8], [4 x i8]* @1, i32 0, i32 0
-	%27 = call i32 (i8*, ...) @printf(i8* %26, double %25)
-	%28 = sdiv i32 11, 3
-	%29 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%30 = call i32 (i8*, ...) @printf(i8* %29, i32 %28)
-	%31 = srem i32 11, 3
-	%32 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%33 = call i32 (i8*, ...) @printf(i8* %32, i32 %31)
-	%34 = sitofp i32 11 to double
-	%35 = sitofp i32 3 to double
+	%26 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%27 = call i64 (i8*, ...) @printf(i8* %26, double %25)
+	%28 = sdiv i64 11, 3
+	%29 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%30 = call i64 (i8*, ...) @printf(i8* %29, i64 %28)
+	%31 = srem i64 11, 3
+	%32 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%33 = call i64 (i8*, ...) @printf(i8* %32, i64 %31)
+	%34 = sitofp i64 11 to double
+	%35 = sitofp i64 3 to double
 	%36 = fdiv double %34, %35
-	%37 = sitofp i32 2 to double
+	%37 = sitofp i64 2 to double
 	%38 = fdiv double %36, %37
-	%39 = getelementptr [4 x i8], [4 x i8]* @1, i32 0, i32 0
-	%40 = call i32 (i8*, ...) @printf(i8* %39, double %38)
-	%41 = sitofp i32 11 to double
-	%42 = sitofp i32 3 to double
+	%39 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%40 = call i64 (i8*, ...) @printf(i8* %39, double %38)
+	%41 = sitofp i64 11 to double
+	%42 = sitofp i64 3 to double
 	%43 = fdiv double %41, %42
-	%44 = sitofp i32 7 to double
-	%45 = sitofp i32 2 to double
+	%44 = sitofp i64 7 to double
+	%45 = sitofp i64 2 to double
 	%46 = fdiv double %44, %45
 	%47 = fadd double %43, %46
-	%48 = getelementptr [4 x i8], [4 x i8]* @1, i32 0, i32 0
-	%49 = call i32 (i8*, ...) @printf(i8* %48, double %47)
-	%50 = sitofp i32 11 to double
-	%51 = sitofp i32 3 to double
+	%48 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%49 = call i64 (i8*, ...) @printf(i8* %48, double %47)
+	%50 = sitofp i64 11 to double
+	%51 = sitofp i64 3 to double
 	%52 = fdiv double %50, %51
-	%53 = sitofp i32 7 to double
-	%54 = sitofp i32 2 to double
+	%53 = sitofp i64 7 to double
+	%54 = sitofp i64 2 to double
 	%55 = fdiv double %53, %54
 	%56 = fsub double %52, %55
-	%57 = getelementptr [4 x i8], [4 x i8]* @1, i32 0, i32 0
-	%58 = call i32 (i8*, ...) @printf(i8* %57, double %56)
-	%59 = sitofp i32 11 to double
-	%60 = sitofp i32 3 to double
+	%57 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%58 = call i64 (i8*, ...) @printf(i8* %57, double %56)
+	%59 = sitofp i64 11 to double
+	%60 = sitofp i64 3 to double
 	%61 = fdiv double %59, %60
-	%62 = sitofp i32 3 to double
+	%62 = sitofp i64 3 to double
 	%63 = fmul double %61, %62
-	%64 = getelementptr [4 x i8], [4 x i8]* @1, i32 0, i32 0
-	%65 = call i32 (i8*, ...) @printf(i8* %64, double %63)
-	%66 = sitofp i32 69 to double
+	%64 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%65 = call i64 (i8*, ...) @printf(i8* %64, double %63)
+	%66 = sitofp i64 69 to double
 	%67 = fadd double %66, 0x3FDAE147AE147AE1
-	%68 = getelementptr [4 x i8], [4 x i8]* @1, i32 0, i32 0
-	%69 = call i32 (i8*, ...) @printf(i8* %68, double %67)
+	%68 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%69 = call i64 (i8*, ...) @printf(i8* %68, double %67)
 	%70 = fadd double 69.0, 0x3FDAE147AE147AE1
-	%71 = getelementptr [4 x i8], [4 x i8]* @1, i32 0, i32 0
-	%72 = call i32 (i8*, ...) @printf(i8* %71, double %70)
-	ret i32 0
+	%71 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%72 = call i64 (i8*, ...) @printf(i8* %71, double %70)
+	ret i64 0
 }
 
 ```

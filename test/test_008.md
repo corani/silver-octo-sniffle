@@ -110,43 +110,43 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 ```
 ## IR
 ```llvm
-@0 = global i32 0
-@1 = global i32 0
+@0 = global i64 0
+@1 = global i64 0
 @2 = global i1 false
-@3 = global [5 x i8] c"Equal"
-@4 = global [9 x i8] c"Not Equal"
+@3 = global [6 x i8] c"Equal\00"
+@4 = global [10 x i8] c"Not Equal\00"
 
-declare i32 @puts(i8* %str)
+declare i64 @puts(i8* %str)
 
-declare i32 @rand()
+declare i64 @rand()
 
-declare i32 @sprintf(i8* %buf, i8* %format, ...)
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
-declare i32 @printf(i8* %format, ...)
+declare i64 @printf(i8* %format, ...)
 
-define i32 @main() {
+define i64 @main() {
 entry:
-	store i32 1, i32* @0
-	store i32 2, i32* @1
-	%0 = load i32, i32* @0
-	%1 = load i32, i32* @1
-	%2 = icmp eq i32 %0, %1
+	store i64 1, i64* @0
+	store i64 2, i64* @1
+	%0 = load i64, i64* @0
+	%1 = load i64, i64* @1
+	%2 = icmp eq i64 %0, %1
 	store i1 %2, i1* @2
 	%3 = load i1, i1* @2
 	br i1 %3, label %4, label %7
 
 4:
-	%5 = getelementptr [5 x i8], [5 x i8]* @3, i32 0, i32 0
-	%6 = call i32 @puts(i8* %5)
+	%5 = getelementptr [6 x i8], [6 x i8]* @3, i64 0, i64 0
+	%6 = call i64 @puts(i8* %5)
 	br label %10
 
 7:
-	%8 = getelementptr [9 x i8], [9 x i8]* @4, i32 0, i32 0
-	%9 = call i32 @puts(i8* %8)
+	%8 = getelementptr [10 x i8], [10 x i8]* @4, i64 0, i64 0
+	%9 = call i64 @puts(i8* %8)
 	br label %10
 
 10:
-	ret i32 0
+	ret i64 0
 }
 
 ```

@@ -270,221 +270,221 @@ test/test_005.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
 @0 = global [5 x i8] c"TRUE\00"
 @1 = global [6 x i8] c"FALSE\00"
 
-declare i32 @puts(i8* %str)
+declare i64 @puts(i8* %str)
 
-declare i32 @rand()
+declare i64 @rand()
 
-declare i32 @sprintf(i8* %buf, i8* %format, ...)
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
-declare i32 @printf(i8* %format, ...)
+declare i64 @printf(i8* %format, ...)
 
-define i32 @main() {
+define i64 @main() {
 entry:
-	%0 = icmp eq i32 1, 2
+	%0 = icmp eq i64 1, 2
 	br i1 %0, label %1, label %3
 
 1:
-	%2 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%2 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %5
 
 3:
-	%4 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%4 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %5
 
 5:
 	%6 = phi i8* [ %2, %1 ], [ %4, %3 ]
-	%7 = call i32 @puts(i8* %6)
-	%8 = sitofp i32 3 to double
-	%9 = sitofp i32 2 to double
+	%7 = call i64 @puts(i8* %6)
+	%8 = sitofp i64 3 to double
+	%9 = sitofp i64 2 to double
 	%10 = fdiv double %8, %9
-	%11 = sitofp i32 6 to double
-	%12 = sitofp i32 4 to double
+	%11 = sitofp i64 6 to double
+	%12 = sitofp i64 4 to double
 	%13 = fdiv double %11, %12
 	%14 = fcmp ueq double %10, %13
 	br i1 %14, label %15, label %17
 
 15:
-	%16 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%16 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %19
 
 17:
-	%18 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%18 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %19
 
 19:
 	%20 = phi i8* [ %16, %15 ], [ %18, %17 ]
-	%21 = call i32 @puts(i8* %20)
-	%22 = icmp ne i32 1, 2
+	%21 = call i64 @puts(i8* %20)
+	%22 = icmp ne i64 1, 2
 	br i1 %22, label %23, label %25
 
 23:
-	%24 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%24 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %27
 
 25:
-	%26 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%26 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %27
 
 27:
 	%28 = phi i8* [ %24, %23 ], [ %26, %25 ]
-	%29 = call i32 @puts(i8* %28)
-	%30 = sitofp i32 3 to double
-	%31 = sitofp i32 2 to double
+	%29 = call i64 @puts(i8* %28)
+	%30 = sitofp i64 3 to double
+	%31 = sitofp i64 2 to double
 	%32 = fdiv double %30, %31
-	%33 = sitofp i32 6 to double
-	%34 = sitofp i32 4 to double
+	%33 = sitofp i64 6 to double
+	%34 = sitofp i64 4 to double
 	%35 = fdiv double %33, %34
 	%36 = fcmp une double %32, %35
 	br i1 %36, label %37, label %39
 
 37:
-	%38 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%38 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %41
 
 39:
-	%40 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%40 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %41
 
 41:
 	%42 = phi i8* [ %38, %37 ], [ %40, %39 ]
-	%43 = call i32 @puts(i8* %42)
-	%44 = icmp slt i32 1, 2
+	%43 = call i64 @puts(i8* %42)
+	%44 = icmp slt i64 1, 2
 	br i1 %44, label %45, label %47
 
 45:
-	%46 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%46 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %49
 
 47:
-	%48 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%48 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %49
 
 49:
 	%50 = phi i8* [ %46, %45 ], [ %48, %47 ]
-	%51 = call i32 @puts(i8* %50)
-	%52 = sitofp i32 2 to double
-	%53 = sitofp i32 1 to double
+	%51 = call i64 @puts(i8* %50)
+	%52 = sitofp i64 2 to double
+	%53 = sitofp i64 1 to double
 	%54 = fdiv double %52, %53
-	%55 = sitofp i32 1 to double
-	%56 = sitofp i32 1 to double
+	%55 = sitofp i64 1 to double
+	%56 = sitofp i64 1 to double
 	%57 = fdiv double %55, %56
 	%58 = fcmp ult double %54, %57
 	br i1 %58, label %59, label %61
 
 59:
-	%60 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%60 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %63
 
 61:
-	%62 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%62 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %63
 
 63:
 	%64 = phi i8* [ %60, %59 ], [ %62, %61 ]
-	%65 = call i32 @puts(i8* %64)
-	%66 = icmp sle i32 1, 1
+	%65 = call i64 @puts(i8* %64)
+	%66 = icmp sle i64 1, 1
 	br i1 %66, label %67, label %69
 
 67:
-	%68 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%68 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %71
 
 69:
-	%70 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%70 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %71
 
 71:
 	%72 = phi i8* [ %68, %67 ], [ %70, %69 ]
-	%73 = call i32 @puts(i8* %72)
-	%74 = sitofp i32 1 to double
-	%75 = sitofp i32 1 to double
+	%73 = call i64 @puts(i8* %72)
+	%74 = sitofp i64 1 to double
+	%75 = sitofp i64 1 to double
 	%76 = fdiv double %74, %75
-	%77 = sitofp i32 1 to double
-	%78 = sitofp i32 1 to double
+	%77 = sitofp i64 1 to double
+	%78 = sitofp i64 1 to double
 	%79 = fdiv double %77, %78
 	%80 = fcmp ule double %76, %79
 	br i1 %80, label %81, label %83
 
 81:
-	%82 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%82 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %85
 
 83:
-	%84 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%84 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %85
 
 85:
 	%86 = phi i8* [ %82, %81 ], [ %84, %83 ]
-	%87 = call i32 @puts(i8* %86)
-	%88 = icmp sgt i32 1, 2
+	%87 = call i64 @puts(i8* %86)
+	%88 = icmp sgt i64 1, 2
 	br i1 %88, label %89, label %91
 
 89:
-	%90 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%90 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %93
 
 91:
-	%92 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%92 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %93
 
 93:
 	%94 = phi i8* [ %90, %89 ], [ %92, %91 ]
-	%95 = call i32 @puts(i8* %94)
-	%96 = sitofp i32 2 to double
-	%97 = sitofp i32 2 to double
+	%95 = call i64 @puts(i8* %94)
+	%96 = sitofp i64 2 to double
+	%97 = sitofp i64 2 to double
 	%98 = fdiv double %96, %97
-	%99 = sitofp i32 2 to double
-	%100 = sitofp i32 1 to double
+	%99 = sitofp i64 2 to double
+	%100 = sitofp i64 1 to double
 	%101 = fdiv double %99, %100
 	%102 = fcmp ugt double %98, %101
 	br i1 %102, label %103, label %105
 
 103:
-	%104 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%104 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %107
 
 105:
-	%106 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%106 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %107
 
 107:
 	%108 = phi i8* [ %104, %103 ], [ %106, %105 ]
-	%109 = call i32 @puts(i8* %108)
-	%110 = icmp sge i32 2, 2
+	%109 = call i64 @puts(i8* %108)
+	%110 = icmp sge i64 2, 2
 	br i1 %110, label %111, label %113
 
 111:
-	%112 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%112 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %115
 
 113:
-	%114 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%114 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %115
 
 115:
 	%116 = phi i8* [ %112, %111 ], [ %114, %113 ]
-	%117 = call i32 @puts(i8* %116)
-	%118 = sitofp i32 2 to double
-	%119 = sitofp i32 1 to double
+	%117 = call i64 @puts(i8* %116)
+	%118 = sitofp i64 2 to double
+	%119 = sitofp i64 1 to double
 	%120 = fdiv double %118, %119
-	%121 = sitofp i32 2 to double
-	%122 = sitofp i32 1 to double
+	%121 = sitofp i64 2 to double
+	%122 = sitofp i64 1 to double
 	%123 = fdiv double %121, %122
 	%124 = fcmp uge double %120, %123
 	br i1 %124, label %125, label %127
 
 125:
-	%126 = getelementptr [5 x i8], [5 x i8]* @0, i32 0, i32 0
+	%126 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
 	br label %129
 
 127:
-	%128 = getelementptr [6 x i8], [6 x i8]* @1, i32 0, i32 0
+	%128 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
 	br label %129
 
 129:
 	%130 = phi i8* [ %126, %125 ], [ %128, %127 ]
-	%131 = call i32 @puts(i8* %130)
-	ret i32 0
+	%131 = call i64 @puts(i8* %130)
+	ret i64 0
 }
 
 ```

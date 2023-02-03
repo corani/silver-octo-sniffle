@@ -40,19 +40,19 @@ test/test_006.md:7:0:	eof	""	false	0	0.000000	(7, 0) -> (7, 0)
 ```llvm
 @0 = global [4 x i8] c"%d\0A\00"
 
-declare i32 @puts(i8* %str)
+declare i64 @puts(i8* %str)
 
-declare i32 @rand()
+declare i64 @rand()
 
-declare i32 @sprintf(i8* %buf, i8* %format, ...)
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
-declare i32 @printf(i8* %format, ...)
+declare i64 @printf(i8* %format, ...)
 
-define i32 @main() {
+define i64 @main() {
 entry:
-	%0 = getelementptr [4 x i8], [4 x i8]* @0, i32 0, i32 0
-	%1 = call i32 (i8*, ...) @printf(i8* %0, i32 1)
-	ret i32 0
+	%0 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0
+	%1 = call i64 (i8*, ...) @printf(i8* %0, i64 1)
+	ret i64 0
 }
 
 ```
