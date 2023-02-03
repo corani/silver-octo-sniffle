@@ -15,7 +15,7 @@ func parse(tokens Tokens) (Node, error) {
 		errors: nil,
 	}
 
-	if node, err := p.parse(); err != nil {
+	if node, err := p.parseModule(); err != nil {
 		return node, err
 	} else {
 		return node, p.Error()
@@ -27,34 +27,13 @@ func (p *Parser) Error() error {
 		return nil
 	}
 
-	txt := "type check errors"
+	txt := "parse errors"
 
 	for _, v := range p.errors {
 		txt = txt + ": " + v.Error()
 	}
 
 	return fmt.Errorf(txt)
-}
-
-func (p *Parser) parse() (Node, error) {
-	if p.currentType() == TokenMODULE {
-		return p.parseModule()
-	}
-
-	stmts, err := p.parseStmtSequence(TokenEOF)
-	if err != nil {
-		return nil, err
-	}
-
-	if _, err := p.require(TokenEOF); err != nil {
-		return nil, err
-	}
-
-	return &Module{
-		token: stmts.Token(),
-		name:  "",
-		stmts: stmts,
-	}, nil
 }
 
 func (p *Parser) parseModule() (Node, error) {
@@ -495,7 +474,7 @@ func (p *Parser) parseFactor() (Expr, error) {
 	switch p.currentType() {
 	case TokenIdent:
 		return p.parseDesignator()
-	case TokenInteger, TokenReal, TokenMinus:
+	case TokenInteger, TokenReal, TokenMinus, TokenPlus:
 		return p.parseNumberExpr()
 	case TokenString:
 		return p.parseStringLiteral()
