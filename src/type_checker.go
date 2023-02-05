@@ -120,25 +120,55 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 	case "print":
 		e.typ = TypeVoid
 	case "INC", "DEC":
-		e.typ = TypeVoid
-
-		if len(e.args) != 1 {
-			c.errors = append(c.errors, fmt.Errorf("expected 1 argument for %q, got %d",
-				e.token.Text, len(e.args)))
-		} else {
-			if _, ok := c.vars[e.args[0].Token().Text]; !ok {
-				c.errors = append(c.errors, fmt.Errorf("argument to %q must be a variable",
-					e.token.Text))
-			} else if t := e.args[0].Type(); t != TypeInt64 {
-				c.errors = append(c.errors, fmt.Errorf("expected argument of type INTEGER for %q, got %v",
-					e.token.Text, t))
-			}
+		if c.isLen(e.args, 1) && c.isVar(e.args[0]) && c.isType(e.args[0], TypeInt64) {
+			e.typ = TypeVoid
+		}
+	case "FLT":
+		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeInt64) {
+			e.typ = TypeFloat64
+		}
+	case "FLOOR":
+		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeFloat64) {
+			e.typ = TypeInt64
 		}
 	default:
 		c.errors = append(c.errors, fmt.Errorf("don't know how to call %q", e.token.Text))
 	}
 }
 
+func (c *typeChecker) isLen(e []Expr, exp int) bool {
+	if len(e) != exp {
+		c.errors = append(c.errors, fmt.Errorf("expected %d arguments, got %d", exp, len(e)))
+
+		return false
+	}
+
+	return true
+}
+
+func (c *typeChecker) isVar(e Expr) bool {
+	if e.Token().Type != TokenIdent {
+		c.errors = append(c.errors, fmt.Errorf("expected identifier, got %s", e.Token().Type))
+
+		return false
+	} else if _, ok := c.vars[e.Token().Text]; !ok {
+		c.errors = append(c.errors, fmt.Errorf("%q must be a variable", e.Token().Text))
+
+		return false
+	}
+
+	return true
+}
+
+func (c *typeChecker) isType(e Expr, exp Type) bool {
+	if e.Type() != exp {
+		c.errors = append(c.errors, fmt.Errorf("expected type %s, got %s", exp, e.Type()))
+
+		return false
+	}
+
+	return true
+}
 func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 	for _, v := range e.args {
 		v.Visit(c)

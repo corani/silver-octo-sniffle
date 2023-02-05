@@ -364,6 +364,7 @@ func (p *Parser) parseIfTail(t Token) (Stmt, error) {
 }
 
 func (p *Parser) parseCallExpr(ident Token) (Expr, error) {
+	// TODO(daniel): add designator.
 	node := &CallExpr{
 		token: ident,
 		args:  nil,
@@ -473,7 +474,16 @@ func (p *Parser) parseFactor() (Expr, error) {
 	// factor := designator [actualParameters] | number | string | boolean | '(' expr ')' | '~' factor
 	switch p.currentType() {
 	case TokenIdent:
-		return p.parseDesignator()
+		d, err := p.parseDesignator()
+		if err != nil {
+			return nil, err
+		}
+
+		if p.currentType() != TokenLParen {
+			return d, nil
+		}
+
+		return p.parseCallExpr(d.Token())
 	case TokenInteger, TokenReal, TokenMinus, TokenPlus:
 		return p.parseNumberExpr()
 	case TokenString:
