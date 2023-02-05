@@ -119,6 +119,21 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 	switch e.token.Text {
 	case "print":
 		e.typ = TypeVoid
+	case "INC", "DEC":
+		e.typ = TypeVoid
+
+		if len(e.args) != 1 {
+			c.errors = append(c.errors, fmt.Errorf("expected 1 argument for %q, got %d",
+				e.token.Text, len(e.args)))
+		} else {
+			if _, ok := c.vars[e.args[0].Token().Text]; !ok {
+				c.errors = append(c.errors, fmt.Errorf("argument to %q must be a variable",
+					e.token.Text))
+			} else if t := e.args[0].Type(); t != TypeInt64 {
+				c.errors = append(c.errors, fmt.Errorf("expected argument of type INTEGER for %q, got %v",
+					e.token.Text, t))
+			}
+		}
 	default:
 		c.errors = append(c.errors, fmt.Errorf("don't know how to call %q", e.token.Text))
 	}

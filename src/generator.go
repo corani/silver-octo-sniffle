@@ -62,7 +62,7 @@ func (g *generator) Error() error {
 		return nil
 	}
 
-	txt := "type check errors"
+	txt := "generate errors"
 
 	for _, v := range g.errors {
 		txt = txt + ": " + v.Error()
@@ -140,6 +140,10 @@ func (g *generator) VisitCallExpr(n *CallExpr) {
 	switch n.token.Text {
 	case "print":
 		g.callPrint(n.args)
+	case "INC":
+		g.callIncDec(n.args, 1)
+	case "DEC":
+		g.callIncDec(n.args, -1)
 	default:
 		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q", n.token.Text))
 	}
@@ -299,6 +303,12 @@ func (g *generator) anyToInteger(v value.Value) value.Value {
 	}
 
 	return v
+}
+
+func (g *generator) callIncDec(args []Expr, offset int64) {
+	v := g.visitAndReturnValue(args[0])
+	g.currentValue = g.currentBlock.NewAdd(v, constant.NewInt(types.I64, offset))
+	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
 }
 
 func (g *generator) callPrint(args []Expr) {
