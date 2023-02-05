@@ -274,7 +274,9 @@ func (p *Parser) parseStmt() (Stmt, error) {
 		case TokenAssign:
 			return p.parseAssignStmt(ident)
 		default:
-			expr, err := p.parseCallExpr(ident)
+			expr, err := p.parseCallExpr(&DesignatorExpr{
+				token: ident,
+			})
 			if err != nil {
 				return nil, err
 			}
@@ -363,11 +365,10 @@ func (p *Parser) parseIfTail(t Token) (Stmt, error) {
 	}, nil
 }
 
-func (p *Parser) parseCallExpr(ident Token) (Expr, error) {
-	// TODO(daniel): add designator.
+func (p *Parser) parseCallExpr(designator *DesignatorExpr) (Expr, error) {
 	node := &CallExpr{
-		token: ident,
-		args:  nil,
+		designator: designator,
+		args:       nil,
 	}
 
 	if _, err := p.require(TokenLParen); err != nil {
@@ -483,7 +484,7 @@ func (p *Parser) parseFactor() (Expr, error) {
 			return d, nil
 		}
 
-		return p.parseCallExpr(d.Token())
+		return p.parseCallExpr(d)
 	case TokenInteger, TokenReal, TokenMinus, TokenPlus:
 		return p.parseNumberExpr()
 	case TokenString:
@@ -512,7 +513,7 @@ func (p *Parser) parseFactor() (Expr, error) {
 	}
 }
 
-func (p *Parser) parseDesignator() (Expr, error) {
+func (p *Parser) parseDesignator() (*DesignatorExpr, error) {
 	ident, _ := p.require(TokenIdent)
 
 	return &DesignatorExpr{

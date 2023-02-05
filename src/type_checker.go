@@ -116,7 +116,7 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 	}
 
 	// TODO(daniel): return type of calls.
-	switch e.token.Text {
+	switch e.Token().Text {
 	case "print":
 		e.typ = TypeVoid
 	case "INC", "DEC":
@@ -132,7 +132,8 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 			e.typ = TypeInt64
 		}
 	default:
-		c.errors = append(c.errors, fmt.Errorf("don't know how to call %q", e.token.Text))
+		c.errors = append(c.errors, fmt.Errorf("don't know how to call %q",
+			e.Token().Text))
 	}
 }
 
@@ -169,6 +170,7 @@ func (c *typeChecker) isType(e Expr, exp Type) bool {
 
 	return true
 }
+
 func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 	for _, v := range e.args {
 		v.Visit(c)

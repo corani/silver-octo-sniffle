@@ -89,17 +89,17 @@ test/test_011.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
       (number [i64] 1)
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (variable [i64] "x")
       )
     )
     (assign y
-      (FLT [f64]
+      (call "FLT" [f64]
         (variable [i64] "x")
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (variable [f64] "y")
       )
     )
@@ -110,17 +110,17 @@ test/test_011.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (variable [f64] "y")
       )
     )
     (assign x
-      (FLOOR [i64]
+      (call "FLOOR" [i64]
         (variable [f64] "y")
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (variable [i64] "x")
       )
     )
