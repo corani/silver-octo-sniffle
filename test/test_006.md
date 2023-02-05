@@ -29,7 +29,7 @@ test/test_006.md:7:0:	eof	""	false	0	0.000000	(7, 0) -> (7, 0)
 (module "trailing"
   (stmts
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (number [i64] 1)
       )
     )

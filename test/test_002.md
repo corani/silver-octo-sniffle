@@ -182,12 +182,12 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
 (module "BinaryOperations"
   (stmts
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (number [i64] 33)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (minus [i64]
           (number [i64] 0)
           (number [i64] 42)
@@ -195,7 +195,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (plus [i64]
           (plus [i64]
             (number [i64] 34)
@@ -206,7 +206,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (minus [i64]
           (number [i64] 66)
           (number [i64] 33)
@@ -214,7 +214,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (plus [i64]
           (minus [i64]
             (number [i64] 0)
@@ -225,7 +225,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (plus [i64]
           (plus [i64]
             (number [i64] 34)
@@ -236,7 +236,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (asterisk [i64]
           (plus [i64]
             (number [i64] 34)
@@ -247,7 +247,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (slash [f64]
           (plus [i64]
             (number [i64] 34)
@@ -258,7 +258,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (div [i64]
           (number [i64] 11)
           (number [i64] 3)
@@ -266,7 +266,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (mod [i64]
           (number [i64] 11)
           (number [i64] 3)
@@ -274,7 +274,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (slash [f64]
           (slash [f64]
             (number [i64] 11)
@@ -285,7 +285,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (plus [f64]
           (slash [f64]
             (number [i64] 11)
@@ -299,7 +299,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (minus [f64]
           (slash [f64]
             (number [i64] 11)
@@ -313,7 +313,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (asterisk [f64]
           (slash [f64]
             (number [i64] 11)
@@ -324,7 +324,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (plus [f64]
           (number [i64] 69)
           (number [f64] 0.420000)
@@ -332,7 +332,7 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (plus [f64]
           (number [f64] 69.000000)
           (number [f64] 0.420000)

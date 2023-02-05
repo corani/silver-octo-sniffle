@@ -67,27 +67,27 @@ test/test_010.md:10:0:	eof	""	false	0	0.000000	(10, 0) -> (10, 0)
       (number [i64] 1)
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (variable [i64] "x")
       )
     )
     (expr2stmt
-      (INC [void]
+      (call "INC" [void]
         (variable [i64] "x")
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (variable [i64] "x")
       )
     )
     (expr2stmt
-      (DEC [void]
+      (call "DEC" [void]
         (variable [i64] "x")
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (variable [i64] "x")
       )
     )

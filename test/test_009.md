@@ -141,14 +141,14 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       )
       (stmts
         (expr2stmt
-          (print [void]
+          (call "print" [void]
             (string "Equal")
           )
         )
       )
       (stmts
         (expr2stmt
-          (print [void]
+          (call "print" [void]
             (string "Not Equal")
           )
         )
@@ -164,14 +164,14 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       )
       (stmts
         (expr2stmt
-          (print [void]
+          (call "print" [void]
             (string "Equal")
           )
         )
       )
       (stmts
         (expr2stmt
-          (print [void]
+          (call "print" [void]
             (string "Not Equal")
           )
         )
@@ -181,14 +181,14 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (constant [boolean] "ne")
       (stmts
         (expr2stmt
-          (print [void]
+          (call "print" [void]
             (string "Not Equal")
           )
         )
       )
       (stmts
         (expr2stmt
-          (print [void]
+          (call "print" [void]
             (string "Equal")
           )
         )

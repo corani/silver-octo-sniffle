@@ -120,7 +120,7 @@ func (p *astPrinter) VisitExprStmt(n *ExprStmt) {
 }
 
 func (p *astPrinter) VisitCallExpr(n *CallExpr) {
-	p.printf("(%v [%v]", n.token.Text, n.typ)
+	p.printf("(call %q [%v]", n.Token().Text, n.typ)
 	p.indent++
 
 	for _, arg := range n.args {

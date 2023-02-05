@@ -34,7 +34,7 @@ test/test_003.md:13:0:	eof	""	false	0	0.000000	(13, 0) -> (13, 0)
 (module "MultiLine"
   (stmts
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (string "\n      multi-line strings\n      should work\n    ")
       )
     )

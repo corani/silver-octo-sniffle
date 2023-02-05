@@ -41,7 +41,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] require a `MODULE` instead of allowing naked statements.
 - [X] support built-in `INC` and `DEC` procedures. 
 - [X] support built-in `FLT` and `FLOOR` procedures.
-- [ ] add designator to CallExpr.
+- [X] add designator to CallExpr.
 - [ ] no automatic type conversion.
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.

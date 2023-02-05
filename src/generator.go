@@ -137,7 +137,7 @@ func (g *generator) VisitExprStmt(n *ExprStmt) {
 }
 
 func (g *generator) VisitCallExpr(n *CallExpr) {
-	switch n.token.Text {
+	switch n.Token().Text {
 	case "print":
 		g.callPrint(n.args)
 	case "INC":
@@ -149,7 +149,8 @@ func (g *generator) VisitCallExpr(n *CallExpr) {
 	case "FLOOR":
 		g.callFLOOR(n.args[0])
 	default:
-		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q", n.token.Text))
+		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q",
+			n.Token().Text))
 	}
 }
 

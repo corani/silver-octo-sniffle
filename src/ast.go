@@ -361,15 +361,15 @@ func (n *BinaryExpr) Visit(v Visitor) {
 }
 
 type CallExpr struct {
-	token Token
-	typ   Type
-	args  []Expr
+	designator *DesignatorExpr
+	typ        Type
+	args       []Expr
 }
 
 var _ Expr = (*CallExpr)(nil)
 
 func (n *CallExpr) Token() Token {
-	return n.token
+	return n.designator.Token()
 }
 
 func (n *CallExpr) Type() Type {

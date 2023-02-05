@@ -92,14 +92,14 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       (variable [boolean] "res")
       (stmts
         (expr2stmt
-          (print [void]
+          (call "print" [void]
             (string "Equal")
           )
         )
       )
       (stmts
         (expr2stmt
-          (print [void]
+          (call "print" [void]
             (string "Not Equal")
           )
         )

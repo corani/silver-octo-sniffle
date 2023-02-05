@@ -141,7 +141,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 (module "Comparisons"
   (stmts
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (eq [boolean]
           (number [i64] 1)
           (number [i64] 2)
@@ -149,7 +149,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (eq [boolean]
           (slash [f64]
             (number [i64] 3)
@@ -163,7 +163,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (ne [boolean]
           (number [i64] 1)
           (number [i64] 2)
@@ -171,7 +171,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (ne [boolean]
           (slash [f64]
             (number [i64] 3)
@@ -185,7 +185,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (lt [boolean]
           (number [i64] 1)
           (number [i64] 2)
@@ -193,7 +193,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (lt [boolean]
           (slash [f64]
             (number [i64] 2)
@@ -207,7 +207,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (le [boolean]
           (number [i64] 1)
           (number [i64] 1)
@@ -215,7 +215,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (le [boolean]
           (slash [f64]
             (number [i64] 1)
@@ -229,7 +229,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (gt [boolean]
           (number [i64] 1)
           (number [i64] 2)
@@ -237,7 +237,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (gt [boolean]
           (slash [f64]
             (number [i64] 2)
@@ -251,7 +251,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (ge [boolean]
           (number [i64] 2)
           (number [i64] 2)
@@ -259,7 +259,7 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       )
     )
     (expr2stmt
-      (print [void]
+      (call "print" [void]
         (ge [boolean]
           (slash [f64]
             (number [i64] 2)
