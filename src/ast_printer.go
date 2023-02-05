@@ -113,8 +113,27 @@ func (p *astPrinter) VisitRepeatStmt(n *RepeatStmt) {
 	p.printf("(repeat")
 	p.indent++
 
-	n.stmts.Visit(p)
-	n.expr.Visit(p)
+	n.cond.stmt.Visit(p)
+	n.cond.expr.Visit(p)
+
+	p.indent--
+	p.printf(")")
+}
+
+func (p *astPrinter) VisitWhileStmt(n *WhileStmt) {
+	p.printf("(while")
+	p.indent++
+
+	for _, c := range n.conds {
+		p.printf("(cond")
+		p.indent++
+
+		c.expr.Visit(p)
+		c.stmt.Visit(p)
+
+		p.indent--
+		p.printf(")")
+	}
 
 	p.indent--
 	p.printf(")")

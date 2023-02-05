@@ -89,6 +89,7 @@ type Visitor interface {
 	VisitStmtSequence(*StmtSequence)
 	VisitIfStmt(*IfStmt)
 	VisitRepeatStmt(*RepeatStmt)
+	VisitWhileStmt(*WhileStmt)
 	VisitAssignStmt(*AssignStmt)
 	VisitExprStmt(*ExprStmt)
 	VisitCallExpr(*CallExpr)
@@ -188,10 +189,14 @@ func (n *IfStmt) Visit(v Visitor) {
 	v.VisitIfStmt(n)
 }
 
+type Condition struct {
+	expr Expr
+	stmt Stmt
+}
+
 type RepeatStmt struct {
 	token Token
-	expr  Expr
-	stmts Stmt
+	cond  Condition
 }
 
 var _ Stmt = (*RepeatStmt)(nil)
@@ -202,6 +207,21 @@ func (n *RepeatStmt) Token() Token {
 
 func (n *RepeatStmt) Visit(v Visitor) {
 	v.VisitRepeatStmt(n)
+}
+
+type WhileStmt struct {
+	token Token
+	conds []Condition
+}
+
+var _ Stmt = (*WhileStmt)(nil)
+
+func (n *WhileStmt) Token() Token {
+	return n.token
+}
+
+func (n *WhileStmt) Visit(v Visitor) {
+	v.VisitWhileStmt(n)
 }
 
 type AssignStmt struct {

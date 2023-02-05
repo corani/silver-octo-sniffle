@@ -107,12 +107,24 @@ func (c *typeChecker) VisitIfStmt(s *IfStmt) {
 }
 
 func (c *typeChecker) VisitRepeatStmt(s *RepeatStmt) {
-	s.expr.Visit(c)
-	s.stmts.Visit(c)
+	s.cond.expr.Visit(c)
+	s.cond.stmt.Visit(c)
 
-	if s.expr.Type() != TypeBoolean {
+	if s.cond.expr.Type() != TypeBoolean {
 		c.errors = append(c.errors, fmt.Errorf("condition for REPEAT must be boolean, got %v",
-			s.expr.Type()))
+			s.cond.expr.Type()))
+	}
+}
+
+func (c *typeChecker) VisitWhileStmt(s *WhileStmt) {
+	for _, cond := range s.conds {
+		cond.expr.Visit(c)
+		cond.stmt.Visit(c)
+
+		if cond.expr.Type() != TypeBoolean {
+			c.errors = append(c.errors, fmt.Errorf("condition for WHILE must be boolean, got %v",
+				cond.expr.Type()))
+		}
 	}
 }
 

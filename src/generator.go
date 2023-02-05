@@ -138,11 +138,37 @@ func (g *generator) VisitRepeatStmt(n *RepeatStmt) {
 	g.currentBlock.NewBr(startBlk)
 	g.currentBlock = startBlk
 
-	n.stmts.Visit(g)
+	n.cond.stmt.Visit(g)
 
-	cond := g.visitAndReturnValue(n.expr)
+	cond := g.visitAndReturnValue(n.cond.expr)
 
 	g.currentBlock.NewCondBr(cond, doneBlk, startBlk)
+	g.currentBlock = doneBlk
+}
+
+func (g *generator) VisitWhileStmt(n *WhileStmt) {
+	var startBlk, condBlk, bodyBlk, doneBlk *ir.Block
+
+	condBlk = g.currentFunc.NewBlock("")
+	startBlk = condBlk
+
+	g.currentBlock.NewBr(condBlk)
+
+	for _, cond := range n.conds {
+		bodyBlk = g.currentFunc.NewBlock("")
+		doneBlk = g.currentFunc.NewBlock("")
+
+		g.currentBlock = condBlk
+		value := g.visitAndReturnValue(cond.expr)
+		g.currentBlock.NewCondBr(value, bodyBlk, doneBlk)
+
+		g.currentBlock = bodyBlk
+		cond.stmt.Visit(g)
+		g.currentBlock.NewBr(startBlk)
+
+		condBlk = doneBlk
+	}
+
 	g.currentBlock = doneBlk
 }
 
