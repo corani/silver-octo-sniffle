@@ -289,6 +289,8 @@ func (p *Parser) parseStmt() (Stmt, error) {
 		return p.parseIfStmt()
 	case TokenREPEAT:
 		return p.parseRepeatStmt()
+	case TokenWHILE:
+		return p.parseWhileStmt()
 	default:
 		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index].Type)
 	}
@@ -389,8 +391,53 @@ func (p *Parser) parseRepeatStmt() (Stmt, error) {
 
 	return &RepeatStmt{
 		token: t,
-		expr:  expr,
-		stmts: stmts,
+		cond: Condition{
+			expr: expr,
+			stmt: stmts,
+		},
+	}, nil
+}
+
+func (p *Parser) parseWhileStmt() (Stmt, error) {
+	t, err := p.require(TokenWHILE)
+	if err != nil {
+		return nil, err
+	}
+
+	var conds []Condition
+
+	for {
+		expr, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+
+		if _, err := p.require(TokenDO); err != nil {
+			return nil, err
+		}
+
+		stmts, err := p.parseStmtSequence(TokenELSIF, TokenEND)
+		if err != nil {
+			return nil, err
+		}
+
+		conds = append(conds, Condition{
+			expr: expr,
+			stmt: stmts,
+		})
+
+		if !p.expect(TokenELSIF) {
+			break
+		}
+	}
+
+	if _, err := p.require(TokenEND); err != nil {
+		return nil, err
+	}
+
+	return &WhileStmt{
+		token: t,
+		conds: conds,
 	}, nil
 }
 
