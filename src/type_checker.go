@@ -106,6 +106,16 @@ func (c *typeChecker) VisitIfStmt(s *IfStmt) {
 	s.falseBlock.Visit(c)
 }
 
+func (c *typeChecker) VisitRepeatStmt(s *RepeatStmt) {
+	s.expr.Visit(c)
+	s.stmts.Visit(c)
+
+	if s.expr.Type() != TypeBoolean {
+		c.errors = append(c.errors, fmt.Errorf("condition for REPEAT must be boolean, got %v",
+			s.expr.Type()))
+	}
+}
+
 func (c *typeChecker) VisitExprStmt(s *ExprStmt) {
 	s.expr.Visit(c)
 }

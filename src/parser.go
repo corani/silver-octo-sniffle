@@ -287,6 +287,8 @@ func (p *Parser) parseStmt() (Stmt, error) {
 		}
 	case TokenIF:
 		return p.parseIfStmt()
+	case TokenREPEAT:
+		return p.parseRepeatStmt()
 	default:
 		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index].Type)
 	}
@@ -362,6 +364,33 @@ func (p *Parser) parseIfTail(t Token) (Stmt, error) {
 		expr:       expr,
 		trueBlock:  trueBlock,
 		falseBlock: falseBlock,
+	}, nil
+}
+
+func (p *Parser) parseRepeatStmt() (Stmt, error) {
+	t, err := p.require(TokenREPEAT)
+	if err != nil {
+		return nil, err
+	}
+
+	stmts, err := p.parseStmtSequence(TokenUNTIL)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := p.require(TokenUNTIL); err != nil {
+		return nil, err
+	}
+
+	expr, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	return &RepeatStmt{
+		token: t,
+		expr:  expr,
+		stmts: stmts,
 	}, nil
 }
 
