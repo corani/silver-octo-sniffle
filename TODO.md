@@ -42,7 +42,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
 - [ ] support local procedure calls (i.e. in the same module).
-- [ ] support built-in `INC` and `DEC` procedures. 
+- [X] support built-in `INC` and `DEC` procedures. 
 - [ ] support built-in `FLT` and `FLOOR` procedures.
 - [ ] support `CHAR` types. 
 - [ ] support built-in `ORD` and `CHR` procedures.
