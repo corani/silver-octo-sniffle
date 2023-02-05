@@ -43,6 +43,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [X] support built-in `FLT` and `FLOOR` procedures.
 - [X] add designator to CallExpr.
 - [X] no automatic type conversion.
+- [X] support `REPEAT` / `UNTIL` statement.
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
 - [ ] support local procedure calls (i.e. in the same module).
@@ -55,7 +56,6 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [ ] support built-in `LEN` procedure.
 - [ ] support `RECORD` types.
 - [ ] support `PROCEDURE` types.
-- [ ] support `REPEAT` / `UNTIL` statement.
 - [ ] support `FOR` / `BY` / `DO` statement.
 - [ ] support `WHILE` / `DO` / `ELSIF` statement.
 - [ ] support `CASE` / `OF` statement.

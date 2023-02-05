@@ -109,6 +109,17 @@ func (p *astPrinter) VisitIfStmt(n *IfStmt) {
 	p.printf(")")
 }
 
+func (p *astPrinter) VisitRepeatStmt(n *RepeatStmt) {
+	p.printf("(repeat")
+	p.indent++
+
+	n.stmts.Visit(p)
+	n.expr.Visit(p)
+
+	p.indent--
+	p.printf(")")
+}
+
 func (p *astPrinter) VisitExprStmt(n *ExprStmt) {
 	p.printf("(expr2stmt")
 	p.indent++

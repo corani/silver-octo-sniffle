@@ -131,6 +131,21 @@ func (g *generator) VisitIfStmt(n *IfStmt) {
 	g.currentBlock = endBlk
 }
 
+func (g *generator) VisitRepeatStmt(n *RepeatStmt) {
+	startBlk := g.currentFunc.NewBlock("")
+	doneBlk := g.currentFunc.NewBlock("")
+
+	g.currentBlock.NewBr(startBlk)
+	g.currentBlock = startBlk
+
+	n.stmts.Visit(g)
+
+	cond := g.visitAndReturnValue(n.expr)
+
+	g.currentBlock.NewCondBr(cond, doneBlk, startBlk)
+	g.currentBlock = doneBlk
+}
+
 func (g *generator) VisitExprStmt(n *ExprStmt) {
 	// NOTE(daniel): ignore the result.
 	n.expr.Visit(g)
