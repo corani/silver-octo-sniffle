@@ -39,11 +39,13 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] support global constant literals.
 - [x] support global constant expressions.
 - [x] require a `MODULE` instead of allowing naked statements.
+- [X] support built-in `INC` and `DEC` procedures. 
+- [X] support built-in `FLT` and `FLOOR` procedures.
+- [ ] add designator to CallExpr.
+- [ ] no automatic type conversion.
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
 - [ ] support local procedure calls (i.e. in the same module).
-- [X] support built-in `INC` and `DEC` procedures. 
-- [ ] support built-in `FLT` and `FLOOR` procedures.
 - [ ] support `CHAR` types. 
 - [ ] support built-in `ORD` and `CHR` procedures.
 - [ ] support `SET` types.

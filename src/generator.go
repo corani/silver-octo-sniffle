@@ -141,9 +141,13 @@ func (g *generator) VisitCallExpr(n *CallExpr) {
 	case "print":
 		g.callPrint(n.args)
 	case "INC":
-		g.callIncDec(n.args, 1)
+		g.callIncDec(n.args[0], 1)
 	case "DEC":
-		g.callIncDec(n.args, -1)
+		g.callIncDec(n.args[0], -1)
+	case "FLT":
+		g.callFLT(n.args[0])
+	case "FLOOR":
+		g.callFLOOR(n.args[0])
 	default:
 		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q", n.token.Text))
 	}
@@ -305,10 +309,20 @@ func (g *generator) anyToInteger(v value.Value) value.Value {
 	return v
 }
 
-func (g *generator) callIncDec(args []Expr, offset int64) {
-	v := g.visitAndReturnValue(args[0])
+func (g *generator) callIncDec(arg Expr, offset int64) {
+	v := g.visitAndReturnValue(arg)
 	g.currentValue = g.currentBlock.NewAdd(v, constant.NewInt(types.I64, offset))
-	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
+	g.currentBlock.NewStore(g.currentValue, g.vars[arg.Token().Text])
+}
+
+func (g *generator) callFLT(arg Expr) {
+	number := g.visitAndReturnValue(arg)
+	g.currentValue = g.currentBlock.NewSIToFP(number, types.Double)
+}
+
+func (g *generator) callFLOOR(arg Expr) {
+	number := g.visitAndReturnValue(arg)
+	g.currentValue = g.currentBlock.NewFPToSI(number, types.I64)
 }
 
 func (g *generator) callPrint(args []Expr) {
