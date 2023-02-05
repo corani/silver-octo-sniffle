@@ -126,10 +126,24 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 	case "FLT":
 		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeInt64) {
 			e.typ = TypeFloat64
+
+			if v := e.args[0].ConstValue(); v != nil {
+				e.constValue = &Value{
+					typ:  e.typ,
+					real: v.Real(),
+				}
+			}
 		}
 	case "FLOOR":
 		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeFloat64) {
 			e.typ = TypeInt64
+
+			if v := e.args[0].ConstValue(); v != nil {
+				e.constValue = &Value{
+					typ:     e.typ,
+					integer: v.Int(),
+				}
+			}
 		}
 	default:
 		c.errors = append(c.errors, fmt.Errorf("don't know how to call %q",
@@ -176,25 +190,34 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 		v.Visit(c)
 	}
 
+	if len(e.args) != 2 {
+		c.errors = append(c.errors, fmt.Errorf("binary expression with %d arguments", len(e.args)))
+	}
+
 	switch {
+	case e.args[0].Type() != e.args[1].Type():
+		e.typ = TypeVoid
+
+		c.errors = append(c.errors, fmt.Errorf("different types for binary operator %s",
+			e.token.Type))
 	case e.token.Type == TokenSlash:
 		e.typ = TypeFloat64
+
+		if e.args[0].Type() != e.Type() {
+			c.errors = append(c.errors, fmt.Errorf("unexpected type for binary operator %s",
+				e.token.Type))
+		}
 	case e.token.isRelation():
 		e.typ = TypeBoolean
 	case e.token.Type == TokenAmpersand || e.token.Type == TokenOR:
-		if e.args[0].Type() != TypeBoolean || e.args[1].Type() != TypeBoolean {
-			c.errors = append(c.errors, fmt.Errorf("can only %s boolean values", e.token.Type))
-		}
-
 		e.typ = TypeBoolean
-	case e.args[0].Type() != e.args[1].Type():
-		e.typ = TypeFloat64
+
+		if e.args[0].Type() != e.Type() {
+			c.errors = append(c.errors, fmt.Errorf("unexpected type for binary operator %s",
+				e.token.Type))
+		}
 	default:
 		e.typ = e.args[0].Type()
-	}
-
-	if len(e.args) != 2 {
-		c.errors = append(c.errors, fmt.Errorf("binary expression with %d arguments", len(e.args)))
 	}
 
 	lhs := e.args[0].ConstValue()
