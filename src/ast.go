@@ -364,6 +364,7 @@ type CallExpr struct {
 	designator *DesignatorExpr
 	typ        Type
 	args       []Expr
+	constValue *Value
 }
 
 var _ Expr = (*CallExpr)(nil)
@@ -377,7 +378,7 @@ func (n *CallExpr) Type() Type {
 }
 
 func (n *CallExpr) ConstValue() *Value {
-	return nil
+	return n.constValue
 }
 
 func (n *CallExpr) Visit(v Visitor) {

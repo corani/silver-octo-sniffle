@@ -5,17 +5,17 @@ MODULE GlobalConsts;
 
 CONST x = 1;
       y = 2.2;
-      z = x + y;
-      ne = (x # y);
+      z = FLT(x) + y;
+      ne = (FLT(x) # y);
 
 BEGIN
-    IF x = y THEN
+    IF FLT(x) = y THEN
         print("Equal")
     ELSE
         print("Not Equal")
     END;
 
-    IF x + y = z THEN
+    IF FLT(x) + y = z THEN
         print("Equal")
     ELSE
         print("Not Equal")
@@ -44,24 +44,33 @@ test/test_009.md:4:10:	real	"2.2"	false	0	2.200000	(4, 10) -> (4, 13)
 test/test_009.md:4:13:	semicolon	";"	false	0	0.000000	(4, 13) -> (4, 14)
 test/test_009.md:5:6:	ident	"z"	false	0	0.000000	(5, 6) -> (5, 7)
 test/test_009.md:5:8:	eq	"="	false	0	0.000000	(5, 8) -> (5, 9)
-test/test_009.md:5:10:	ident	"x"	false	0	0.000000	(5, 10) -> (5, 11)
-test/test_009.md:5:12:	plus	"+"	false	0	0.000000	(5, 12) -> (5, 13)
-test/test_009.md:5:14:	ident	"y"	false	0	0.000000	(5, 14) -> (5, 15)
-test/test_009.md:5:15:	semicolon	";"	false	0	0.000000	(5, 15) -> (5, 16)
+test/test_009.md:5:10:	ident	"FLT"	false	0	0.000000	(5, 10) -> (5, 13)
+test/test_009.md:5:13:	lparen	"("	false	0	0.000000	(5, 13) -> (5, 14)
+test/test_009.md:5:14:	ident	"x"	false	0	0.000000	(5, 14) -> (5, 15)
+test/test_009.md:5:15:	rparen	")"	false	0	0.000000	(5, 15) -> (5, 16)
+test/test_009.md:5:17:	plus	"+"	false	0	0.000000	(5, 17) -> (5, 18)
+test/test_009.md:5:19:	ident	"y"	false	0	0.000000	(5, 19) -> (5, 20)
+test/test_009.md:5:20:	semicolon	";"	false	0	0.000000	(5, 20) -> (5, 21)
 test/test_009.md:6:6:	ident	"ne"	false	0	0.000000	(6, 6) -> (6, 8)
 test/test_009.md:6:9:	eq	"="	false	0	0.000000	(6, 9) -> (6, 10)
 test/test_009.md:6:11:	lparen	"("	false	0	0.000000	(6, 11) -> (6, 12)
-test/test_009.md:6:12:	ident	"x"	false	0	0.000000	(6, 12) -> (6, 13)
-test/test_009.md:6:14:	ne	"#"	false	0	0.000000	(6, 14) -> (6, 15)
-test/test_009.md:6:16:	ident	"y"	false	0	0.000000	(6, 16) -> (6, 17)
+test/test_009.md:6:12:	ident	"FLT"	false	0	0.000000	(6, 12) -> (6, 15)
+test/test_009.md:6:15:	lparen	"("	false	0	0.000000	(6, 15) -> (6, 16)
+test/test_009.md:6:16:	ident	"x"	false	0	0.000000	(6, 16) -> (6, 17)
 test/test_009.md:6:17:	rparen	")"	false	0	0.000000	(6, 17) -> (6, 18)
-test/test_009.md:6:18:	semicolon	";"	false	0	0.000000	(6, 18) -> (6, 19)
+test/test_009.md:6:19:	ne	"#"	false	0	0.000000	(6, 19) -> (6, 20)
+test/test_009.md:6:21:	ident	"y"	false	0	0.000000	(6, 21) -> (6, 22)
+test/test_009.md:6:22:	rparen	")"	false	0	0.000000	(6, 22) -> (6, 23)
+test/test_009.md:6:23:	semicolon	";"	false	0	0.000000	(6, 23) -> (6, 24)
 test/test_009.md:8:0:	begin	"BEGIN"	false	0	0.000000	(8, 0) -> (8, 5)
 test/test_009.md:9:4:	if	"IF"	false	0	0.000000	(9, 4) -> (9, 6)
-test/test_009.md:9:7:	ident	"x"	false	0	0.000000	(9, 7) -> (9, 8)
-test/test_009.md:9:9:	eq	"="	false	0	0.000000	(9, 9) -> (9, 10)
-test/test_009.md:9:11:	ident	"y"	false	0	0.000000	(9, 11) -> (9, 12)
-test/test_009.md:9:13:	then	"THEN"	false	0	0.000000	(9, 13) -> (9, 17)
+test/test_009.md:9:7:	ident	"FLT"	false	0	0.000000	(9, 7) -> (9, 10)
+test/test_009.md:9:10:	lparen	"("	false	0	0.000000	(9, 10) -> (9, 11)
+test/test_009.md:9:11:	ident	"x"	false	0	0.000000	(9, 11) -> (9, 12)
+test/test_009.md:9:12:	rparen	")"	false	0	0.000000	(9, 12) -> (9, 13)
+test/test_009.md:9:14:	eq	"="	false	0	0.000000	(9, 14) -> (9, 15)
+test/test_009.md:9:16:	ident	"y"	false	0	0.000000	(9, 16) -> (9, 17)
+test/test_009.md:9:18:	then	"THEN"	false	0	0.000000	(9, 18) -> (9, 22)
 test/test_009.md:10:8:	ident	"print"	false	0	0.000000	(10, 8) -> (10, 13)
 test/test_009.md:10:13:	lparen	"("	false	0	0.000000	(10, 13) -> (10, 14)
 test/test_009.md:10:14:	string	"Equal"	false	0	0.000000	(10, 14) -> (10, 21)
@@ -74,12 +83,15 @@ test/test_009.md:12:25:	rparen	")"	false	0	0.000000	(12, 25) -> (12, 26)
 test/test_009.md:13:4:	end	"END"	false	0	0.000000	(13, 4) -> (13, 7)
 test/test_009.md:13:7:	semicolon	";"	false	0	0.000000	(13, 7) -> (13, 8)
 test/test_009.md:15:4:	if	"IF"	false	0	0.000000	(15, 4) -> (15, 6)
-test/test_009.md:15:7:	ident	"x"	false	0	0.000000	(15, 7) -> (15, 8)
-test/test_009.md:15:9:	plus	"+"	false	0	0.000000	(15, 9) -> (15, 10)
-test/test_009.md:15:11:	ident	"y"	false	0	0.000000	(15, 11) -> (15, 12)
-test/test_009.md:15:13:	eq	"="	false	0	0.000000	(15, 13) -> (15, 14)
-test/test_009.md:15:15:	ident	"z"	false	0	0.000000	(15, 15) -> (15, 16)
-test/test_009.md:15:17:	then	"THEN"	false	0	0.000000	(15, 17) -> (15, 21)
+test/test_009.md:15:7:	ident	"FLT"	false	0	0.000000	(15, 7) -> (15, 10)
+test/test_009.md:15:10:	lparen	"("	false	0	0.000000	(15, 10) -> (15, 11)
+test/test_009.md:15:11:	ident	"x"	false	0	0.000000	(15, 11) -> (15, 12)
+test/test_009.md:15:12:	rparen	")"	false	0	0.000000	(15, 12) -> (15, 13)
+test/test_009.md:15:14:	plus	"+"	false	0	0.000000	(15, 14) -> (15, 15)
+test/test_009.md:15:16:	ident	"y"	false	0	0.000000	(15, 16) -> (15, 17)
+test/test_009.md:15:18:	eq	"="	false	0	0.000000	(15, 18) -> (15, 19)
+test/test_009.md:15:20:	ident	"z"	false	0	0.000000	(15, 20) -> (15, 21)
+test/test_009.md:15:22:	then	"THEN"	false	0	0.000000	(15, 22) -> (15, 26)
 test/test_009.md:16:8:	ident	"print"	false	0	0.000000	(16, 8) -> (16, 13)
 test/test_009.md:16:13:	lparen	"("	false	0	0.000000	(16, 13) -> (16, 14)
 test/test_009.md:16:14:	string	"Equal"	false	0	0.000000	(16, 14) -> (16, 21)
@@ -122,13 +134,17 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
     )
     (z [f64]
       (plus [f64]
-        (constant [i64] "x")
+        (call "FLT" [f64]
+          (constant [i64] "x")
+        )
         (constant [f64] "y")
       )
     )
     (ne [boolean]
       (ne [boolean]
-        (constant [i64] "x")
+        (call "FLT" [f64]
+          (constant [i64] "x")
+        )
         (constant [f64] "y")
       )
     )
@@ -136,7 +152,9 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
   (stmts
     (if
       (eq [boolean]
-        (constant [i64] "x")
+        (call "FLT" [f64]
+          (constant [i64] "x")
+        )
         (constant [f64] "y")
       )
       (stmts
@@ -157,7 +175,9 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
     (if
       (eq [boolean]
         (plus [f64]
-          (constant [i64] "x")
+          (call "FLT" [f64]
+            (constant [i64] "x")
+          )
           (constant [f64] "y")
         )
         (constant [f64] "z")
