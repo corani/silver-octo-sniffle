@@ -90,6 +90,7 @@ type Visitor interface {
 	VisitIfStmt(*IfStmt)
 	VisitRepeatStmt(*RepeatStmt)
 	VisitWhileStmt(*WhileStmt)
+	VisitForStmt(*ForStmt)
 	VisitAssignStmt(*AssignStmt)
 	VisitExprStmt(*ExprStmt)
 	VisitCallExpr(*CallExpr)
@@ -222,6 +223,25 @@ func (n *WhileStmt) Token() Token {
 
 func (n *WhileStmt) Visit(v Visitor) {
 	v.VisitWhileStmt(n)
+}
+
+type ForStmt struct {
+	token Token
+	iter  Token
+	from  Expr
+	to    Expr
+	by    Expr
+	stmt  Stmt
+}
+
+var _ Stmt = (*ForStmt)(nil)
+
+func (n *ForStmt) Token() Token {
+	return n.token
+}
+
+func (n *ForStmt) Visit(v Visitor) {
+	v.VisitForStmt(n)
 }
 
 type AssignStmt struct {

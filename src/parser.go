@@ -291,6 +291,8 @@ func (p *Parser) parseStmt() (Stmt, error) {
 		return p.parseRepeatStmt()
 	case TokenWHILE:
 		return p.parseWhileStmt()
+	case TokenFOR:
+		return p.parseForStmt()
 	default:
 		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index].Type)
 	}
@@ -438,6 +440,78 @@ func (p *Parser) parseWhileStmt() (Stmt, error) {
 	return &WhileStmt{
 		token: t,
 		conds: conds,
+	}, nil
+}
+
+func (p *Parser) parseForStmt() (Stmt, error) {
+	t, err := p.require(TokenFOR)
+	if err != nil {
+		return nil, err
+	}
+
+	iter, err := p.require(TokenIdent)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := p.require(TokenAssign); err != nil {
+		return nil, err
+	}
+
+	from, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := p.require(TokenTO); err != nil {
+		return nil, err
+	}
+
+	to, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	var by Expr
+
+	if p.expect(TokenBY) {
+		by, err = p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// NOTE(daniel): if no `BY` is specified, synthesize a `BY 1`.
+		by = &NumberExpr{
+			token: Token{
+				File:  t.File,
+				Range: t.Range,
+				Type:  TokenInteger,
+				Text:  "1",
+				Int:   1,
+			},
+		}
+	}
+
+	if _, err := p.require(TokenDO); err != nil {
+		return nil, err
+	}
+
+	stmt, err := p.parseStmtSequence(TokenEND)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := p.require(TokenEND); err != nil {
+		return nil, err
+	}
+
+	return &ForStmt{
+		token: t,
+		iter:  iter,
+		from:  from,
+		to:    to,
+		by:    by,
+		stmt:  stmt,
 	}, nil
 }
 
