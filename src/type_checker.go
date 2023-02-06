@@ -128,6 +128,44 @@ func (c *typeChecker) VisitWhileStmt(s *WhileStmt) {
 	}
 }
 
+func (c *typeChecker) VisitForStmt(s *ForStmt) {
+	iter, ok := c.vars[s.iter.Text]
+	if !ok {
+		c.errors = append(c.errors, fmt.Errorf("FOR iterator must be a variable"))
+	}
+
+	// TODO(daniel): is this true?
+	if iter.typ != TypeInt64 {
+		c.errors = append(c.errors, fmt.Errorf("FOR iterator must be an integer, got %v",
+			iter.typ))
+	}
+
+	s.from.Visit(c)
+	s.to.Visit(c)
+	s.by.Visit(c)
+
+	if s.from.Type() != iter.typ {
+		c.errors = append(c.errors, fmt.Errorf("FOR iterator FROM must be an integer, got %v",
+			s.from.Type()))
+	}
+
+	if s.to.Type() != iter.typ {
+		c.errors = append(c.errors, fmt.Errorf("FOR iterator TO must be an integer, got %v",
+			s.to.Type()))
+	}
+
+	if s.by.Type() != iter.typ {
+		c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must be an integer, got %v",
+			s.by.Type()))
+	}
+
+	if s.by.ConstValue() == nil {
+		c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must be a constant expression"))
+	}
+
+	s.stmt.Visit(c)
+}
+
 func (c *typeChecker) VisitExprStmt(s *ExprStmt) {
 	s.expr.Visit(c)
 }

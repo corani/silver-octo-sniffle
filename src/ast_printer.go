@@ -139,6 +139,19 @@ func (p *astPrinter) VisitWhileStmt(n *WhileStmt) {
 	p.printf(")")
 }
 
+func (p *astPrinter) VisitForStmt(n *ForStmt) {
+	p.printf("(for %v", n.iter.Text)
+	p.indent++
+
+	n.from.Visit(p)
+	n.to.Visit(p)
+	n.by.Visit(p)
+	n.stmt.Visit(p)
+
+	p.indent--
+	p.printf(")")
+}
+
 func (p *astPrinter) VisitExprStmt(n *ExprStmt) {
 	p.printf("(expr2stmt")
 	p.indent++

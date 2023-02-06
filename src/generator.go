@@ -172,6 +172,37 @@ func (g *generator) VisitWhileStmt(n *WhileStmt) {
 	g.currentBlock = doneBlk
 }
 
+func (g *generator) VisitForStmt(n *ForStmt) {
+	bodyBlk := g.currentFunc.NewBlock("")
+	doneBlk := g.currentFunc.NewBlock("")
+
+	fromv := g.visitAndReturnValue(n.from)
+	incrv := g.visitAndReturnValue(n.by)
+
+	g.currentBlock.NewStore(fromv, g.vars[n.iter.Text])
+	g.currentBlock.NewBr(bodyBlk)
+
+	g.currentBlock = bodyBlk
+	n.stmt.Visit(g)
+
+	oldv := g.currentBlock.NewLoad(g.vars[n.iter.Text].ContentType, g.vars[n.iter.Text])
+	newv := g.currentBlock.NewAdd(oldv, incrv)
+	g.currentBlock.NewStore(newv, g.vars[n.iter.Text])
+	tov := g.visitAndReturnValue(n.to)
+
+	var cond value.Value
+
+	if n.by.ConstValue().Int() > 0 {
+		cond = g.currentBlock.NewICmp(enum.IPredSLE, newv, tov)
+	} else {
+		cond = g.currentBlock.NewICmp(enum.IPredSGE, newv, tov)
+	}
+
+	g.currentBlock.NewCondBr(cond, bodyBlk, doneBlk)
+
+	g.currentBlock = doneBlk
+}
+
 func (g *generator) VisitExprStmt(n *ExprStmt) {
 	// NOTE(daniel): ignore the result.
 	n.expr.Visit(g)
