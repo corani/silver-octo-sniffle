@@ -622,7 +622,7 @@ func (p *Parser) parseTerm() (Expr, error) {
 }
 
 func (p *Parser) parseFactor() (Expr, error) {
-	// factor := designator [actualParameters] | number | string | boolean | '(' expr ')' | '~' factor
+	// factor := set | designator [actualParameters] | number | string | boolean | '(' expr ')' | '~' factor
 	switch p.currentType() {
 	case TokenIdent:
 		d, err := p.parseDesignator()
@@ -658,6 +658,8 @@ func (p *Parser) parseFactor() (Expr, error) {
 		}
 
 		return expr, nil
+	case TokenLBrace:
+		return p.parseSetLiteral()
 	default:
 		return nil, fmt.Errorf("unexpected token in factor: %q", p.currentType())
 	}
@@ -733,6 +735,54 @@ func (p *Parser) parseBooleanLiteral() (Expr, error) {
 	}
 
 	return &BooleanExpr{token: t}, nil
+}
+
+func (p *Parser) parseSetLiteral() (Expr, error) {
+	t, err := p.require(TokenLBrace)
+	if err != nil {
+		return nil, err
+	}
+
+	var bits []byte
+
+	for p.currentType() != TokenRBrace {
+		i1, err := p.require(TokenInteger)
+		if err != nil {
+			return nil, err
+		}
+
+		if !p.expect(TokenDotDot) {
+			bits = append(bits, byte(i1.Int))
+
+			if p.expect(TokenComma) {
+				continue
+			}
+
+			break
+		}
+
+		i2, err := p.require(TokenInteger)
+		if err != nil {
+			return nil, err
+		}
+
+		for i := i1.Int; i <= i2.Int; i++ {
+			bits = append(bits, byte(i))
+		}
+
+		if p.expect(TokenComma) {
+			continue
+		}
+	}
+
+	if _, err := p.require(TokenRBrace); err != nil {
+		return nil, err
+	}
+
+	return &SetExpr{
+		token: t,
+		bits:  bits,
+	}, nil
 }
 
 func (p *Parser) parseNotExpr() (Expr, error) {

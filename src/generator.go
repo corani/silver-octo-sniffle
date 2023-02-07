@@ -78,7 +78,7 @@ func (g *generator) VisitModule(n *Module) {
 
 	for _, decl := range n.vars {
 		switch decl.typ {
-		case TypeInt64:
+		case TypeInt64, TypeSet:
 			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I64, 0))
 		case TypeFloat64:
 			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewFloat(types.Double, 0))
@@ -228,6 +228,10 @@ func (g *generator) VisitCallExpr(n *CallExpr) {
 		g.callORD(n.args[0])
 	case "CHR":
 		g.callCHR(n.args[0])
+	case "INCL":
+		g.callINCL(n.args[0], n.args[1])
+	case "EXCL":
+		g.callEXCL(n.args[0], n.args[1])
 	default:
 		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q",
 			n.Token().Text))
@@ -243,34 +247,56 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 			n.token.Type))
 	}
 
+	// TODO(daniel): check if set operations are correct!
 	switch n.token.Type {
 	case TokenMinus:
 		if left.Type().Equal(types.I64) {
-			// INTEGER subtraction
-			g.currentValue = g.currentBlock.NewSub(left, right)
+			if n.args[0].Type() == TypeSet {
+				// SET difference
+				g.currentValue = g.currentBlock.NewXor(right, constant.NewInt(types.I64, -1))
+				g.currentValue = g.currentBlock.NewAnd(left, right)
+			} else {
+				// INTEGER subtraction
+				g.currentValue = g.currentBlock.NewSub(left, right)
+			}
 		} else {
 			// REAL subtraction
 			g.currentValue = g.currentBlock.NewFSub(left, right)
 		}
 	case TokenPlus:
 		if left.Type().Equal(types.I64) {
-			// INTEGER addition
-			g.currentValue = g.currentBlock.NewAdd(left, right)
+			if n.args[0].Type() == TypeSet {
+				// SET union
+				g.currentValue = g.currentBlock.NewOr(left, right)
+			} else {
+				// INTEGER addition
+				g.currentValue = g.currentBlock.NewAdd(left, right)
+			}
 		} else {
 			// REAL addition
 			g.currentValue = g.currentBlock.NewFAdd(left, right)
 		}
 	case TokenAsterisk:
 		if left.Type().Equal(types.I64) {
-			// INTEGER multiplication
-			g.currentValue = g.currentBlock.NewMul(left, right)
+			if n.args[0].Type() == TypeSet {
+				// SET intersection
+				g.currentValue = g.currentBlock.NewAnd(left, right)
+			} else {
+				// INTEGER multiplication
+				g.currentValue = g.currentBlock.NewMul(left, right)
+			}
 		} else {
 			// REAL multiplication
 			g.currentValue = g.currentBlock.NewFMul(left, right)
 		}
 	case TokenSlash:
-		// REAL division
-		g.currentValue = g.currentBlock.NewFDiv(left, right)
+		if n.args[0].Type() == TypeSet {
+			// SET symmetric difference
+			g.currentValue = g.currentBlock.NewXor(left, right)
+		} else {
+			// REAL division
+			g.currentValue = g.currentBlock.NewFDiv(left, right)
+		}
 	case TokenDIV:
 		// INTEGER division
 		g.currentValue = g.currentBlock.NewSDiv(left, right)
@@ -368,6 +394,10 @@ func (g *generator) VisitBooleanExpr(n *BooleanExpr) {
 	}
 }
 
+func (g *generator) VisitSetExpr(n *SetExpr) {
+	g.currentValue = constant.NewInt(types.I64, int64(n.constValue.Int()))
+}
+
 func (g *generator) VisitNotExpr(n *NotExpr) {
 	val := g.visitAndReturnValue(n.expr)
 
@@ -415,6 +445,23 @@ func (g *generator) callCHR(arg Expr) {
 	g.currentValue = g.currentBlock.NewTrunc(v, types.I8)
 }
 
+func (g *generator) callINCL(set Expr, val Expr) {
+	v := g.visitAndReturnValue(set)
+	b := g.visitAndReturnValue(val)
+	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
+	g.currentValue = g.currentBlock.NewOr(v, g.currentValue)
+	g.currentBlock.NewStore(g.currentValue, g.vars[set.Token().Text])
+}
+
+func (g *generator) callEXCL(set Expr, val Expr) {
+	v := g.visitAndReturnValue(set)
+	b := g.visitAndReturnValue(val)
+	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
+	g.currentValue = g.currentBlock.NewXor(g.currentValue, constant.NewInt(types.I64, -1))
+	g.currentValue = g.currentBlock.NewAnd(v, g.currentValue)
+	g.currentBlock.NewStore(g.currentValue, g.vars[set.Token().Text])
+}
+
 func (g *generator) callPrint(args []Expr) {
 	// TODO(daniel): make print a (polymorphic?) function in the "stdlib" and make an actual
 	// function call here.
@@ -431,6 +478,8 @@ func (g *generator) callPrint(args []Expr) {
 			g.printBoolean(arg)
 		case TypeChar:
 			g.printChar(arg)
+		case TypeSet:
+			g.printSet(arg)
 		default:
 			g.errors = append(g.errors, fmt.Errorf("don't know how to print type: %s", arg.Type()))
 		}
@@ -493,6 +542,11 @@ func (g *generator) printChar(arg Expr) {
 	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
 
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, v)
+}
+
+func (g *generator) printSet(arg Expr) {
+	// TODO(daniel): can we get a better print for sets?
+	g.printInteger(arg)
 }
 
 func (g *generator) generateStdlib() {

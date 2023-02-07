@@ -11,6 +11,7 @@ const (
 	TypeString
 	TypeBoolean
 	TypeChar
+	TypeSet
 )
 
 func (t Type) String() string {
@@ -27,6 +28,8 @@ func (t Type) String() string {
 		return "boolean"
 	case TypeChar:
 		return "char"
+	case TypeSet:
+		return "set"
 	default:
 		return fmt.Sprintf("undefined=%d", int(t))
 	}
@@ -47,7 +50,7 @@ func (v Value) Type() Type {
 
 func (v Value) Int() int {
 	switch v.typ {
-	case TypeInt64:
+	case TypeInt64, TypeSet:
 		return v.integer
 	case TypeFloat64:
 		return int(v.real)

@@ -39,6 +39,7 @@ type Visitor interface {
 	VisitStringExpr(*StringExpr)
 	VisitCharExpr(*CharExpr)
 	VisitBooleanExpr(*BooleanExpr)
+	VisitSetExpr(*SetExpr)
 	VisitNotExpr(*NotExpr)
 }
 
@@ -329,6 +330,28 @@ func (n *BooleanExpr) ConstValue() *Value {
 
 func (n *BooleanExpr) Visit(v Visitor) {
 	v.VisitBooleanExpr(n)
+}
+
+type SetExpr struct {
+	token      Token
+	bits       []byte
+	constValue *Value
+}
+
+func (n *SetExpr) Token() Token {
+	return n.token
+}
+
+func (n *SetExpr) Type() Type {
+	return TypeSet
+}
+
+func (n *SetExpr) ConstValue() *Value {
+	return n.constValue
+}
+
+func (n *SetExpr) Visit(v Visitor) {
+	v.VisitSetExpr(n)
 }
 
 type NotExpr struct {

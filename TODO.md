@@ -50,11 +50,12 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [X] support `CHAR` types. 
 - [X] support built-in `ORD` and `CHR` procedures.
 - [x] support relational operators for `CHAR` types.
+- [X] support `SET` types.
+- [X] support built-in `INCL` and `EXCL` procedures. 
+- [ ] verify `SET` operations `+` / `-` / `*` / `/`.
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
 - [ ] support local procedure calls (i.e. in the same module).
-- [ ] support `SET` types.
-- [ ] support built-in `INCL` and `EXCL` procedures. 
 - [ ] support `POINTER` types.
 - [ ] support `ARRAY` types.
 - [ ] support built-in `LEN` procedure.
