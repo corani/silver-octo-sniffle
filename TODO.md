@@ -46,6 +46,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [X] support `REPEAT` / `UNTIL` statement.
 - [X] support `WHILE` / `DO` / `ELSIF` statement.
 - [X] support `FOR` / `BY` / `DO` statement.
+- [x] support built-in `ORD` procedure for booleans. 
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
 - [ ] support local procedure calls (i.e. in the same module).

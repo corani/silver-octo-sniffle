@@ -161,6 +161,20 @@ func (c *typeChecker) VisitForStmt(s *ForStmt) {
 
 	if s.by.ConstValue() == nil {
 		c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must be a constant expression"))
+	} else if s.by.ConstValue().Int() == 0 {
+		c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must not be zero"))
+	}
+
+	if s.from.ConstValue() != nil && s.to.ConstValue() != nil && s.by.ConstValue() != nil {
+		from := s.from.ConstValue().Int()
+		to := s.to.ConstValue().Int()
+		by := s.by.ConstValue().Int()
+
+		if from > to && by > 0 {
+			c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must be negative if FROM > BY"))
+		} else if from < to && by < 0 {
+			c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must be positive if FROM < BY"))
+		}
 	}
 
 	s.stmt.Visit(c)
@@ -196,6 +210,17 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 		}
 	case "FLOOR":
 		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeFloat64) {
+			e.typ = TypeInt64
+
+			if v := e.args[0].ConstValue(); v != nil {
+				e.constValue = &Value{
+					typ:     e.typ,
+					integer: v.Int(),
+				}
+			}
+		}
+	case "ORD":
+		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeBoolean) {
 			e.typ = TypeInt64
 
 			if v := e.args[0].ConstValue(); v != nil {

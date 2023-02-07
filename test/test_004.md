@@ -7,7 +7,9 @@ BEGIN
     print(~TRUE);
     print(~FALSE);
     print(TRUE & FALSE);
-    print(TRUE OR FALSE)
+    print(TRUE OR FALSE);
+    print(ORD(TRUE));
+    print(ORD(FALSE))
 END BooleanOperators.
 ```
 ## Tokens
@@ -41,10 +43,26 @@ test/test_004.md:7:10:	boolean	"TRUE"	true	0	0.000000	(7, 10) -> (7, 14)
 test/test_004.md:7:15:	or	"OR"	false	0	0.000000	(7, 15) -> (7, 17)
 test/test_004.md:7:18:	boolean	"FALSE"	false	0	0.000000	(7, 18) -> (7, 23)
 test/test_004.md:7:23:	rparen	")"	false	0	0.000000	(7, 23) -> (7, 24)
-test/test_004.md:8:0:	end	"END"	false	0	0.000000	(8, 0) -> (8, 3)
-test/test_004.md:8:4:	ident	"BooleanOperators"	false	0	0.000000	(8, 4) -> (8, 20)
-test/test_004.md:8:20:	dot	"."	false	0	0.000000	(8, 20) -> (8, 21)
-test/test_004.md:9:0:	eof	""	false	0	0.000000	(9, 0) -> (9, 0)
+test/test_004.md:7:24:	semicolon	";"	false	0	0.000000	(7, 24) -> (7, 25)
+test/test_004.md:8:4:	ident	"print"	false	0	0.000000	(8, 4) -> (8, 9)
+test/test_004.md:8:9:	lparen	"("	false	0	0.000000	(8, 9) -> (8, 10)
+test/test_004.md:8:10:	ident	"ORD"	false	0	0.000000	(8, 10) -> (8, 13)
+test/test_004.md:8:13:	lparen	"("	false	0	0.000000	(8, 13) -> (8, 14)
+test/test_004.md:8:14:	boolean	"TRUE"	true	0	0.000000	(8, 14) -> (8, 18)
+test/test_004.md:8:18:	rparen	")"	false	0	0.000000	(8, 18) -> (8, 19)
+test/test_004.md:8:19:	rparen	")"	false	0	0.000000	(8, 19) -> (8, 20)
+test/test_004.md:8:20:	semicolon	";"	false	0	0.000000	(8, 20) -> (8, 21)
+test/test_004.md:9:4:	ident	"print"	false	0	0.000000	(9, 4) -> (9, 9)
+test/test_004.md:9:9:	lparen	"("	false	0	0.000000	(9, 9) -> (9, 10)
+test/test_004.md:9:10:	ident	"ORD"	false	0	0.000000	(9, 10) -> (9, 13)
+test/test_004.md:9:13:	lparen	"("	false	0	0.000000	(9, 13) -> (9, 14)
+test/test_004.md:9:14:	boolean	"FALSE"	false	0	0.000000	(9, 14) -> (9, 19)
+test/test_004.md:9:19:	rparen	")"	false	0	0.000000	(9, 19) -> (9, 20)
+test/test_004.md:9:20:	rparen	")"	false	0	0.000000	(9, 20) -> (9, 21)
+test/test_004.md:10:0:	end	"END"	false	0	0.000000	(10, 0) -> (10, 3)
+test/test_004.md:10:4:	ident	"BooleanOperators"	false	0	0.000000	(10, 4) -> (10, 20)
+test/test_004.md:10:20:	dot	"."	false	0	0.000000	(10, 20) -> (10, 21)
+test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
 ```
 ## AST
 ```scheme
@@ -80,6 +98,20 @@ test/test_004.md:9:0:	eof	""	false	0	0.000000	(9, 0) -> (9, 0)
         )
       )
     )
+    (expr2stmt
+      (call "print" [void]
+        (call "ORD" [i64]
+          #true
+        )
+      )
+    )
+    (expr2stmt
+      (call "print" [void]
+        (call "ORD" [i64]
+          #false
+        )
+      )
+    )
   )
 )
 ```
@@ -87,6 +119,7 @@ test/test_004.md:9:0:	eof	""	false	0	0.000000	(9, 0) -> (9, 0)
 ```llvm
 @0 = global [5 x i8] c"TRUE\00"
 @1 = global [6 x i8] c"FALSE\00"
+@2 = global [4 x i8] c"%d\0A\00"
 
 declare i64 @puts(i8* %str)
 
@@ -154,6 +187,10 @@ entry:
 29:
 	%30 = phi i8* [ %26, %25 ], [ %28, %27 ]
 	%31 = call i64 @puts(i8* %30)
+	%32 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
+	%33 = call i64 (i8*, ...) @printf(i8* %32, i1 true)
+	%34 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
+	%35 = call i64 (i8*, ...) @printf(i8* %34, i1 false)
 	ret i64 0
 }
 
@@ -164,4 +201,6 @@ FALSE
 TRUE
 FALSE
 TRUE
+1
+0
 ```

@@ -220,6 +220,8 @@ func (g *generator) VisitCallExpr(n *CallExpr) {
 		g.callFLT(n.args[0])
 	case "FLOOR":
 		g.callFLOOR(n.args[0])
+	case "ORD":
+		g.callORD(n.args[0])
 	default:
 		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q",
 			n.Token().Text))
@@ -383,6 +385,15 @@ func (g *generator) callFLT(arg Expr) {
 func (g *generator) callFLOOR(arg Expr) {
 	number := g.visitAndReturnValue(arg)
 	g.currentValue = g.currentBlock.NewFPToSI(number, types.I64)
+}
+
+func (g *generator) callORD(arg Expr) {
+	if arg.Type() == TypeBoolean {
+		// NOTE(daniel): a Boolean is type I1, which is already an integer.
+		arg.Visit(g)
+	} else {
+		g.errors = append(g.errors, fmt.Errorf("don't know how to ORD type: %s", arg.Type()))
+	}
 }
 
 func (g *generator) callPrint(args []Expr) {
