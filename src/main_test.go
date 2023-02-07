@@ -107,6 +107,7 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 	}
 
 	if err := execute(w, absName); err != nil {
+		t.Log(result.ir)
 		t.Fatal(err)
 	}
 

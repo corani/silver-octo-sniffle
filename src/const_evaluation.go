@@ -19,10 +19,21 @@ func evaluateNumberExpr(lit Token) (*Value, error) {
 	}
 }
 
+func evaluateCharExpr(lit Token) *Value {
+	if len(lit.Text) == 0 {
+		return nil
+	}
+
+	return &Value{
+		typ:  TypeChar,
+		char: byte(lit.Text[0]),
+	}
+}
+
 func evaluateStringExpr(lit Token) *Value {
 	return &Value{
-		typ:    TypeString,
-		String: lit.Text,
+		typ: TypeString,
+		str: lit.Text,
 	}
 }
 
@@ -39,8 +50,8 @@ func evaluateBooleanExpr(lit Token) (*Value, error) {
 	}
 
 	return &Value{
-		typ:  TypeBoolean,
-		Bool: v,
+		typ:     TypeBoolean,
+		boolean: v,
 	}, nil
 }
 
@@ -51,8 +62,8 @@ func evaluateNotExpr(expr Expr) (*Value, error) {
 
 	if c := expr.ConstValue(); c != nil {
 		return &Value{
-			typ:  TypeBoolean,
-			Bool: !c.Bool,
+			typ:     TypeBoolean,
+			boolean: !c.Bool(),
 		}, nil
 	}
 
@@ -140,8 +151,8 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 		switch target {
 		case TypeBoolean:
 			return &Value{
-				typ:  target,
-				Bool: lhs.Bool || rhs.Bool,
+				typ:     target,
+				boolean: lhs.Bool() || rhs.Bool(),
 			}
 		default:
 			return nil
@@ -150,8 +161,8 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 		switch target {
 		case TypeBoolean:
 			return &Value{
-				typ:  target,
-				Bool: lhs.Bool && rhs.Bool,
+				typ:     target,
+				boolean: lhs.Bool() && rhs.Bool(),
 			}
 		default:
 			return nil
@@ -161,13 +172,13 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 		case TypeBoolean:
 			if lhs.Type() == TypeFloat64 || rhs.Type() == TypeFloat64 {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Real() == rhs.Real(),
+					typ:     target,
+					boolean: lhs.Real() == rhs.Real(),
 				}
 			} else {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Int() == rhs.Int(),
+					typ:     target,
+					boolean: lhs.Int() == rhs.Int(),
 				}
 			}
 		default:
@@ -178,13 +189,13 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 		case TypeBoolean:
 			if lhs.Type() == TypeFloat64 || rhs.Type() == TypeFloat64 {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Real() != rhs.Real(),
+					typ:     target,
+					boolean: lhs.Real() != rhs.Real(),
 				}
 			} else {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Int() != rhs.Int(),
+					typ:     target,
+					boolean: lhs.Int() != rhs.Int(),
 				}
 			}
 		default:
@@ -195,13 +206,13 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 		case TypeBoolean:
 			if lhs.Type() == TypeFloat64 || rhs.Type() == TypeFloat64 {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Real() < rhs.Real(),
+					typ:     target,
+					boolean: lhs.Real() < rhs.Real(),
 				}
 			} else {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Int() < rhs.Int(),
+					typ:     target,
+					boolean: lhs.Int() < rhs.Int(),
 				}
 			}
 		default:
@@ -212,13 +223,13 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 		case TypeBoolean:
 			if lhs.Type() == TypeFloat64 || rhs.Type() == TypeFloat64 {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Real() <= rhs.Real(),
+					typ:     target,
+					boolean: lhs.Real() <= rhs.Real(),
 				}
 			} else {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Int() <= rhs.Int(),
+					typ:     target,
+					boolean: lhs.Int() <= rhs.Int(),
 				}
 			}
 		default:
@@ -229,13 +240,13 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 		case TypeBoolean:
 			if lhs.Type() == TypeFloat64 || rhs.Type() == TypeFloat64 {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Real() >= rhs.Real(),
+					typ:     target,
+					boolean: lhs.Real() >= rhs.Real(),
 				}
 			} else {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Int() >= rhs.Int(),
+					typ:     target,
+					boolean: lhs.Int() >= rhs.Int(),
 				}
 			}
 		default:
@@ -246,13 +257,13 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 		case TypeBoolean:
 			if lhs.Type() == TypeFloat64 || rhs.Type() == TypeFloat64 {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Real() > rhs.Real(),
+					typ:     target,
+					boolean: lhs.Real() > rhs.Real(),
 				}
 			} else {
 				return &Value{
-					typ:  target,
-					Bool: lhs.Int() > rhs.Int(),
+					typ:     target,
+					boolean: lhs.Int() > rhs.Int(),
 				}
 			}
 		default:

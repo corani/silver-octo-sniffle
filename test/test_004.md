@@ -187,10 +187,12 @@ entry:
 29:
 	%30 = phi i8* [ %26, %25 ], [ %28, %27 ]
 	%31 = call i64 @puts(i8* %30)
-	%32 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
-	%33 = call i64 (i8*, ...) @printf(i8* %32, i1 true)
-	%34 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
-	%35 = call i64 (i8*, ...) @printf(i8* %34, i1 false)
+	%32 = zext i1 true to i64
+	%33 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
+	%34 = call i64 (i8*, ...) @printf(i8* %33, i64 %32)
+	%35 = zext i1 false to i64
+	%36 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
+	%37 = call i64 (i8*, ...) @printf(i8* %36, i64 %35)
 	ret i64 0
 }
 

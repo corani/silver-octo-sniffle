@@ -64,6 +64,8 @@ func (c *typeChecker) VisitModule(m *Module) {
 			decl.typ = TypeFloat64
 		case "BOOLEAN":
 			decl.typ = TypeBoolean
+		case "CHAR":
+			decl.typ = TypeChar
 		default:
 			// TODO(daniel): support "CHAR", "SET", "ARRAY", "RECORD", "POINTER", ...
 			c.errors = append(c.errors, fmt.Errorf("unknown type %q for variable %q",
@@ -220,13 +222,40 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 			}
 		}
 	case "ORD":
-		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeBoolean) {
+		if !c.isLen(e.args, 1) {
+			break
+		}
+
+		switch e.args[0].Type() {
+		case TypeBoolean:
 			e.typ = TypeInt64
 
 			if v := e.args[0].ConstValue(); v != nil {
 				e.constValue = &Value{
 					typ:     e.typ,
 					integer: v.Int(),
+				}
+			}
+		case TypeChar:
+			e.typ = TypeInt64
+
+			if v := e.args[0].ConstValue(); v != nil {
+				e.constValue = &Value{
+					typ:     e.typ,
+					integer: v.Int(),
+				}
+			}
+		default:
+			c.errors = append(c.errors, fmt.Errorf("expected type BOOLEAN or CHAR, got %s", e.Type()))
+		}
+	case "CHR":
+		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeInt64) {
+			e.typ = TypeChar
+
+			if v := e.args[0].ConstValue(); v != nil {
+				e.constValue = &Value{
+					typ:  e.typ,
+					char: v.Char(),
 				}
 			}
 		}
@@ -337,6 +366,10 @@ func (c *typeChecker) VisitNumberExpr(e *NumberExpr) {
 
 func (c *typeChecker) VisitStringExpr(e *StringExpr) {
 	e.constValue = evaluateStringExpr(e.token)
+}
+
+func (c *typeChecker) VisitCharExpr(e *CharExpr) {
+	e.constValue = evaluateCharExpr(e.token)
 }
 
 func (c *typeChecker) VisitBooleanExpr(e *BooleanExpr) {
