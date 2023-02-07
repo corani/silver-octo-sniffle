@@ -17,6 +17,8 @@ BEGIN
 
     INC(y);
     print(CHR(y));
+
+    print(x <= "B");
 END Chars.
 ```
 ## Tokens
@@ -73,10 +75,17 @@ test/test_016.md:16:14:	ident	"y"	false	0	0.000000	(16, 14) -> (16, 15)
 test/test_016.md:16:15:	rparen	")"	false	0	0.000000	(16, 15) -> (16, 16)
 test/test_016.md:16:16:	rparen	")"	false	0	0.000000	(16, 16) -> (16, 17)
 test/test_016.md:16:17:	semicolon	";"	false	0	0.000000	(16, 17) -> (16, 18)
-test/test_016.md:17:0:	end	"END"	false	0	0.000000	(17, 0) -> (17, 3)
-test/test_016.md:17:4:	ident	"Chars"	false	0	0.000000	(17, 4) -> (17, 9)
-test/test_016.md:17:9:	dot	"."	false	0	0.000000	(17, 9) -> (17, 10)
-test/test_016.md:18:0:	eof	""	false	0	0.000000	(18, 0) -> (18, 0)
+test/test_016.md:18:4:	ident	"print"	false	0	0.000000	(18, 4) -> (18, 9)
+test/test_016.md:18:9:	lparen	"("	false	0	0.000000	(18, 9) -> (18, 10)
+test/test_016.md:18:10:	ident	"x"	false	0	0.000000	(18, 10) -> (18, 11)
+test/test_016.md:18:12:	le	"<="	false	0	0.000000	(18, 12) -> (18, 14)
+test/test_016.md:18:15:	string	"B"	false	0	0.000000	(18, 15) -> (18, 18)
+test/test_016.md:18:18:	rparen	")"	false	0	0.000000	(18, 18) -> (18, 19)
+test/test_016.md:18:19:	semicolon	";"	false	0	0.000000	(18, 19) -> (18, 20)
+test/test_016.md:19:0:	end	"END"	false	0	0.000000	(19, 0) -> (19, 3)
+test/test_016.md:19:4:	ident	"Chars"	false	0	0.000000	(19, 4) -> (19, 9)
+test/test_016.md:19:9:	dot	"."	false	0	0.000000	(19, 9) -> (19, 10)
+test/test_016.md:20:0:	eof	""	false	0	0.000000	(20, 0) -> (20, 0)
 ```
 ## AST
 ```scheme
@@ -121,6 +130,14 @@ test/test_016.md:18:0:	eof	""	false	0	0.000000	(18, 0) -> (18, 0)
         )
       )
     )
+    (expr2stmt
+      (call "print" [void]
+        (le [boolean]
+          (variable [char] "x")
+          (char "B")
+        )
+      )
+    )
   )
 )
 ```
@@ -130,6 +147,8 @@ test/test_016.md:18:0:	eof	""	false	0	0.000000	(18, 0) -> (18, 0)
 @1 = global i64 0
 @2 = global [4 x i8] c"%c\0A\00"
 @3 = global [4 x i8] c"%d\0A\00"
+@4 = global [5 x i8] c"TRUE\00"
+@5 = global [6 x i8] c"FALSE\00"
 
 declare i64 @puts(i8* %str)
 
@@ -160,6 +179,21 @@ entry:
 	%13 = trunc i64 %12 to i8
 	%14 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
 	%15 = call i64 (i8*, ...) @printf(i8* %14, i8 %13)
+	%16 = load i8, i8* @0
+	%17 = icmp sle i8 %16, 66
+	br i1 %17, label %18, label %20
+
+18:
+	%19 = getelementptr [5 x i8], [5 x i8]* @4, i64 0, i64 0
+	br label %22
+
+20:
+	%21 = getelementptr [6 x i8], [6 x i8]* @5, i64 0, i64 0
+	br label %22
+
+22:
+	%23 = phi i8* [ %19, %18 ], [ %21, %20 ]
+	%24 = call i64 @puts(i8* %23)
 	ret i64 0
 }
 
@@ -170,4 +204,5 @@ A
 B
 66
 C
+TRUE
 ```

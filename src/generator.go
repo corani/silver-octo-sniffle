@@ -284,39 +284,39 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 		// logical OR
 		g.currentValue = g.currentBlock.NewOr(left, right)
 	case TokenEQ:
-		if left.Type().Equal(types.I64) {
+		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, left, right)
 		} else {
 			// TODO(daniel): do we need "ordered" or "unordered" float compares?
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUEQ, left, right)
 		}
 	case TokenNE:
-		if left.Type().Equal(types.I64) {
+		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredNE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUNE, left, right)
 		}
 	case TokenLT:
-		if left.Type().Equal(types.I64) {
+		if _, ok := left.Type().(*types.IntType); ok {
 			// TODO(daniel): "signed" or "unsigned" integer compares?
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLT, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULT, left, right)
 		}
 	case TokenLE:
-		if left.Type().Equal(types.I64) {
+		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULE, left, right)
 		}
 	case TokenGE:
-		if left.Type().Equal(types.I64) {
+		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGE, left, right)
 		}
 	case TokenGT:
-		if left.Type().Equal(types.I64) {
+		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGT, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGT, left, right)
