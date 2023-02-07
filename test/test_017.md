@@ -24,6 +24,10 @@ BEGIN
     EXCL(z, 4);
 
     print(z);
+
+    IF 30 IN z THEN
+        print(30)
+    END
 END Sets.
 ```
 ## Tokens
@@ -116,10 +120,20 @@ test/test_017.md:23:9:	lparen	"("	false	0	0.000000	(23, 9) -> (23, 10)
 test/test_017.md:23:10:	ident	"z"	false	0	0.000000	(23, 10) -> (23, 11)
 test/test_017.md:23:11:	rparen	")"	false	0	0.000000	(23, 11) -> (23, 12)
 test/test_017.md:23:12:	semicolon	";"	false	0	0.000000	(23, 12) -> (23, 13)
-test/test_017.md:24:0:	end	"END"	false	0	0.000000	(24, 0) -> (24, 3)
-test/test_017.md:24:4:	ident	"Sets"	false	0	0.000000	(24, 4) -> (24, 8)
-test/test_017.md:24:8:	dot	"."	false	0	0.000000	(24, 8) -> (24, 9)
-test/test_017.md:25:0:	eof	""	false	0	0.000000	(25, 0) -> (25, 0)
+test/test_017.md:25:4:	if	"IF"	false	0	0.000000	(25, 4) -> (25, 6)
+test/test_017.md:25:7:	integer	"30"	false	30	0.000000	(25, 7) -> (25, 9)
+test/test_017.md:25:10:	in	"IN"	false	0	0.000000	(25, 10) -> (25, 12)
+test/test_017.md:25:13:	ident	"z"	false	0	0.000000	(25, 13) -> (25, 14)
+test/test_017.md:25:15:	then	"THEN"	false	0	0.000000	(25, 15) -> (25, 19)
+test/test_017.md:26:8:	ident	"print"	false	0	0.000000	(26, 8) -> (26, 13)
+test/test_017.md:26:13:	lparen	"("	false	0	0.000000	(26, 13) -> (26, 14)
+test/test_017.md:26:14:	integer	"30"	false	30	0.000000	(26, 14) -> (26, 16)
+test/test_017.md:26:16:	rparen	")"	false	0	0.000000	(26, 16) -> (26, 17)
+test/test_017.md:27:4:	end	"END"	false	0	0.000000	(27, 4) -> (27, 7)
+test/test_017.md:28:0:	end	"END"	false	0	0.000000	(28, 0) -> (28, 3)
+test/test_017.md:28:4:	ident	"Sets"	false	0	0.000000	(28, 4) -> (28, 8)
+test/test_017.md:28:8:	dot	"."	false	0	0.000000	(28, 8) -> (28, 9)
+test/test_017.md:29:0:	eof	""	false	0	0.000000	(29, 0) -> (29, 0)
 ```
 ## AST
 ```scheme
@@ -184,6 +198,21 @@ test/test_017.md:25:0:	eof	""	false	0	0.000000	(25, 0) -> (25, 0)
         (variable [set] "z")
       )
     )
+    (if
+      (in [boolean]
+        (number [i64] 30)
+        (variable [set] "z")
+      )
+      (stmts
+        (expr2stmt
+          (call "print" [void]
+            (number [i64] 30)
+          )
+        )
+      )
+      (stmts
+      )
+    )
   )
 )
 ```
@@ -239,6 +268,21 @@ entry:
 	%25 = load i64, i64* @2
 	%26 = getelementptr [4 x i8], [4 x i8]* @3, i64 0, i64 0
 	%27 = call i64 (i8*, ...) @printf(i8* %26, i64 %25)
+	%28 = load i64, i64* @2
+	%29 = shl i64 1, 30
+	%30 = and i64 %28, %29
+	%31 = icmp ne i64 %30, 0
+	br i1 %31, label %32, label %35
+
+32:
+	%33 = getelementptr [4 x i8], [4 x i8]* @3, i64 0, i64 0
+	%34 = call i64 (i8*, ...) @printf(i8* %33, i64 30)
+	br label %36
+
+35:
+	br label %36
+
+36:
 	ret i64 0
 }
 
@@ -248,4 +292,5 @@ entry:
 1075837966
 2096158
 1075837966
+30
 ```

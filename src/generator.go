@@ -347,6 +347,10 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGT, left, right)
 		}
+	case TokenIN:
+		g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), left)
+		g.currentValue = g.currentBlock.NewAnd(right, g.currentValue)
+		g.currentValue = g.currentBlock.NewICmp(enum.IPredNE, g.currentValue, zero)
 	default:
 		g.errors = append(g.errors, fmt.Errorf("unsupported token type: %+v", n.token))
 	}
