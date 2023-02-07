@@ -68,6 +68,12 @@ func (v Value) Int() int {
 		return v.integer
 	case TypeFloat64:
 		return int(v.real)
+	case TypeBoolean:
+		if v.Bool {
+			return 1
+		}
+
+		return 0
 	default:
 		return 0
 	}
