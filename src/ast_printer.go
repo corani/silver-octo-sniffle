@@ -217,6 +217,34 @@ func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
 	}
 }
 
+func (p *astPrinter) VisitSetExpr(n *SetExpr) {
+	// condense ranges in the list of bits.
+	var bits []string
+
+	start := -1
+
+	for i := 0; i < len(n.bits); i++ {
+		if i < len(n.bits)-1 && n.bits[i]+1 == n.bits[i+1] {
+			if start < 0 {
+				start = i
+			}
+
+			// doing a range
+			continue
+		}
+
+		if start >= 0 {
+			// finished range
+			bits = append(bits, fmt.Sprintf("%d..%d", n.bits[start], n.bits[i]))
+			start = -1
+		} else {
+			bits = append(bits, fmt.Sprintf("%d", n.bits[i]))
+		}
+	}
+
+	p.printf("(set (%s))", strings.Join(bits, ", "))
+}
+
 func (p *astPrinter) VisitNotExpr(n *NotExpr) {
 	p.printf("(not [%v]", n.Type())
 	p.indent++

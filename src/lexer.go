@@ -72,6 +72,14 @@ func lex(name string, bs []byte) (Tokens, error) {
 					return result, fmt.Errorf("expected 'H' or 'X' after hex digits: %q", text())
 				}
 			} else if peek('.') {
+				// special case: back-track as we found a ".." after the integer, so it's not a real.
+				if peek('.') {
+					tokenType = TokenInteger
+					i -= 2
+
+					break
+				}
+
 				// it's a real number.
 				while(isNumeric)
 

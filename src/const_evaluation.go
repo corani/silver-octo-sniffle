@@ -55,6 +55,20 @@ func evaluateBooleanExpr(lit Token) (*Value, error) {
 	}, nil
 }
 
+func evaluateSetExpr(expr *SetExpr) *Value {
+	var val int64
+
+	for _, bit := range expr.bits {
+		val |= 1 << bit
+	}
+
+	// TODO(daniel): use a uint64 for type set?
+	return &Value{
+		typ:     TypeSet,
+		integer: int(val),
+	}
+}
+
 func evaluateNotExpr(expr Expr) (*Value, error) {
 	if expr.Type() != TypeBoolean {
 		return nil, fmt.Errorf("`~` not supported for type %v", expr.Type())
@@ -71,6 +85,7 @@ func evaluateNotExpr(expr Expr) (*Value, error) {
 }
 
 func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
+	// TODO(daniel): check if set operations are correct!
 	switch op {
 	case TokenPlus:
 		switch target {
@@ -83,6 +98,11 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 			return &Value{
 				typ:  target,
 				real: lhs.Real() + rhs.Real(),
+			}
+		case TypeSet: // set union
+			return &Value{
+				typ:     target,
+				integer: lhs.Int() | rhs.Int(),
 			}
 		default:
 			return nil
@@ -99,6 +119,11 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 				typ:  target,
 				real: lhs.Real() - rhs.Real(),
 			}
+		case TypeSet: // set difference
+			return &Value{
+				typ:     target,
+				integer: lhs.Int() &^ rhs.Int(),
+			}
 		default:
 			return nil
 		}
@@ -114,15 +139,25 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 				typ:  target,
 				real: lhs.Real() * rhs.Real(),
 			}
+		case TypeSet: // set intersection
+			return &Value{
+				typ:     target,
+				integer: lhs.Int() & rhs.Int(),
+			}
 		default:
 			return nil
 		}
-	case TokenSlash: // REAL division
+	case TokenSlash:
 		switch target {
-		case TypeFloat64:
+		case TypeFloat64: // REAL division
 			return &Value{
 				typ:  target,
 				real: lhs.Real() / rhs.Real(),
+			}
+		case TypeSet: // symmetric set difference
+			return &Value{
+				typ:     target,
+				integer: lhs.Int() ^ rhs.Int(),
 			}
 		default:
 			return nil

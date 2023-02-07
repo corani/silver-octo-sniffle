@@ -66,6 +66,8 @@ func (c *typeChecker) VisitModule(m *Module) {
 			decl.typ = TypeBoolean
 		case "CHAR":
 			decl.typ = TypeChar
+		case "SET":
+			decl.typ = TypeSet
 		default:
 			// TODO(daniel): support "CHAR", "SET", "ARRAY", "RECORD", "POINTER", ...
 			c.errors = append(c.errors, fmt.Errorf("unknown type %q for variable %q",
@@ -259,6 +261,28 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 				}
 			}
 		}
+	case "INCL":
+		e.typ = TypeVoid
+
+		if c.isLen(e.args, 2) && c.isType(e.args[0], TypeSet) && c.isType(e.args[1], TypeInt64) {
+			set := e.args[0].ConstValue()
+			val := e.args[1].ConstValue()
+
+			if set != nil && val != nil {
+				set.integer |= 1 << val.Int()
+			}
+		}
+	case "EXCL":
+		e.typ = TypeVoid
+
+		if c.isLen(e.args, 2) && c.isType(e.args[0], TypeSet) && c.isType(e.args[1], TypeInt64) {
+			set := e.args[0].ConstValue()
+			val := e.args[1].ConstValue()
+
+			if set != nil && val != nil {
+				set.integer &= ^(1 << val.Int())
+			}
+		}
 	default:
 		c.errors = append(c.errors, fmt.Errorf("don't know how to call %q",
 			e.Token().Text))
@@ -378,6 +402,10 @@ func (c *typeChecker) VisitBooleanExpr(e *BooleanExpr) {
 	} else {
 		e.constValue = v
 	}
+}
+
+func (c *typeChecker) VisitSetExpr(e *SetExpr) {
+	e.constValue = evaluateSetExpr(e)
 }
 
 func (c *typeChecker) VisitNotExpr(e *NotExpr) {
