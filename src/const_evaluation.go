@@ -305,7 +305,14 @@ func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
 			return nil
 		}
 	case TokenIN:
-		return nil
+		if lhs.Type() == TypeInt64 && rhs.Type() == TypeSet {
+			return &Value{
+				typ:     target,
+				boolean: rhs.Int()&(1<<lhs.Int()) != 0,
+			}
+		} else {
+			return nil
+		}
 	case TokenIS:
 		return nil
 	default:

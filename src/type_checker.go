@@ -333,6 +333,8 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 	}
 
 	switch {
+	case e.token.Type == TokenIN:
+		e.typ = TypeBoolean
 	case e.args[0].Type() != e.args[1].Type():
 		e.typ = TypeVoid
 
