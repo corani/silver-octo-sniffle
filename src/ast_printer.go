@@ -205,6 +205,10 @@ func (p *astPrinter) VisitStringExpr(n *StringExpr) {
 	p.printf("(string %q)", n.token.Text)
 }
 
+func (p *astPrinter) VisitCharExpr(n *CharExpr) {
+	p.printf("(char %q)", n.token.Text)
+}
+
 func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
 	if n.token.Bool {
 		p.printf("#true")

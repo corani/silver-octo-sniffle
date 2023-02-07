@@ -84,6 +84,10 @@ func (g *generator) VisitModule(n *Module) {
 			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewFloat(types.Double, 0))
 		case TypeBoolean:
 			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I1, 0))
+		case TypeChar:
+			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I8, 0))
+		default:
+			panic(fmt.Sprintf("don't know how to declare global variable of type %s", decl.typ))
 		}
 	}
 
@@ -222,6 +226,8 @@ func (g *generator) VisitCallExpr(n *CallExpr) {
 		g.callFLOOR(n.args[0])
 	case "ORD":
 		g.callORD(n.args[0])
+	case "CHR":
+		g.callCHR(n.args[0])
 	default:
 		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q",
 			n.Token().Text))
@@ -328,7 +334,7 @@ func (g *generator) VisitDesignatorExpr(n *DesignatorExpr) {
 		case TypeFloat64:
 			g.currentValue = constant.NewFloat(types.Double, v.Real())
 		case TypeBoolean:
-			g.currentValue = constant.NewBool(v.Bool)
+			g.currentValue = constant.NewBool(v.Bool())
 		}
 	} else if v, ok := g.vars[n.token.Text]; ok {
 		g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
@@ -348,6 +354,10 @@ func (g *generator) VisitStringExpr(n *StringExpr) {
 	str := g.internString(n.token.Text + "\000")
 
 	g.currentValue = g.currentBlock.NewGetElementPtr(str.ContentType, str, zero, zero)
+}
+
+func (g *generator) VisitCharExpr(n *CharExpr) {
+	g.currentValue = constant.NewInt(types.I8, int64(n.constValue.Int()))
 }
 
 func (g *generator) VisitBooleanExpr(n *BooleanExpr) {
@@ -388,12 +398,21 @@ func (g *generator) callFLOOR(arg Expr) {
 }
 
 func (g *generator) callORD(arg Expr) {
-	if arg.Type() == TypeBoolean {
-		// NOTE(daniel): a Boolean is type I1, which is already an integer.
-		arg.Visit(g)
-	} else {
+	switch arg.Type() {
+	case TypeBoolean:
+		v := g.visitAndReturnValue(arg)
+		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
+	case TypeChar:
+		v := g.visitAndReturnValue(arg)
+		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
+	default:
 		g.errors = append(g.errors, fmt.Errorf("don't know how to ORD type: %s", arg.Type()))
 	}
+}
+
+func (g *generator) callCHR(arg Expr) {
+	v := g.visitAndReturnValue(arg)
+	g.currentValue = g.currentBlock.NewTrunc(v, types.I8)
 }
 
 func (g *generator) callPrint(args []Expr) {
@@ -410,6 +429,8 @@ func (g *generator) callPrint(args []Expr) {
 			g.printString(arg)
 		case TypeBoolean:
 			g.printBoolean(arg)
+		case TypeChar:
+			g.printChar(arg)
 		default:
 			g.errors = append(g.errors, fmt.Errorf("don't know how to print type: %s", arg.Type()))
 		}
@@ -463,6 +484,15 @@ func (g *generator) printBoolean(arg Expr) {
 	g.currentBlock = endBlk
 	strptr := g.currentBlock.NewPhi(ir.NewIncoming(truePtr, trueBlk), ir.NewIncoming(falsePtr, falseBlk))
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], strptr)
+}
+
+func (g *generator) printChar(arg Expr) {
+	v := g.visitAndReturnValue(arg)
+
+	format := g.internString("%c\n\000")
+	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, v)
 }
 
 func (g *generator) generateStdlib() {

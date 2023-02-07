@@ -719,7 +719,11 @@ func (p *Parser) parseStringLiteral() (Expr, error) {
 		return nil, err
 	}
 
-	return &StringExpr{token: t}, nil
+	if len(t.Text) == 1 {
+		return &CharExpr{token: t}, nil
+	} else {
+		return &StringExpr{token: t}, nil
+	}
 }
 
 func (p *Parser) parseBooleanLiteral() (Expr, error) {

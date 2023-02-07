@@ -23,73 +23,6 @@ func (k Kind) String() string {
 	}
 }
 
-type Type int
-
-const (
-	TypeVoid Type = iota
-	TypeInt64
-	TypeFloat64
-	TypeString
-	TypeBoolean
-)
-
-func (t Type) String() string {
-	switch t {
-	case TypeVoid:
-		return "void"
-	case TypeInt64:
-		return "i64"
-	case TypeFloat64:
-		return "f64"
-	case TypeString:
-		return "string"
-	case TypeBoolean:
-		return "boolean"
-	default:
-		return fmt.Sprintf("undefined=%d", int(t))
-	}
-}
-
-type Value struct {
-	typ     Type
-	integer int
-	real    float64
-	Bool    bool
-	String  string
-}
-
-func (v Value) Type() Type {
-	return v.typ
-}
-
-func (v Value) Int() int {
-	switch v.typ {
-	case TypeInt64:
-		return v.integer
-	case TypeFloat64:
-		return int(v.real)
-	case TypeBoolean:
-		if v.Bool {
-			return 1
-		}
-
-		return 0
-	default:
-		return 0
-	}
-}
-
-func (v Value) Real() float64 {
-	switch v.typ {
-	case TypeInt64:
-		return float64(v.integer)
-	case TypeFloat64:
-		return v.real
-	default:
-		return 0
-	}
-}
-
 type Visitor interface {
 	VisitModule(*Module)
 	VisitStmtSequence(*StmtSequence)
@@ -104,6 +37,7 @@ type Visitor interface {
 	VisitDesignatorExpr(*DesignatorExpr)
 	VisitNumberExpr(*NumberExpr)
 	VisitStringExpr(*StringExpr)
+	VisitCharExpr(*CharExpr)
 	VisitBooleanExpr(*BooleanExpr)
 	VisitNotExpr(*NotExpr)
 }
@@ -326,6 +260,29 @@ func (n *NumberExpr) ConstValue() *Value {
 
 func (n *NumberExpr) Visit(v Visitor) {
 	v.VisitNumberExpr(n)
+}
+
+type CharExpr struct {
+	token      Token
+	constValue *Value
+}
+
+var _ Expr = (*CharExpr)(nil)
+
+func (n *CharExpr) Token() Token {
+	return n.token
+}
+
+func (n *CharExpr) Type() Type {
+	return TypeChar
+}
+
+func (n *CharExpr) ConstValue() *Value {
+	return n.constValue
+}
+
+func (n *CharExpr) Visit(v Visitor) {
+	v.VisitCharExpr(n)
 }
 
 type StringExpr struct {
