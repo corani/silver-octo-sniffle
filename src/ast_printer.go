@@ -88,7 +88,7 @@ func (p *astPrinter) VisitStmtSequence(n *StmtSequence) {
 }
 
 func (p *astPrinter) VisitAssignStmt(n *AssignStmt) {
-	p.printf("(assign %v", n.token.Text)
+	p.printf("(assign %v", n.Token().Text)
 	p.indent++
 
 	n.expr.Visit(p)
@@ -175,7 +175,7 @@ func (p *astPrinter) VisitCallExpr(n *CallExpr) {
 }
 
 func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
-	p.printf("(%v [%v]", n.token.Type, n.typ)
+	p.printf("(%v [%v]", n.Token().Type, n.typ)
 	p.indent++
 
 	for _, arg := range n.args {
@@ -187,30 +187,28 @@ func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
 }
 
 func (p *astPrinter) VisitDesignatorExpr(n *DesignatorExpr) {
-	p.printf("(%v [%v] %q)", n.kind, n.typ, n.token.Text)
+	p.printf("(%v [%v] %q)", n.kind, n.typ, n.Token().Text)
 }
 
 func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
 	switch n.Type() {
 	case TypeInt64:
-		p.printf("(number [%v] %d)", n.typ, n.token.Int)
+		p.printf("(number [%v] %d)", n.typ, n.Token().Int)
 	case TypeFloat64:
-		p.printf("(number [%v] %f)", n.typ, n.token.Real)
-	default:
-		p.printf("(number [%v] %q)", n.typ, n.token.Text)
+		p.printf("(number [%v] %f)", n.typ, n.Token().Real)
 	}
 }
 
 func (p *astPrinter) VisitStringExpr(n *StringExpr) {
-	p.printf("(string %q)", n.token.Text)
+	p.printf("(string %q)", n.Token().Text)
 }
 
 func (p *astPrinter) VisitCharExpr(n *CharExpr) {
-	p.printf("(char %q)", n.token.Text)
+	p.printf("(char %q)", n.Token().Text)
 }
 
 func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
-	if n.token.Bool {
+	if n.Token().Bool {
 		p.printf("#true")
 	} else {
 		p.printf("#false")

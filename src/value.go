@@ -12,6 +12,9 @@ const (
 	TypeBoolean
 	TypeChar
 	TypeSet
+	TypeArray
+	TypePointer
+	TypeRecord
 )
 
 func (t Type) String() string {

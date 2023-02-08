@@ -11,6 +11,9 @@ BEGIN
   END;
   FOR x := 9 TO 1 BY -3 DO
     print(x)
+  END;
+  FOR x := 1 TO 3 DO 
+    print(x)
   END
 END ForBy.
 ```
@@ -55,10 +58,23 @@ test/test_015.md:10:9:	lparen	"("	false	0	0.000000	(10, 9) -> (10, 10)
 test/test_015.md:10:10:	ident	"x"	false	0	0.000000	(10, 10) -> (10, 11)
 test/test_015.md:10:11:	rparen	")"	false	0	0.000000	(10, 11) -> (10, 12)
 test/test_015.md:11:2:	end	"END"	false	0	0.000000	(11, 2) -> (11, 5)
-test/test_015.md:12:0:	end	"END"	false	0	0.000000	(12, 0) -> (12, 3)
-test/test_015.md:12:4:	ident	"ForBy"	false	0	0.000000	(12, 4) -> (12, 9)
-test/test_015.md:12:9:	dot	"."	false	0	0.000000	(12, 9) -> (12, 10)
-test/test_015.md:13:0:	eof	""	false	0	0.000000	(13, 0) -> (13, 0)
+test/test_015.md:11:5:	semicolon	";"	false	0	0.000000	(11, 5) -> (11, 6)
+test/test_015.md:12:2:	for	"FOR"	false	0	0.000000	(12, 2) -> (12, 5)
+test/test_015.md:12:6:	ident	"x"	false	0	0.000000	(12, 6) -> (12, 7)
+test/test_015.md:12:8:	assign	":="	false	0	0.000000	(12, 8) -> (12, 10)
+test/test_015.md:12:11:	integer	"1"	false	1	0.000000	(12, 11) -> (12, 12)
+test/test_015.md:12:13:	to	"TO"	false	0	0.000000	(12, 13) -> (12, 15)
+test/test_015.md:12:16:	integer	"3"	false	3	0.000000	(12, 16) -> (12, 17)
+test/test_015.md:12:18:	do	"DO"	false	0	0.000000	(12, 18) -> (12, 20)
+test/test_015.md:13:4:	ident	"print"	false	0	0.000000	(13, 4) -> (13, 9)
+test/test_015.md:13:9:	lparen	"("	false	0	0.000000	(13, 9) -> (13, 10)
+test/test_015.md:13:10:	ident	"x"	false	0	0.000000	(13, 10) -> (13, 11)
+test/test_015.md:13:11:	rparen	")"	false	0	0.000000	(13, 11) -> (13, 12)
+test/test_015.md:14:2:	end	"END"	false	0	0.000000	(14, 2) -> (14, 5)
+test/test_015.md:15:0:	end	"END"	false	0	0.000000	(15, 0) -> (15, 3)
+test/test_015.md:15:4:	ident	"ForBy"	false	0	0.000000	(15, 4) -> (15, 9)
+test/test_015.md:15:9:	dot	"."	false	0	0.000000	(15, 9) -> (15, 10)
+test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
 ```
 ## AST
 ```scheme
@@ -86,6 +102,18 @@ test/test_015.md:13:0:	eof	""	false	0	0.000000	(13, 0) -> (13, 0)
         (number [i64] 0)
         (number [i64] 3)
       )
+      (stmts
+        (expr2stmt
+          (call "print" [void]
+            (variable [i64] "x")
+          )
+        )
+      )
+    )
+    (for x
+      (number [i64] 1)
+      (number [i64] 3)
+      (number [i64] 1)
       (stmts
         (expr2stmt
           (call "print" [void]
@@ -141,6 +169,20 @@ entry:
 	br i1 %15, label %9, label %16
 
 16:
+	store i64 1, i64* @0
+	br label %17
+
+17:
+	%18 = load i64, i64* @0
+	%19 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%20 = call i64 (i8*, ...) @printf(i8* %19, i64 %18)
+	%21 = load i64, i64* @0
+	%22 = add i64 %21, 1
+	store i64 %22, i64* @0
+	%23 = icmp sle i64 %22, 3
+	br i1 %23, label %17, label %24
+
+24:
 	ret i64 0
 }
 
@@ -154,5 +196,8 @@ entry:
 9
 9
 6
+3
+1
+2
 3
 ```

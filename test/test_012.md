@@ -100,7 +100,7 @@ entry:
 
 0:
 	%1 = load i64, i64* @0
-	%2 = add i64 %1, -1
+	%2 = sub i64 %1, 1
 	store i64 %2, i64* @0
 	%3 = load i64, i64* @0
 	%4 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0

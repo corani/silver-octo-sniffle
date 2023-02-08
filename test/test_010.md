@@ -120,7 +120,7 @@ entry:
 	%6 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
 	%7 = call i64 (i8*, ...) @printf(i8* %6, i64 %5)
 	%8 = load i64, i64* @0
-	%9 = add i64 %8, -1
+	%9 = sub i64 %8, 1
 	store i64 %9, i64* @0
 	%10 = load i64, i64* @0
 	%11 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
