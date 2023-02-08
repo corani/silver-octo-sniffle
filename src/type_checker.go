@@ -328,11 +328,9 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 		v.Visit(c)
 	}
 
-	if len(e.args) != 2 {
-		c.errors = append(c.errors, fmt.Errorf("binary expression with %d arguments", len(e.args)))
-	}
-
 	switch {
+	case len(e.args) != 2:
+		c.errors = append(c.errors, fmt.Errorf("binary expression with %d arguments", len(e.args)))
 	case e.token.Type == TokenIN:
 		e.typ = TypeBoolean
 	case e.args[0].Type() != e.args[1].Type():

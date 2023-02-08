@@ -359,7 +359,7 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 func (g *generator) VisitDesignatorExpr(n *DesignatorExpr) {
 	if v, ok := g.consts[n.token.Text]; ok {
 		switch v.Type() {
-		case TypeInt64:
+		case TypeInt64, TypeSet:
 			g.currentValue = constant.NewInt(types.I64, int64(v.Int()))
 		case TypeFloat64:
 			g.currentValue = constant.NewFloat(types.Double, v.Real())

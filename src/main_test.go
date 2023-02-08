@@ -79,6 +79,10 @@ func readGoldenTest(t *testing.T, path string) ([]byte, []byte) {
 func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 	result, err := do(srcName, bs)
 	if err != nil {
+		if result.ast != nil {
+			printAST(os.Stdout, result.ast)
+		}
+
 		t.Fatal(err)
 	}
 

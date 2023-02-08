@@ -86,7 +86,6 @@ func evaluateNotExpr(expr Expr) (*Value, error) {
 }
 
 func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {
-	// TODO(daniel): check if set operations are correct!
 	switch op {
 	case TokenPlus:
 		switch target {
