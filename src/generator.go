@@ -254,7 +254,7 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 			if n.args[0].Type() == TypeSet {
 				// SET difference
 				g.currentValue = g.currentBlock.NewXor(right, constant.NewInt(types.I64, -1))
-				g.currentValue = g.currentBlock.NewAnd(left, right)
+				g.currentValue = g.currentBlock.NewAnd(left, g.currentValue)
 			} else {
 				// INTEGER subtraction
 				g.currentValue = g.currentBlock.NewSub(left, right)

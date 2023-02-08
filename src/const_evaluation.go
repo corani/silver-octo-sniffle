@@ -81,7 +81,8 @@ func evaluateNotExpr(expr Expr) (*Value, error) {
 		}, nil
 	}
 
-	return nil, fmt.Errorf("`~` expression is not const")
+	//nolint:nilnil
+	return nil, nil
 }
 
 func evaluateBinaryExpr(op TokenType, target Type, lhs, rhs *Value) *Value {

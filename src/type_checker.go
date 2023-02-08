@@ -341,11 +341,15 @@ func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {
 		c.errors = append(c.errors, fmt.Errorf("different types for binary operator %s",
 			e.token.Type))
 	case e.token.Type == TokenSlash:
-		e.typ = TypeFloat64
+		if e.args[0].Type() == TypeSet && e.args[1].Type() == TypeSet {
+			e.typ = TypeSet
+		} else {
+			e.typ = TypeFloat64
 
-		if e.args[0].Type() != e.Type() {
-			c.errors = append(c.errors, fmt.Errorf("unexpected type for binary operator %s",
-				e.token.Type))
+			if e.args[0].Type() != e.Type() {
+				c.errors = append(c.errors, fmt.Errorf("unexpected type for binary operator %s",
+					e.token.Type))
+			}
 		}
 	case e.token.isRelation():
 		e.typ = TypeBoolean
