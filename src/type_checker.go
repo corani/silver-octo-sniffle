@@ -193,134 +193,19 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 		v.Visit(c)
 	}
 
-	// TODO(daniel): return type of calls.
-	switch e.Token().Text {
-	case "print":
-		e.typ = TypeVoid
-	case "INC", "DEC":
-		if c.isLen(e.args, 1) && c.isVar(e.args[0]) && c.isType(e.args[0], TypeInt64) {
-			e.typ = TypeVoid
-		}
-	case "FLT":
-		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeInt64) {
-			e.typ = TypeFloat64
+	if v, ok := builtin[e.Token().Text]; ok {
+		t, err := v.Validate(e.args)
+		if err != nil {
+			c.errors = append(c.errors, err)
 
-			if v := e.args[0].ConstValue(); v != nil {
-				e.constValue = &Value{
-					typ:  e.typ,
-					real: v.Real(),
-				}
-			}
-		}
-	case "FLOOR":
-		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeFloat64) {
-			e.typ = TypeInt64
-
-			if v := e.args[0].ConstValue(); v != nil {
-				e.constValue = &Value{
-					typ:     e.typ,
-					integer: v.Int(),
-				}
-			}
-		}
-	case "ORD":
-		if !c.isLen(e.args, 1) {
-			break
+			return
 		}
 
-		switch e.args[0].Type() {
-		case TypeBoolean:
-			e.typ = TypeInt64
-
-			if v := e.args[0].ConstValue(); v != nil {
-				e.constValue = &Value{
-					typ:     e.typ,
-					integer: v.Int(),
-				}
-			}
-		case TypeChar:
-			e.typ = TypeInt64
-
-			if v := e.args[0].ConstValue(); v != nil {
-				e.constValue = &Value{
-					typ:     e.typ,
-					integer: v.Int(),
-				}
-			}
-		default:
-			c.errors = append(c.errors, fmt.Errorf("expected type BOOLEAN or CHAR, got %s", e.Type()))
-		}
-	case "CHR":
-		if c.isLen(e.args, 1) && c.isType(e.args[0], TypeInt64) {
-			e.typ = TypeChar
-
-			if v := e.args[0].ConstValue(); v != nil {
-				e.constValue = &Value{
-					typ:  e.typ,
-					char: v.Char(),
-				}
-			}
-		}
-	case "INCL":
-		e.typ = TypeVoid
-
-		if c.isLen(e.args, 2) && c.isType(e.args[0], TypeSet) && c.isType(e.args[1], TypeInt64) {
-			set := e.args[0].ConstValue()
-			val := e.args[1].ConstValue()
-
-			if set != nil && val != nil {
-				set.integer |= 1 << val.Int()
-			}
-		}
-	case "EXCL":
-		e.typ = TypeVoid
-
-		if c.isLen(e.args, 2) && c.isType(e.args[0], TypeSet) && c.isType(e.args[1], TypeInt64) {
-			set := e.args[0].ConstValue()
-			val := e.args[1].ConstValue()
-
-			if set != nil && val != nil {
-				set.integer &= ^(1 << val.Int())
-			}
-		}
-	default:
-		c.errors = append(c.errors, fmt.Errorf("don't know how to call %q",
-			e.Token().Text))
+		e.typ = t
+		e.constValue = v.ConstValue(e.args)
+	} else {
+		c.errors = append(c.errors, fmt.Errorf("builtin function %q not found", e.Token().Text))
 	}
-}
-
-func (c *typeChecker) isLen(e []Expr, exp int) bool {
-	if len(e) != exp {
-		c.errors = append(c.errors, fmt.Errorf("expected %d arguments, got %d", exp, len(e)))
-
-		return false
-	}
-
-	return true
-}
-
-func (c *typeChecker) isVar(e Expr) bool {
-	if e.Token().Type != TokenIdent {
-		c.errors = append(c.errors, fmt.Errorf("expected identifier, got %s", e.Token().Type))
-
-		return false
-	} else if _, ok := c.vars[e.Token().Text]; !ok {
-		c.errors = append(c.errors, fmt.Errorf("%q must be a variable", e.Token().Text))
-
-		return false
-	}
-
-	return true
-}
-
-func (c *typeChecker) isType(e Expr, exp Type) bool {
-	if e.Type() != exp {
-		c.errors = append(c.errors, fmt.Errorf("expected type %s, got %s", exp, e.Type()))
-
-		return false
-	}
-
-	return true
 }
 
 func (c *typeChecker) VisitBinaryExpr(e *BinaryExpr) {

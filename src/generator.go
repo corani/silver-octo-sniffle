@@ -416,8 +416,18 @@ func (g *generator) visitAndReturnValue(n Node) value.Value {
 }
 
 func (g *generator) callIncDec(arg Expr, offset int64) {
+	if offset == 0 {
+		return
+	}
+
 	v := g.visitAndReturnValue(arg)
-	g.currentValue = g.currentBlock.NewAdd(v, constant.NewInt(types.I64, offset))
+
+	if offset > 0 {
+		g.currentValue = g.currentBlock.NewAdd(v, constant.NewInt(types.I64, offset))
+	} else {
+		g.currentValue = g.currentBlock.NewSub(v, constant.NewInt(types.I64, -offset))
+	}
+
 	g.currentBlock.NewStore(g.currentValue, g.vars[arg.Token().Text])
 }
 
