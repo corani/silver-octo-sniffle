@@ -2,10 +2,6 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/llir/llvm/ir"
-	"github.com/llir/llvm/ir/constant"
-	"github.com/llir/llvm/ir/types"
 )
 
 type functionArg struct {
@@ -66,14 +62,9 @@ func (f function) Validate(args []Expr) (Type, error) {
 	return TypeVoid, fmt.Errorf("no matching overload found")
 }
 
-func (f function) ConstValue([]Expr) (*Value, error) {
-	return nil, nil
-}
-
 type Function interface {
 	Validate([]Expr) (Type, error)
-	ConstValue([]Expr) (*Value, error)
-	Generate(*Generator, []Expr) error
+	Visit(BuiltinVisitor, []Expr)
 }
 
 type Builtins map[string]Function
@@ -108,19 +99,42 @@ func registerBuiltins() {
 }
 
 func init() {
+	// TODO(daniel): don't use `init` functions!
 	registerBuiltins()
+}
+
+type BuiltinVisitor interface {
+	VisitBuiltinPrint(*BuiltinPrint, []Expr)
+	VisitBuiltinABS(*BuiltinABS, []Expr)
+	VisitBuiltinODD(*BuiltinODD, []Expr)
+	VisitBuiltinLSL(*BuiltinLSL, []Expr)
+	VisitBuiltinASR(*BuiltinASR, []Expr)
+	VisitBuiltinROR(*BuiltinROR, []Expr)
+	VisitBuiltinLEN(*BuiltinLEN, []Expr)
+	VisitBuiltinORD(*BuiltinORD, []Expr)
+	VisitBuiltinCHR(*BuiltinCHR, []Expr)
+	VisitBuiltinFLOOR(*BuiltinFLOOR, []Expr)
+	VisitBuiltinFLT(*BuiltinFLT, []Expr)
+	VisitBuiltinINC(*BuiltinINC, []Expr)
+	VisitBuiltinDEC(*BuiltinDEC, []Expr)
+	VisitBuiltinINCL(*BuiltinINCL, []Expr)
+	VisitBuiltinEXCL(*BuiltinEXCL, []Expr)
+	VisitBuiltinPACK(*BuiltinPACK, []Expr)
+	VisitBuiltinUNPK(*BuiltinUNPK, []Expr)
+	VisitBuiltinNEW(*BuiltinNEW, []Expr)
+	VisitBuiltinASSERT(*BuiltinASSERT, []Expr)
 }
 
 // ----- print ----------------------------------------------------------------
 
-type builtinPrint struct {
+type BuiltinPrint struct {
 	function
 }
 
-var _ Function = (*builtinPrint)(nil)
+var _ Function = (*BuiltinPrint)(nil)
 
-func newBuiltinPrint() *builtinPrint {
-	return &builtinPrint{
+func newBuiltinPrint() *BuiltinPrint {
+	return &BuiltinPrint{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeVoid,
@@ -162,103 +176,20 @@ func newBuiltinPrint() *builtinPrint {
 	}
 }
 
-func (f *builtinPrint) Generate(g *Generator, args []Expr) error {
-	arg := args[0]
-
-	// NOTE(daniel): we could probably do something smarter here, but for now this works.
-	switch arg.Type() {
-	case TypeInt64:
-		f.printInteger(g, arg)
-	case TypeFloat64:
-		f.printReal(g, arg)
-	case TypeString:
-		f.printString(g, arg)
-	case TypeBoolean:
-		f.printBoolean(g, arg)
-	case TypeChar:
-		f.printChar(g, arg)
-	case TypeSet:
-		f.printSet(g, arg)
-	default:
-		return fmt.Errorf("don't know how to print type: %s", arg.Type())
-	}
-
-	return nil
-}
-
-func (f *builtinPrint) printInteger(g *Generator, arg Expr) {
-	number := g.visitAndReturnValue(arg)
-
-	format := g.internString("%d\n\000")
-	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
-}
-
-func (f *builtinPrint) printReal(g *Generator, arg Expr) {
-	number := g.visitAndReturnValue(arg)
-
-	format := g.internString("%f\n\000")
-	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
-}
-
-func (f *builtinPrint) printString(g *Generator, arg Expr) {
-	str := g.visitAndReturnValue(arg)
-
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
-}
-
-func (f *builtinPrint) printBoolean(g *Generator, arg Expr) {
-	TRUE := g.internString("TRUE\000")
-	FALSE := g.internString("FALSE\000")
-
-	boolean := g.visitAndReturnValue(arg)
-
-	trueBlk := g.currentFunc.NewBlock("")
-	falseBlk := g.currentFunc.NewBlock("")
-	endBlk := g.currentFunc.NewBlock("")
-
-	g.currentBlock.NewCondBr(boolean, trueBlk, falseBlk)
-
-	g.currentBlock = trueBlk
-	truePtr := g.currentBlock.NewGetElementPtr(TRUE.ContentType, TRUE, zero, zero)
-	g.currentBlock.NewBr(endBlk)
-
-	g.currentBlock = falseBlk
-	falsePtr := g.currentBlock.NewGetElementPtr(FALSE.ContentType, FALSE, zero, zero)
-	g.currentBlock.NewBr(endBlk)
-
-	g.currentBlock = endBlk
-	strptr := g.currentBlock.NewPhi(ir.NewIncoming(truePtr, trueBlk), ir.NewIncoming(falsePtr, falseBlk))
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], strptr)
-}
-
-func (f *builtinPrint) printChar(g *Generator, arg Expr) {
-	v := g.visitAndReturnValue(arg)
-
-	format := g.internString("%c\n\000")
-	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, v)
-}
-
-func (f *builtinPrint) printSet(g *Generator, arg Expr) {
-	// TODO(daniel): can we get a better print for sets?
-	f.printInteger(g, arg)
+func (f *BuiltinPrint) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinPrint(f, args)
 }
 
 // ----- ABS ------------------------------------------------------------------
 
-type builtinABS struct {
+type BuiltinABS struct {
 	function
 }
 
-var _ Function = (*builtinABS)(nil)
+var _ Function = (*BuiltinABS)(nil)
 
-func newBuiltinABS() *builtinABS {
-	return &builtinABS{
+func newBuiltinABS() *BuiltinABS {
+	return &BuiltinABS{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeInt64,
@@ -276,49 +207,20 @@ func newBuiltinABS() *builtinABS {
 	}
 }
 
-func (f *builtinABS) ConstValue(args []Expr) (*Value, error) {
-	c := args[0].ConstValue()
-	if c == nil {
-		return nil, nil
-	}
-
-	if c.integer < 0 {
-		c.integer = -c.integer
-	}
-	if c.real < 0 {
-		c.real = -c.real
-	}
-
-	switch args[0].Type() {
-	case TypeInt64:
-		return &Value{
-			typ:     args[0].Type(),
-			integer: c.Int(),
-		}, nil
-	case TypeFloat64:
-		return &Value{
-			typ:  args[0].Type(),
-			real: c.Real(),
-		}, nil
-	default:
-		return nil, nil
-	}
-}
-
-func (f *builtinABS) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinABS.Generate is not implemented")
+func (f *BuiltinABS) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinABS(f, args)
 }
 
 // ----- ODD ------------------------------------------------------------------
 
-type builtinODD struct {
+type BuiltinODD struct {
 	function
 }
 
-var _ Function = (*builtinODD)(nil)
+var _ Function = (*BuiltinODD)(nil)
 
-func newBuiltinODD() *builtinODD {
-	return &builtinODD{
+func newBuiltinODD() *BuiltinODD {
+	return &BuiltinODD{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeBoolean,
@@ -330,32 +232,20 @@ func newBuiltinODD() *builtinODD {
 	}
 }
 
-func (f *builtinODD) ConstValue(args []Expr) (*Value, error) {
-	c := args[0].ConstValue()
-	if c == nil {
-		return nil, nil
-	}
-
-	return &Value{
-		typ:     TypeBoolean,
-		boolean: c.Int()%2 == 1,
-	}, nil
-}
-
-func (f *builtinODD) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinODD.Generate is not implemented")
+func (f *BuiltinODD) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinODD(f, args)
 }
 
 // ----- LSL ------------------------------------------------------------------
 
-type builtinLSL struct {
+type BuiltinLSL struct {
 	function
 }
 
-var _ Function = (*builtinLSL)(nil)
+var _ Function = (*BuiltinLSL)(nil)
 
-func newBuiltinLSL() *builtinLSL {
-	return &builtinLSL{
+func newBuiltinLSL() *BuiltinLSL {
+	return &BuiltinLSL{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeInt64,
@@ -368,24 +258,20 @@ func newBuiltinLSL() *builtinLSL {
 	}
 }
 
-func (f *builtinLSL) ConstValue(args []Expr) (*Value, error) {
-	return nil, fmt.Errorf("builtinLSL.ConstValue is not implemented")
-}
-
-func (f *builtinLSL) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinLSL.Generate is not implemented")
+func (f *BuiltinLSL) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinLSL(f, args)
 }
 
 // ----- ASR ------------------------------------------------------------------
 
-type builtinASR struct {
+type BuiltinASR struct {
 	function
 }
 
-var _ Function = (*builtinASR)(nil)
+var _ Function = (*BuiltinASR)(nil)
 
-func newBuiltinASR() *builtinASR {
-	return &builtinASR{
+func newBuiltinASR() *BuiltinASR {
+	return &BuiltinASR{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeInt64,
@@ -398,24 +284,20 @@ func newBuiltinASR() *builtinASR {
 	}
 }
 
-func (f *builtinASR) ConstValue(args []Expr) (*Value, error) {
-	return nil, fmt.Errorf("builtinASR.ConstValue is not implemented")
-}
-
-func (f *builtinASR) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinASR.Generate is not implemented")
+func (f *BuiltinASR) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinASR(f, args)
 }
 
 // ----- ROR ------------------------------------------------------------------
 
-type builtinROR struct {
+type BuiltinROR struct {
 	function
 }
 
-var _ Function = (*builtinROR)(nil)
+var _ Function = (*BuiltinROR)(nil)
 
-func newBuiltinROR() *builtinROR {
-	return &builtinROR{
+func newBuiltinROR() *BuiltinROR {
+	return &BuiltinROR{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeInt64,
@@ -428,24 +310,20 @@ func newBuiltinROR() *builtinROR {
 	}
 }
 
-func (f *builtinROR) ConstValue(args []Expr) (*Value, error) {
-	return nil, fmt.Errorf("builtinROR.ConstValue is not implemented")
-}
-
-func (f *builtinROR) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinROR.Generate is not implemented")
+func (f *BuiltinROR) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinROR(f, args)
 }
 
 // ----- LEN ------------------------------------------------------------------
 
-type builtinLEN struct {
+type BuiltinLEN struct {
 	function
 }
 
-var _ Function = (*builtinLEN)(nil)
+var _ Function = (*BuiltinLEN)(nil)
 
-func newBuiltinLEN() *builtinLEN {
-	return &builtinLEN{
+func newBuiltinLEN() *BuiltinLEN {
+	return &BuiltinLEN{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeInt64,
@@ -464,24 +342,20 @@ func newBuiltinLEN() *builtinLEN {
 	}
 }
 
-func (f *builtinLEN) ConstValue(args []Expr) (*Value, error) {
-	return nil, fmt.Errorf("builtinLEN.ConstValue is not implemented")
-}
-
-func (f *builtinLEN) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinLEN.Generate is not implemented")
+func (f *BuiltinLEN) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinLEN(f, args)
 }
 
 // ----- ORD ------------------------------------------------------------------
 
-type builtinORD struct {
+type BuiltinORD struct {
 	function
 }
 
-var _ Function = (*builtinORD)(nil)
+var _ Function = (*BuiltinORD)(nil)
 
-func newBuiltinORD() *builtinORD {
-	return &builtinORD{
+func newBuiltinORD() *BuiltinORD {
+	return &BuiltinORD{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeInt64,
@@ -499,46 +373,20 @@ func newBuiltinORD() *builtinORD {
 	}
 }
 
-func (f *builtinORD) ConstValue(args []Expr) (*Value, error) {
-	c := args[0].ConstValue()
-	if c == nil {
-		return nil, nil
-	}
-
-	switch args[0].Type() {
-	case TypeBoolean, TypeChar:
-		return &Value{
-			typ:     TypeInt64,
-			integer: c.Int(),
-		}, nil
-	default:
-		return nil, nil
-	}
-}
-
-func (f *builtinORD) Generate(g *Generator, args []Expr) error {
-	switch args[0].Type() {
-	case TypeBoolean:
-		v := g.visitAndReturnValue(args[0])
-		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
-	case TypeChar:
-		v := g.visitAndReturnValue(args[0])
-		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
-	}
-
-	return nil
+func (f *BuiltinORD) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinORD(f, args)
 }
 
 // ----- CHR ------------------------------------------------------------------
 
-type builtinCHR struct {
+type BuiltinCHR struct {
 	function
 }
 
-var _ Function = (*builtinCHR)(nil)
+var _ Function = (*BuiltinCHR)(nil)
 
-func newBuiltinCHR() *builtinCHR {
-	return &builtinCHR{
+func newBuiltinCHR() *BuiltinCHR {
+	return &BuiltinCHR{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeChar,
@@ -550,34 +398,20 @@ func newBuiltinCHR() *builtinCHR {
 	}
 }
 
-func (f *builtinCHR) ConstValue(args []Expr) (*Value, error) {
-	if c := args[0].ConstValue(); c != nil {
-		return &Value{
-			typ:  TypeChar,
-			char: c.Char(),
-		}, nil
-	}
-
-	return nil, nil
-}
-
-func (f *builtinCHR) Generate(g *Generator, args []Expr) error {
-	v := g.visitAndReturnValue(args[0])
-	g.currentValue = g.currentBlock.NewTrunc(v, types.I8)
-
-	return nil
+func (f *BuiltinCHR) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinCHR(f, args)
 }
 
 // ----- FLOOR ----------------------------------------------------------------
 
-type builtinFLOOR struct {
+type BuiltinFLOOR struct {
 	function
 }
 
-var _ Function = (*builtinFLOOR)(nil)
+var _ Function = (*BuiltinFLOOR)(nil)
 
-func newBuiltinFLOOR() *builtinFLOOR {
-	return &builtinFLOOR{
+func newBuiltinFLOOR() *BuiltinFLOOR {
+	return &BuiltinFLOOR{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeInt64,
@@ -589,34 +423,20 @@ func newBuiltinFLOOR() *builtinFLOOR {
 	}
 }
 
-func (f *builtinFLOOR) ConstValue(args []Expr) (*Value, error) {
-	if c := args[0].ConstValue(); c != nil {
-		return &Value{
-			typ:     TypeInt64,
-			integer: c.Int(),
-		}, nil
-	}
-
-	return nil, nil
-}
-
-func (f *builtinFLOOR) Generate(g *Generator, args []Expr) error {
-	v := g.visitAndReturnValue(args[0])
-	g.currentValue = g.currentBlock.NewFPToSI(v, types.I64)
-
-	return nil
+func (f *BuiltinFLOOR) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinFLOOR(f, args)
 }
 
 // ----- FLT ------------------------------------------------------------------
 
-type builtinFLT struct {
+type BuiltinFLT struct {
 	function
 }
 
-var _ Function = (*builtinFLT)(nil)
+var _ Function = (*BuiltinFLT)(nil)
 
-func newBuiltinFLT() *builtinFLT {
-	return &builtinFLT{
+func newBuiltinFLT() *BuiltinFLT {
+	return &BuiltinFLT{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeFloat64,
@@ -628,34 +448,20 @@ func newBuiltinFLT() *builtinFLT {
 	}
 }
 
-func (f *builtinFLT) ConstValue(args []Expr) (*Value, error) {
-	if c := args[0].ConstValue(); c != nil {
-		return &Value{
-			typ:  TypeFloat64,
-			real: c.Real(),
-		}, nil
-	}
-
-	return nil, nil
-}
-
-func (f *builtinFLT) Generate(g *Generator, args []Expr) error {
-	v := g.visitAndReturnValue(args[0])
-	g.currentValue = g.currentBlock.NewSIToFP(v, types.Double)
-
-	return nil
+func (f *BuiltinFLT) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinFLT(f, args)
 }
 
 // ----- INC ------------------------------------------------------------------
 
-type builtinINC struct {
+type BuiltinINC struct {
 	function
 }
 
-var _ Function = (*builtinINC)(nil)
+var _ Function = (*BuiltinINC)(nil)
 
-func newBuiltinINC() *builtinINC {
-	return &builtinINC{
+func newBuiltinINC() *BuiltinINC {
+	return &BuiltinINC{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeVoid,
@@ -674,33 +480,20 @@ func newBuiltinINC() *builtinINC {
 	}
 }
 
-func (f *builtinINC) Generate(g *Generator, args []Expr) error {
-	offset := 1
-
-	if len(args) == 2 {
-		offset = args[1].ConstValue().Int()
-	}
-
-	if offset > 0 {
-		v := g.visitAndReturnValue(args[0])
-
-		g.currentValue = g.currentBlock.NewAdd(v, constant.NewInt(types.I64, int64(offset)))
-		g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
-	}
-
-	return nil
+func (f *BuiltinINC) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinINC(f, args)
 }
 
 // ----- DEC ------------------------------------------------------------------
 
-type builtinDEC struct {
+type BuiltinDEC struct {
 	function
 }
 
-var _ Function = (*builtinDEC)(nil)
+var _ Function = (*BuiltinDEC)(nil)
 
-func newBuiltinDEC() *builtinDEC {
-	return &builtinDEC{
+func newBuiltinDEC() *BuiltinDEC {
+	return &BuiltinDEC{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeVoid,
@@ -719,33 +512,20 @@ func newBuiltinDEC() *builtinDEC {
 	}
 }
 
-func (f *builtinDEC) Generate(g *Generator, args []Expr) error {
-	offset := 1
-
-	if len(args) == 2 {
-		offset = args[1].ConstValue().Int()
-	}
-
-	if offset > 0 {
-		v := g.visitAndReturnValue(args[0])
-
-		g.currentValue = g.currentBlock.NewSub(v, constant.NewInt(types.I64, int64(offset)))
-		g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
-	}
-
-	return nil
+func (f *BuiltinDEC) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinDEC(f, args)
 }
 
 // ----- INCL -----------------------------------------------------------------
 
-type builtinINCL struct {
+type BuiltinINCL struct {
 	function
 }
 
-var _ Function = (*builtinINCL)(nil)
+var _ Function = (*BuiltinINCL)(nil)
 
-func newBuiltinINCL() *builtinINCL {
-	return &builtinINCL{
+func newBuiltinINCL() *BuiltinINCL {
+	return &BuiltinINCL{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeVoid,
@@ -758,26 +538,20 @@ func newBuiltinINCL() *builtinINCL {
 	}
 }
 
-func (f *builtinINCL) Generate(g *Generator, args []Expr) error {
-	v := g.visitAndReturnValue(args[0])
-	b := g.visitAndReturnValue(args[1])
-	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
-	g.currentValue = g.currentBlock.NewOr(v, g.currentValue)
-	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
-
-	return nil
+func (f *BuiltinINCL) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinINCL(f, args)
 }
 
 // ----- EXCL -----------------------------------------------------------------
 
-type builtinEXCL struct {
+type BuiltinEXCL struct {
 	function
 }
 
-var _ Function = (*builtinEXCL)(nil)
+var _ Function = (*BuiltinEXCL)(nil)
 
-func newBuiltinEXCL() *builtinEXCL {
-	return &builtinEXCL{
+func newBuiltinEXCL() *BuiltinEXCL {
+	return &BuiltinEXCL{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeVoid,
@@ -790,27 +564,20 @@ func newBuiltinEXCL() *builtinEXCL {
 	}
 }
 
-func (f *builtinEXCL) Generate(g *Generator, args []Expr) error {
-	v := g.visitAndReturnValue(args[0])
-	b := g.visitAndReturnValue(args[1])
-	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
-	g.currentValue = g.currentBlock.NewXor(g.currentValue, constant.NewInt(types.I64, -1))
-	g.currentValue = g.currentBlock.NewAnd(v, g.currentValue)
-	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
-
-	return nil
+func (f *BuiltinEXCL) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinEXCL(f, args)
 }
 
 // ----- PACK -----------------------------------------------------------------
 
-type builtinPACK struct {
+type BuiltinPACK struct {
 	function
 }
 
-var _ Function = (*builtinPACK)(nil)
+var _ Function = (*BuiltinPACK)(nil)
 
-func newBuiltinPACK() *builtinPACK {
-	return &builtinPACK{
+func newBuiltinPACK() *BuiltinPACK {
+	return &BuiltinPACK{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeVoid,
@@ -823,20 +590,20 @@ func newBuiltinPACK() *builtinPACK {
 	}
 }
 
-func (f *builtinPACK) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinPACK.Generate is not implemented")
+func (f *BuiltinPACK) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinPACK(f, args)
 }
 
 // ----- UNPK -----------------------------------------------------------------
 
-type builtinUNPK struct {
+type BuiltinUNPK struct {
 	function
 }
 
-var _ Function = (*builtinUNPK)(nil)
+var _ Function = (*BuiltinUNPK)(nil)
 
-func newBuiltinUNPK() *builtinUNPK {
-	return &builtinUNPK{
+func newBuiltinUNPK() *BuiltinUNPK {
+	return &BuiltinUNPK{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeVoid,
@@ -849,20 +616,20 @@ func newBuiltinUNPK() *builtinUNPK {
 	}
 }
 
-func (f *builtinUNPK) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinUNPK.Generate is not implemented")
+func (f *BuiltinUNPK) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinUNPK(f, args)
 }
 
 // ----- NEW ------------------------------------------------------------------
 
-type builtinNEW struct {
+type BuiltinNEW struct {
 	function
 }
 
-var _ Function = (*builtinNEW)(nil)
+var _ Function = (*BuiltinNEW)(nil)
 
-func newBuiltinNEW() *builtinNEW {
-	return &builtinNEW{
+func newBuiltinNEW() *BuiltinNEW {
+	return &BuiltinNEW{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeVoid,
@@ -874,20 +641,20 @@ func newBuiltinNEW() *builtinNEW {
 	}
 }
 
-func (f *builtinNEW) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinNEW.Generate is not implemented")
+func (f *BuiltinNEW) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinNEW(f, args)
 }
 
 // ----- ASSERT ---------------------------------------------------------------
 
-type builtinASSERT struct {
+type BuiltinASSERT struct {
 	function
 }
 
-var _ Function = (*builtinASSERT)(nil)
+var _ Function = (*BuiltinASSERT)(nil)
 
-func newBuiltinASSERT() *builtinASSERT {
-	return &builtinASSERT{
+func newBuiltinASSERT() *BuiltinASSERT {
+	return &BuiltinASSERT{
 		function: newFunction([]functionOverload{
 			{
 				ReturnType: TypeVoid,
@@ -899,6 +666,6 @@ func newBuiltinASSERT() *builtinASSERT {
 	}
 }
 
-func (f *builtinASSERT) Generate(g *Generator, args []Expr) error {
-	return fmt.Errorf("builtinASSERT.Generate is not implemented")
+func (f *BuiltinASSERT) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinASSERT(f, args)
 }

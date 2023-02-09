@@ -20,7 +20,7 @@ type astPrinter struct {
 	out    io.Writer
 }
 
-var _ Visitor = (*astPrinter)(nil)
+var _ AstVisitor = (*astPrinter)(nil)
 
 func (p *astPrinter) Print(root Node) {
 	fmt.Fprintln(p.out, "## AST")
