@@ -23,13 +23,11 @@ func newFunction(overloads []functionOverload) function {
 }
 
 func (f function) Validate(args []Expr) (Type, error) {
-	// TODO(daniel): can we somehow check if an expression is a variable or constant? Maybe
-	// add a field to the DesignatorExpr?
 next:
 	for _, overload := range f.Overloads {
 		if len(overload.Args) == len(args) {
 			for i := 0; i < len(args); i++ {
-				if overload.Args[i].Type != args[i].Type() {
+				if !argMatches(overload.Args[i], args[i]) {
 					continue next
 				}
 			}
@@ -38,7 +36,23 @@ next:
 		}
 	}
 
-	return TypeVoid, fmt.Errorf("no overload found")
+	return TypeVoid, fmt.Errorf("no matching overload found")
+}
+
+func argMatches(param functionArg, arg Expr) bool {
+	if param.Type != arg.Type() {
+		return false
+	}
+
+	if param.Kind == KindUndefined {
+		return true
+	}
+
+	if designator, ok := arg.(*DesignatorExpr); ok {
+		return param.Kind == designator.Kind()
+	}
+
+	return true
 }
 
 type Function interface {
