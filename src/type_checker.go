@@ -4,10 +4,14 @@ import "fmt"
 
 func typeCheck(root Node) error {
 	checker := &typeChecker{
-		consts: make(map[string]ConstDecl),
-		vars:   make(map[string]VarDecl),
-		errors: nil,
+		consts:       make(map[string]ConstDecl),
+		vars:         make(map[string]VarDecl),
+		builtins:     make(map[string]Function),
+		errors:       nil,
+		currentValue: nil,
 	}
+
+	checker.registerBuiltins()
 
 	return checker.Check(root)
 }
@@ -15,6 +19,7 @@ func typeCheck(root Node) error {
 type typeChecker struct {
 	consts       map[string]ConstDecl
 	vars         map[string]VarDecl
+	builtins     map[string]Function
 	errors       []error
 	currentValue *Value
 }
@@ -28,6 +33,28 @@ func (c *typeChecker) Check(root Node) error {
 	root.Visit(c)
 
 	return c.Error()
+}
+
+func (c *typeChecker) registerBuiltins() {
+	c.builtins["print"] = newBuiltinPrint()
+	c.builtins["ABS"] = newBuiltinABS()
+	c.builtins["ODD"] = newBuiltinODD()
+	c.builtins["LSL"] = newBuiltinLSL()
+	c.builtins["ASR"] = newBuiltinASR()
+	c.builtins["ROR"] = newBuiltinROR()
+	c.builtins["LEN"] = newBuiltinLEN()
+	c.builtins["ORD"] = newBuiltinORD()
+	c.builtins["CHR"] = newBuiltinCHR()
+	c.builtins["FLOOR"] = newBuiltinFLOOR()
+	c.builtins["FLT"] = newBuiltinFLT()
+	c.builtins["INC"] = newBuiltinINC()
+	c.builtins["DEC"] = newBuiltinDEC()
+	c.builtins["INCL"] = newBuiltinINCL()
+	c.builtins["EXCL"] = newBuiltinEXCL()
+	c.builtins["PACK"] = newBuiltinPACK()
+	c.builtins["UNPK"] = newBuiltinUNPK()
+	c.builtins["NEW"] = newBuiltinNEW()
+	c.builtins["ASSERT"] = newBuiltinASSERT()
 }
 
 // TODO(daniel): improve error reporting. Maybe with a callback?
@@ -197,7 +224,7 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 		v.Visit(c)
 	}
 
-	if v, ok := builtin[e.Token().Text]; ok {
+	if v, ok := c.builtins[e.Token().Text]; ok {
 		t, err := v.Validate(e.args)
 		if err != nil {
 			c.errors = append(c.errors, err)
@@ -209,6 +236,7 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 
 		e.typ = t
 		e.constValue = c.currentValue
+		e.builtin = v
 	} else {
 		c.errors = append(c.errors, fmt.Errorf("builtin function %q not found", e.Token().Text))
 	}

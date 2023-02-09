@@ -56,6 +56,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] improve test coverage.
 - [x] factor out builtin functions.
 - [x] use visitor pattern for builtin functions.
+- [ ] split code into packages.
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
 - [ ] support local procedure calls (i.e. in the same module).

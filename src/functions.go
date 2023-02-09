@@ -67,42 +67,6 @@ type Function interface {
 	Visit(BuiltinVisitor, []Expr)
 }
 
-type Builtins map[string]Function
-
-func (b Builtins) register(name string, function Function) {
-	b[name] = function
-}
-
-//nolint:gochecknoglobals
-var builtin = Builtins{}
-
-func registerBuiltins() {
-	builtin.register("print", newBuiltinPrint())
-	builtin.register("ABS", newBuiltinABS())
-	builtin.register("ODD", newBuiltinODD())
-	builtin.register("LSL", newBuiltinLSL())
-	builtin.register("ASR", newBuiltinASR())
-	builtin.register("ROR", newBuiltinROR())
-	builtin.register("LEN", newBuiltinLEN())
-	builtin.register("ORD", newBuiltinORD())
-	builtin.register("CHR", newBuiltinCHR())
-	builtin.register("FLOOR", newBuiltinFLOOR())
-	builtin.register("FLT", newBuiltinFLT())
-	builtin.register("INC", newBuiltinINC())
-	builtin.register("DEC", newBuiltinDEC())
-	builtin.register("INCL", newBuiltinINCL())
-	builtin.register("EXCL", newBuiltinEXCL())
-	builtin.register("PACK", newBuiltinPACK())
-	builtin.register("UNPK", newBuiltinUNPK())
-	builtin.register("NEW", newBuiltinNEW())
-	builtin.register("ASSERT", newBuiltinASSERT())
-}
-
-func init() {
-	// TODO(daniel): don't use `init` functions!
-	registerBuiltins()
-}
-
 type BuiltinVisitor interface {
 	VisitBuiltinPrint(*BuiltinPrint, []Expr)
 	VisitBuiltinABS(*BuiltinABS, []Expr)

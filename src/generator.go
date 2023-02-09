@@ -218,8 +218,8 @@ func (g *Generator) VisitExprStmt(n *ExprStmt) {
 func (g *Generator) VisitCallExpr(n *CallExpr) {
 	name := n.Token().Text
 
-	if function, ok := builtin[name]; ok {
-		function.Visit(g, n.args)
+	if n.builtin != nil {
+		n.builtin.Visit(g, n.args)
 	} else {
 		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q", name))
 	}
