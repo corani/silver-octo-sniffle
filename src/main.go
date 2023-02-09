@@ -7,29 +7,35 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/corani/silver-octo-sniffle/ast"
+	"github.com/corani/silver-octo-sniffle/check"
+	"github.com/corani/silver-octo-sniffle/generate"
+	"github.com/corani/silver-octo-sniffle/lex"
+	"github.com/corani/silver-octo-sniffle/parse"
 )
 
 type CompilationResult struct {
-	tokens Tokens
-	ast    Node
+	tokens lex.Tokens
+	ast    ast.Node
 	ir     string
 	path   string
 }
 
 func do(srcName string, bs []byte) (CompilationResult, error) {
-	tokens, err := lex(srcName, bs)
+	tokens, err := lex.Tokenize(srcName, bs)
 	if err != nil {
 		return CompilationResult{}, err
 	}
 
-	ast, err := parse(tokens)
+	ast, err := parse.Parse(tokens)
 	if err != nil {
 		return CompilationResult{
 			tokens: tokens,
 		}, err
 	}
 
-	if err := typeCheck(ast); err != nil {
+	if err := check.TypeCheck(ast); err != nil {
 		return CompilationResult{
 			tokens: tokens,
 			ast:    ast,
@@ -61,7 +67,7 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 
 	var ir bytes.Buffer
 
-	if err := generateIR(io.MultiWriter(&ir, out), ast); err != nil {
+	if err := generate.GenerateIR(io.MultiWriter(&ir, out), ast); err != nil {
 		return CompilationResult{
 			tokens: tokens,
 			ast:    ast,

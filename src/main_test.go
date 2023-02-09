@@ -11,13 +11,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/corani/silver-octo-sniffle/ast"
 	"github.com/google/go-cmp/cmp"
 	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/ast"
-	"github.com/yuin/goldmark/text"
+	mdast "github.com/yuin/goldmark/ast"
+	mdtext "github.com/yuin/goldmark/text"
 )
 
-func getSpan(lines *text.Segments) (int, int) {
+func getSpan(lines *mdtext.Segments) (int, int) {
 	start := 0
 	end := 0
 
@@ -36,9 +37,9 @@ func getSpan(lines *text.Segments) (int, int) {
 	return start, end
 }
 
-func findSource(src []byte, node ast.Node) []byte {
-	if node.Kind() == ast.KindFencedCodeBlock {
-		code := node.(*ast.FencedCodeBlock)
+func findSource(src []byte, node mdast.Node) []byte {
+	if node.Kind() == mdast.KindFencedCodeBlock {
+		code := node.(*mdast.FencedCodeBlock)
 		start, end := getSpan(code.Lines())
 
 		return src[start:end]
@@ -66,7 +67,7 @@ func readGoldenTest(t *testing.T, path string) ([]byte, []byte) {
 	}
 
 	parser := goldmark.DefaultParser()
-	root := parser.Parse(text.NewReader(exp))
+	root := parser.Parse(mdtext.NewReader(exp))
 
 	source := findSource(exp, root)
 	if source == nil {
@@ -80,7 +81,7 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 	result, err := do(srcName, bs)
 	if err != nil {
 		if result.ast != nil {
-			printAST(os.Stdout, result.ast)
+			ast.PrintAST(os.Stdout, result.ast)
 		}
 
 		t.Fatal(err)
@@ -95,7 +96,7 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 
 	fmt.Fprintln(w, result.tokens)
 
-	printAST(w, result.ast)
+	ast.PrintAST(w, result.ast)
 
 	fmt.Fprintln(w, "## IR")
 	fmt.Fprintln(w, "```llvm")

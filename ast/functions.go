@@ -1,4 +1,4 @@
-package main
+package ast
 
 import (
 	"fmt"
@@ -26,26 +26,26 @@ func (f functionArg) matches(arg Expr) bool {
 }
 
 type functionOverload struct {
-	ReturnType Type
-	Args       []functionArg
+	returnType Type
+	args       []functionArg
 }
 
 func (f functionOverload) matches(args []Expr) (Type, bool) {
-	if len(f.Args) != len(args) {
+	if len(f.args) != len(args) {
 		return TypeVoid, false
 	}
 
 	for i := 0; i < len(args); i++ {
-		if !f.Args[i].matches(args[i]) {
+		if !f.args[i].matches(args[i]) {
 			return TypeVoid, false
 		}
 	}
 
-	return f.ReturnType, true
+	return f.returnType, true
 }
 
 type function struct {
-	Overloads []functionOverload
+	overloads []functionOverload
 }
 
 func newFunction(overloads []functionOverload) function {
@@ -53,7 +53,7 @@ func newFunction(overloads []functionOverload) function {
 }
 
 func (f function) Validate(args []Expr) (Type, error) {
-	for _, overload := range f.Overloads {
+	for _, overload := range f.overloads {
 		if t, ok := overload.matches(args); ok {
 			return t, nil
 		}
@@ -89,6 +89,30 @@ type BuiltinVisitor interface {
 	VisitBuiltinASSERT(*BuiltinASSERT, []Expr)
 }
 
+func GetBuiltinFunctions() map[string]Function {
+	return map[string]Function{
+		"print":  newBuiltinPrint(),
+		"ABS":    newBuiltinABS(),
+		"ODD":    newBuiltinODD(),
+		"LSL":    newBuiltinLSL(),
+		"ASR":    newBuiltinASR(),
+		"ROR":    newBuiltinROR(),
+		"LEN":    newBuiltinLEN(),
+		"ORD":    newBuiltinORD(),
+		"CHR":    newBuiltinCHR(),
+		"FLOOR":  newBuiltinFLOOR(),
+		"FLT":    newBuiltinFLT(),
+		"INC":    newBuiltinINC(),
+		"DEC":    newBuiltinDEC(),
+		"INCL":   newBuiltinINCL(),
+		"EXCL":   newBuiltinEXCL(),
+		"PACK":   newBuiltinPACK(),
+		"UNPK":   newBuiltinUNPK(),
+		"NEW":    newBuiltinNEW(),
+		"ASSERT": newBuiltinASSERT(),
+	}
+}
+
 // ----- print ----------------------------------------------------------------
 
 type BuiltinPrint struct {
@@ -101,38 +125,38 @@ func newBuiltinPrint() *BuiltinPrint {
 	return &BuiltinPrint{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeBoolean, Kind: KindUndefined},
 				},
 			},
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
 			},
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeFloat64, Kind: KindUndefined},
 				},
 			},
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeChar, Kind: KindUndefined},
 				},
 			},
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeString, Kind: KindUndefined},
 				},
 			},
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeSet, Kind: KindUndefined},
 				},
 			},
@@ -156,14 +180,14 @@ func newBuiltinABS() *BuiltinABS {
 	return &BuiltinABS{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeInt64,
-				Args: []functionArg{
+				returnType: TypeInt64,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
 			},
 			{
-				ReturnType: TypeFloat64,
-				Args: []functionArg{
+				returnType: TypeFloat64,
+				args: []functionArg{
 					{Type: TypeFloat64, Kind: KindUndefined},
 				},
 			},
@@ -187,8 +211,8 @@ func newBuiltinODD() *BuiltinODD {
 	return &BuiltinODD{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeBoolean,
-				Args: []functionArg{
+				returnType: TypeBoolean,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
 			},
@@ -212,8 +236,8 @@ func newBuiltinLSL() *BuiltinLSL {
 	return &BuiltinLSL{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeInt64,
-				Args: []functionArg{
+				returnType: TypeInt64,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindUndefined},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -238,8 +262,8 @@ func newBuiltinASR() *BuiltinASR {
 	return &BuiltinASR{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeInt64,
-				Args: []functionArg{
+				returnType: TypeInt64,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindUndefined},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -264,8 +288,8 @@ func newBuiltinROR() *BuiltinROR {
 	return &BuiltinROR{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeInt64,
-				Args: []functionArg{
+				returnType: TypeInt64,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindUndefined},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -290,14 +314,14 @@ func newBuiltinLEN() *BuiltinLEN {
 	return &BuiltinLEN{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeInt64,
-				Args: []functionArg{
+				returnType: TypeInt64,
+				args: []functionArg{
 					{Type: TypeArray, Kind: KindUndefined},
 				},
 			},
 			{
-				ReturnType: TypeInt64,
-				Args: []functionArg{
+				returnType: TypeInt64,
+				args: []functionArg{
 					{Type: TypeArray, Kind: KindUndefined},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -322,14 +346,14 @@ func newBuiltinORD() *BuiltinORD {
 	return &BuiltinORD{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeInt64,
-				Args: []functionArg{
+				returnType: TypeInt64,
+				args: []functionArg{
 					{Type: TypeChar, Kind: KindUndefined},
 				},
 			},
 			{
-				ReturnType: TypeInt64,
-				Args: []functionArg{
+				returnType: TypeInt64,
+				args: []functionArg{
 					{Type: TypeBoolean, Kind: KindUndefined},
 				},
 			},
@@ -353,8 +377,8 @@ func newBuiltinCHR() *BuiltinCHR {
 	return &BuiltinCHR{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeChar,
-				Args: []functionArg{
+				returnType: TypeChar,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
 			},
@@ -378,8 +402,8 @@ func newBuiltinFLOOR() *BuiltinFLOOR {
 	return &BuiltinFLOOR{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeInt64,
-				Args: []functionArg{
+				returnType: TypeInt64,
+				args: []functionArg{
 					{Type: TypeFloat64, Kind: KindUndefined},
 				},
 			},
@@ -403,8 +427,8 @@ func newBuiltinFLT() *BuiltinFLT {
 	return &BuiltinFLT{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeFloat64,
-				Args: []functionArg{
+				returnType: TypeFloat64,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
 			},
@@ -428,14 +452,14 @@ func newBuiltinINC() *BuiltinINC {
 	return &BuiltinINC{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindVar},
 				},
 			},
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindVar},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -460,14 +484,14 @@ func newBuiltinDEC() *BuiltinDEC {
 	return &BuiltinDEC{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindVar},
 				},
 			},
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeInt64, Kind: KindVar},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -492,8 +516,8 @@ func newBuiltinINCL() *BuiltinINCL {
 	return &BuiltinINCL{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeSet, Kind: KindVar},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -518,8 +542,8 @@ func newBuiltinEXCL() *BuiltinEXCL {
 	return &BuiltinEXCL{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeSet, Kind: KindVar},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -544,8 +568,8 @@ func newBuiltinPACK() *BuiltinPACK {
 	return &BuiltinPACK{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeFloat64, Kind: KindVar},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -570,8 +594,8 @@ func newBuiltinUNPK() *BuiltinUNPK {
 	return &BuiltinUNPK{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeFloat64, Kind: KindVar},
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
@@ -596,8 +620,8 @@ func newBuiltinNEW() *BuiltinNEW {
 	return &BuiltinNEW{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypePointer, Kind: KindVar},
 				},
 			},
@@ -621,8 +645,8 @@ func newBuiltinASSERT() *BuiltinASSERT {
 	return &BuiltinASSERT{
 		function: newFunction([]functionOverload{
 			{
-				ReturnType: TypeVoid,
-				Args: []functionArg{
+				returnType: TypeVoid,
+				args: []functionArg{
 					{Type: TypeBoolean, Kind: KindUndefined},
 				},
 			},

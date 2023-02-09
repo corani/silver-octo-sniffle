@@ -1,4 +1,4 @@
-package main
+package ast
 
 import "fmt"
 
@@ -45,6 +45,49 @@ type Value struct {
 	boolean bool
 	str     string
 	char    byte
+}
+
+func NewInt(v int) *Value {
+	return &Value{
+		typ:     TypeInt64,
+		integer: v,
+	}
+}
+
+func NewReal(v float64) *Value {
+	return &Value{
+		typ:  TypeFloat64,
+		real: v,
+	}
+}
+
+func NewChar(v byte) *Value {
+	return &Value{
+		typ:  TypeChar,
+		char: v,
+	}
+}
+
+func NewString(v string) *Value {
+	return &Value{
+		typ: TypeString,
+		str: v,
+	}
+}
+
+func NewBoolean(v bool) *Value {
+	return &Value{
+		typ:     TypeBoolean,
+		boolean: v,
+	}
+}
+
+// TODO(daniel): use a uint64 for type set?
+func NewSet(v int) *Value {
+	return &Value{
+		typ:     TypeSet,
+		integer: v,
+	}
 }
 
 func (v Value) Type() Type {
@@ -111,4 +154,8 @@ func (v Value) String() string {
 
 func (v Value) Bool() bool {
 	return v.boolean
+}
+
+func (v Value) Set() int {
+	return v.integer
 }

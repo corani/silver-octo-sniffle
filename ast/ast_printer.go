@@ -1,4 +1,4 @@
-package main
+package ast
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func printAST(w io.Writer, root Node) {
+func PrintAST(w io.Writer, root Node) {
 	printer := &astPrinter{
 		indent: 0,
 		out:    w,
@@ -39,15 +39,15 @@ func (p *astPrinter) VisitModule(n *Module) {
 	p.printf("(module %q", n.name)
 	p.indent++
 
-	if len(n.consts) != 0 {
+	if len(n.Consts()) != 0 {
 		p.printf("(consts")
 		p.indent++
 
-		for _, decl := range n.consts {
-			p.printf("(%v [%v]", decl.token.Text, decl.typ)
+		for _, decl := range n.Consts() {
+			p.printf("(%v [%v]", decl.Token().Text, decl.Type())
 			p.indent++
 
-			decl.expr.Visit(p)
+			decl.Expr().Visit(p)
 
 			p.indent--
 			p.printf(")")
@@ -57,19 +57,19 @@ func (p *astPrinter) VisitModule(n *Module) {
 		p.printf(")")
 	}
 
-	if len(n.vars) != 0 {
+	if len(n.Vars()) != 0 {
 		p.printf("(vars")
 		p.indent++
 
-		for _, decl := range n.vars {
-			p.printf("(%v [%v])", decl.token.Text, decl.typ)
+		for _, decl := range n.Vars() {
+			p.printf("(%v [%v])", decl.Token().Text, decl.Type())
 		}
 
 		p.indent--
 		p.printf(")")
 	}
 
-	n.stmts.Visit(p)
+	n.Block().Visit(p)
 
 	p.indent--
 	p.printf(")")
@@ -79,7 +79,7 @@ func (p *astPrinter) VisitStmtSequence(n *StmtSequence) {
 	p.printf("(stmts")
 	p.indent++
 
-	for _, stmt := range n.stmts {
+	for _, stmt := range n.Stmts() {
 		stmt.Visit(p)
 	}
 
@@ -91,7 +91,7 @@ func (p *astPrinter) VisitAssignStmt(n *AssignStmt) {
 	p.printf("(assign %v", n.Token().Text)
 	p.indent++
 
-	n.expr.Visit(p)
+	n.Expr().Visit(p)
 
 	p.indent--
 	p.printf(")")
@@ -101,9 +101,9 @@ func (p *astPrinter) VisitIfStmt(n *IfStmt) {
 	p.printf("(if")
 	p.indent++
 
-	n.expr.Visit(p)
-	n.trueBlock.Visit(p)
-	n.falseBlock.Visit(p)
+	n.Expr().Visit(p)
+	n.TrueBlock().Visit(p)
+	n.FalseBlock().Visit(p)
 
 	p.indent--
 	p.printf(")")
@@ -113,8 +113,9 @@ func (p *astPrinter) VisitRepeatStmt(n *RepeatStmt) {
 	p.printf("(repeat")
 	p.indent++
 
-	n.cond.stmt.Visit(p)
-	n.cond.expr.Visit(p)
+	cond := n.Condition()
+	cond.Stmt().Visit(p)
+	cond.Expr().Visit(p)
 
 	p.indent--
 	p.printf(")")
@@ -124,12 +125,12 @@ func (p *astPrinter) VisitWhileStmt(n *WhileStmt) {
 	p.printf("(while")
 	p.indent++
 
-	for _, c := range n.conds {
+	for _, c := range n.Conditions() {
 		p.printf("(cond")
 		p.indent++
 
-		c.expr.Visit(p)
-		c.stmt.Visit(p)
+		c.Expr().Visit(p)
+		c.Stmt().Visit(p)
 
 		p.indent--
 		p.printf(")")
@@ -140,13 +141,13 @@ func (p *astPrinter) VisitWhileStmt(n *WhileStmt) {
 }
 
 func (p *astPrinter) VisitForStmt(n *ForStmt) {
-	p.printf("(for %v", n.iter.Text)
+	p.printf("(for %v", n.Iter().Text)
 	p.indent++
 
-	n.from.Visit(p)
-	n.to.Visit(p)
-	n.by.Visit(p)
-	n.stmt.Visit(p)
+	n.From().Visit(p)
+	n.To().Visit(p)
+	n.By().Visit(p)
+	n.Stmt().Visit(p)
 
 	p.indent--
 	p.printf(")")
@@ -156,7 +157,7 @@ func (p *astPrinter) VisitExprStmt(n *ExprStmt) {
 	p.printf("(expr2stmt")
 	p.indent++
 
-	n.expr.Visit(p)
+	n.Expr().Visit(p)
 
 	p.indent--
 	p.printf(")")
@@ -166,7 +167,7 @@ func (p *astPrinter) VisitCallExpr(n *CallExpr) {
 	p.printf("(call %q [%v]", n.Token().Text, n.typ)
 	p.indent++
 
-	for _, arg := range n.args {
+	for _, arg := range n.Args() {
 		arg.Visit(p)
 	}
 
@@ -178,7 +179,7 @@ func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
 	p.printf("(%v [%v]", n.Token().Type, n.typ)
 	p.indent++
 
-	for _, arg := range n.args {
+	for _, arg := range n.Args() {
 		arg.Visit(p)
 	}
 
@@ -217,12 +218,14 @@ func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
 
 func (p *astPrinter) VisitSetExpr(n *SetExpr) {
 	// condense ranges in the list of bits.
-	var bits []string
+	var parts []string
 
 	start := -1
 
-	for i := 0; i < len(n.bits); i++ {
-		if i < len(n.bits)-1 && n.bits[i]+1 == n.bits[i+1] {
+	bits := n.Bits()
+
+	for i := 0; i < len(bits); i++ {
+		if i < len(bits)-1 && bits[i]+1 == bits[i+1] {
 			if start < 0 {
 				start = i
 			}
@@ -233,21 +236,21 @@ func (p *astPrinter) VisitSetExpr(n *SetExpr) {
 
 		if start >= 0 {
 			// finished range
-			bits = append(bits, fmt.Sprintf("%d..%d", n.bits[start], n.bits[i]))
+			parts = append(parts, fmt.Sprintf("%d..%d", bits[start], bits[i]))
 			start = -1
 		} else {
-			bits = append(bits, fmt.Sprintf("%d", n.bits[i]))
+			parts = append(parts, fmt.Sprintf("%d", bits[i]))
 		}
 	}
 
-	p.printf("(set (%s))", strings.Join(bits, ", "))
+	p.printf("(set (%s))", strings.Join(parts, ", "))
 }
 
 func (p *astPrinter) VisitNotExpr(n *NotExpr) {
 	p.printf("(not [%v]", n.Type())
 	p.indent++
 
-	n.expr.Visit(p)
+	n.Expr().Visit(p)
 
 	p.indent--
 	p.printf(")")
