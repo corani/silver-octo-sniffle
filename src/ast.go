@@ -231,6 +231,10 @@ func (n *DesignatorExpr) Type() Type {
 	return n.typ
 }
 
+func (n *DesignatorExpr) Kind() Kind {
+	return n.kind
+}
+
 func (n *DesignatorExpr) ConstValue() *Value {
 	return n.constValue
 }
