@@ -1,4 +1,4 @@
-package main
+package lex
 
 import (
 	"encoding/hex"
@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func lex(name string, bs []byte) (Tokens, error) {
+func Tokenize(name string, bs []byte) (Tokens, error) {
 	var result Tokens
 
 	row := 1

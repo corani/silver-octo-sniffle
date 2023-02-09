@@ -1,9 +1,11 @@
-package main
+package generate
 
 import (
 	"fmt"
 	"io"
 
+	"github.com/corani/silver-octo-sniffle/ast"
+	"github.com/corani/silver-octo-sniffle/lex"
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/enum"
@@ -13,14 +15,14 @@ import (
 
 var zero = constant.NewInt(types.I64, 0)
 
-func generateIR(writer io.Writer, root Node) error {
+func GenerateIR(writer io.Writer, root ast.Node) error {
 	g := &Generator{
 		currentModule: ir.NewModule(),
 		currentBlock:  nil,
 		currentValue:  nil,
 		stdlib:        make(map[string]*ir.Func),
 		strings:       make(map[string]*ir.Global),
-		consts:        make(map[string]Value),
+		consts:        make(map[string]*ast.Value),
 		vars:          make(map[string]*ir.Global),
 	}
 
@@ -41,17 +43,17 @@ type Generator struct {
 	currentValue  value.Value
 	stdlib        map[string]*ir.Func
 	strings       map[string]*ir.Global
-	consts        map[string]Value
+	consts        map[string]*ast.Value
 	vars          map[string]*ir.Global
 	errors        []error
 }
 
 var (
-	_ AstVisitor     = (*Generator)(nil)
-	_ BuiltinVisitor = (*Generator)(nil)
+	_ ast.AstVisitor     = (*Generator)(nil)
+	_ ast.BuiltinVisitor = (*Generator)(nil)
 )
 
-func (g *Generator) Generate(root Node) (*ir.Module, error) {
+func (g *Generator) Generate(root ast.Node) (*ir.Module, error) {
 	g.generateStdlib()
 
 	root.Visit(g)
@@ -74,52 +76,52 @@ func (g *Generator) Error() error {
 	return fmt.Errorf(txt)
 }
 
-func (g *Generator) VisitModule(n *Module) {
-	for _, decl := range n.consts {
-		g.consts[decl.token.Text] = decl.value
+func (g *Generator) VisitModule(n *ast.Module) {
+	for _, decl := range n.Consts() {
+		g.consts[decl.Token().Text] = decl.Value()
 	}
 
-	for _, decl := range n.vars {
-		switch decl.typ {
-		case TypeInt64, TypeSet:
-			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I64, 0))
-		case TypeFloat64:
-			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewFloat(types.Double, 0))
-		case TypeBoolean:
-			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I1, 0))
-		case TypeChar:
-			g.vars[decl.token.Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I8, 0))
+	for _, decl := range n.Vars() {
+		switch decl.Type() {
+		case ast.TypeInt64, ast.TypeSet:
+			g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I64, 0))
+		case ast.TypeFloat64:
+			g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewFloat(types.Double, 0))
+		case ast.TypeBoolean:
+			g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I1, 0))
+		case ast.TypeChar:
+			g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I8, 0))
 		default:
-			panic(fmt.Sprintf("don't know how to declare global variable of type %s", decl.typ))
+			panic(fmt.Sprintf("don't know how to declare global variable of type %s", decl.Type()))
 		}
 	}
 
 	// TODO(daniel): is it correct that only the "main" module has statements, so that we can
 	// generate an entry-point from them?
-	if n.stmts != nil {
+	if n.Block() != nil {
 		g.currentFunc = g.currentModule.NewFunc("main", types.I64)
 		g.currentBlock = g.currentFunc.NewBlock("entry")
 
-		n.stmts.Visit(g)
+		n.Block().Visit(g)
 
 		g.currentBlock.NewRet(zero)
 	}
 }
 
-func (g *Generator) VisitStmtSequence(n *StmtSequence) {
-	for _, stmt := range n.stmts {
+func (g *Generator) VisitStmtSequence(n *ast.StmtSequence) {
+	for _, stmt := range n.Stmts() {
 		stmt.Visit(g)
 	}
 }
 
-func (g *Generator) VisitAssignStmt(n *AssignStmt) {
-	expr := g.visitAndReturnValue(n.expr)
+func (g *Generator) VisitAssignStmt(n *ast.AssignStmt) {
+	expr := g.visitAndReturnValue(n.Expr())
 
-	g.currentBlock.NewStore(expr, g.vars[n.token.Text])
+	g.currentBlock.NewStore(expr, g.vars[n.Token().Text])
 }
 
-func (g *Generator) VisitIfStmt(n *IfStmt) {
-	condition := g.visitAndReturnValue(n.expr)
+func (g *Generator) VisitIfStmt(n *ast.IfStmt) {
+	condition := g.visitAndReturnValue(n.Expr())
 
 	trueBlk := g.currentFunc.NewBlock("")
 	falseBlk := g.currentFunc.NewBlock("")
@@ -128,32 +130,34 @@ func (g *Generator) VisitIfStmt(n *IfStmt) {
 	g.currentBlock.NewCondBr(condition, trueBlk, falseBlk)
 
 	g.currentBlock = trueBlk
-	n.trueBlock.Visit(g)
+	n.TrueBlock().Visit(g)
 	g.currentBlock.NewBr(endBlk)
 
 	g.currentBlock = falseBlk
-	n.falseBlock.Visit(g)
+	n.FalseBlock().Visit(g)
 	g.currentBlock.NewBr(endBlk)
 
 	g.currentBlock = endBlk
 }
 
-func (g *Generator) VisitRepeatStmt(n *RepeatStmt) {
+func (g *Generator) VisitRepeatStmt(n *ast.RepeatStmt) {
 	startBlk := g.currentFunc.NewBlock("")
 	doneBlk := g.currentFunc.NewBlock("")
 
 	g.currentBlock.NewBr(startBlk)
 	g.currentBlock = startBlk
 
-	n.cond.stmt.Visit(g)
+	cond := n.Condition()
 
-	cond := g.visitAndReturnValue(n.cond.expr)
+	cond.Stmt().Visit(g)
 
-	g.currentBlock.NewCondBr(cond, doneBlk, startBlk)
+	v := g.visitAndReturnValue(cond.Expr())
+
+	g.currentBlock.NewCondBr(v, doneBlk, startBlk)
 	g.currentBlock = doneBlk
 }
 
-func (g *Generator) VisitWhileStmt(n *WhileStmt) {
+func (g *Generator) VisitWhileStmt(n *ast.WhileStmt) {
 	var startBlk, condBlk, bodyBlk, doneBlk *ir.Block
 
 	condBlk = g.currentFunc.NewBlock("")
@@ -161,16 +165,16 @@ func (g *Generator) VisitWhileStmt(n *WhileStmt) {
 
 	g.currentBlock.NewBr(condBlk)
 
-	for _, cond := range n.conds {
+	for _, cond := range n.Conditions() {
 		bodyBlk = g.currentFunc.NewBlock("")
 		doneBlk = g.currentFunc.NewBlock("")
 
 		g.currentBlock = condBlk
-		value := g.visitAndReturnValue(cond.expr)
+		value := g.visitAndReturnValue(cond.Expr())
 		g.currentBlock.NewCondBr(value, bodyBlk, doneBlk)
 
 		g.currentBlock = bodyBlk
-		cond.stmt.Visit(g)
+		cond.Stmt().Visit(g)
 		g.currentBlock.NewBr(startBlk)
 
 		condBlk = doneBlk
@@ -179,27 +183,27 @@ func (g *Generator) VisitWhileStmt(n *WhileStmt) {
 	g.currentBlock = doneBlk
 }
 
-func (g *Generator) VisitForStmt(n *ForStmt) {
+func (g *Generator) VisitForStmt(n *ast.ForStmt) {
 	bodyBlk := g.currentFunc.NewBlock("")
 	doneBlk := g.currentFunc.NewBlock("")
 
-	fromv := g.visitAndReturnValue(n.from)
-	incrv := g.visitAndReturnValue(n.by)
+	fromv := g.visitAndReturnValue(n.From())
+	incrv := g.visitAndReturnValue(n.By())
 
-	g.currentBlock.NewStore(fromv, g.vars[n.iter.Text])
+	g.currentBlock.NewStore(fromv, g.vars[n.Iter().Text])
 	g.currentBlock.NewBr(bodyBlk)
 
 	g.currentBlock = bodyBlk
-	n.stmt.Visit(g)
+	n.Stmt().Visit(g)
 
-	oldv := g.currentBlock.NewLoad(g.vars[n.iter.Text].ContentType, g.vars[n.iter.Text])
+	oldv := g.currentBlock.NewLoad(g.vars[n.Iter().Text].ContentType, g.vars[n.Iter().Text])
 	newv := g.currentBlock.NewAdd(oldv, incrv)
-	g.currentBlock.NewStore(newv, g.vars[n.iter.Text])
-	tov := g.visitAndReturnValue(n.to)
+	g.currentBlock.NewStore(newv, g.vars[n.Iter().Text])
+	tov := g.visitAndReturnValue(n.To())
 
 	var cond value.Value
 
-	if n.by.ConstValue().Int() > 0 {
+	if n.By().ConstValue().Int() > 0 {
 		cond = g.currentBlock.NewICmp(enum.IPredSLE, newv, tov)
 	} else {
 		cond = g.currentBlock.NewICmp(enum.IPredSGE, newv, tov)
@@ -210,35 +214,35 @@ func (g *Generator) VisitForStmt(n *ForStmt) {
 	g.currentBlock = doneBlk
 }
 
-func (g *Generator) VisitExprStmt(n *ExprStmt) {
+func (g *Generator) VisitExprStmt(n *ast.ExprStmt) {
 	// NOTE(daniel): ignore the result.
-	n.expr.Visit(g)
+	n.Expr().Visit(g)
 }
 
-func (g *Generator) VisitCallExpr(n *CallExpr) {
+func (g *Generator) VisitCallExpr(n *ast.CallExpr) {
 	name := n.Token().Text
 
-	if n.builtin != nil {
-		n.builtin.Visit(g, n.args)
+	if fn := n.Builtin(); fn != nil {
+		fn.Visit(g, n.Args())
 	} else {
 		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q", name))
 	}
 }
 
-func (g *Generator) VisitBinaryExpr(n *BinaryExpr) {
-	left := g.visitAndReturnValue(n.args[0])
-	right := g.visitAndReturnValue(n.args[1])
+func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
+	left := g.visitAndReturnValue(n.Lhs())
+	right := g.visitAndReturnValue(n.Rhs())
 
 	if !left.Type().Equal(right.Type()) {
 		g.errors = append(g.errors, fmt.Errorf("types are different in %s",
-			n.token.Type))
+			n.Token().Type))
 	}
 
 	// TODO(daniel): check if set operations are correct!
-	switch n.token.Type {
-	case TokenMinus:
+	switch n.Token().Type {
+	case lex.TokenMinus:
 		if left.Type().Equal(types.I64) {
-			if n.args[0].Type() == TypeSet {
+			if n.Lhs().Type() == ast.TypeSet {
 				// SET difference
 				g.currentValue = g.currentBlock.NewXor(right, constant.NewInt(types.I64, -1))
 				g.currentValue = g.currentBlock.NewAnd(left, g.currentValue)
@@ -250,9 +254,9 @@ func (g *Generator) VisitBinaryExpr(n *BinaryExpr) {
 			// REAL subtraction
 			g.currentValue = g.currentBlock.NewFSub(left, right)
 		}
-	case TokenPlus:
+	case lex.TokenPlus:
 		if left.Type().Equal(types.I64) {
-			if n.args[0].Type() == TypeSet {
+			if n.Lhs().Type() == ast.TypeSet {
 				// SET union
 				g.currentValue = g.currentBlock.NewOr(left, right)
 			} else {
@@ -263,9 +267,9 @@ func (g *Generator) VisitBinaryExpr(n *BinaryExpr) {
 			// REAL addition
 			g.currentValue = g.currentBlock.NewFAdd(left, right)
 		}
-	case TokenAsterisk:
+	case lex.TokenAsterisk:
 		if left.Type().Equal(types.I64) {
-			if n.args[0].Type() == TypeSet {
+			if n.Lhs().Type() == ast.TypeSet {
 				// SET intersection
 				g.currentValue = g.currentBlock.NewAnd(left, right)
 			} else {
@@ -276,127 +280,127 @@ func (g *Generator) VisitBinaryExpr(n *BinaryExpr) {
 			// REAL multiplication
 			g.currentValue = g.currentBlock.NewFMul(left, right)
 		}
-	case TokenSlash:
-		if n.args[0].Type() == TypeSet {
+	case lex.TokenSlash:
+		if n.Lhs().Type() == ast.TypeSet {
 			// SET symmetric difference
 			g.currentValue = g.currentBlock.NewXor(left, right)
 		} else {
 			// REAL division
 			g.currentValue = g.currentBlock.NewFDiv(left, right)
 		}
-	case TokenDIV:
+	case lex.TokenDIV:
 		// INTEGER division
 		g.currentValue = g.currentBlock.NewSDiv(left, right)
-	case TokenMOD:
+	case lex.TokenMOD:
 		// INTEGER modulus
 		g.currentValue = g.currentBlock.NewSRem(left, right)
-	case TokenAmpersand:
+	case lex.TokenAmpersand:
 		// logical AND
 		g.currentValue = g.currentBlock.NewAnd(left, right)
-	case TokenOR:
+	case lex.TokenOR:
 		// logical OR
 		g.currentValue = g.currentBlock.NewOr(left, right)
-	case TokenEQ:
+	case lex.TokenEQ:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, left, right)
 		} else {
 			// TODO(daniel): do we need "ordered" or "unordered" float compares?
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUEQ, left, right)
 		}
-	case TokenNE:
+	case lex.TokenNE:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredNE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUNE, left, right)
 		}
-	case TokenLT:
+	case lex.TokenLT:
 		if _, ok := left.Type().(*types.IntType); ok {
 			// TODO(daniel): "signed" or "unsigned" integer compares?
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLT, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULT, left, right)
 		}
-	case TokenLE:
+	case lex.TokenLE:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULE, left, right)
 		}
-	case TokenGE:
+	case lex.TokenGE:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGE, left, right)
 		}
-	case TokenGT:
+	case lex.TokenGT:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGT, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGT, left, right)
 		}
-	case TokenIN:
+	case lex.TokenIN:
 		g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), left)
 		g.currentValue = g.currentBlock.NewAnd(right, g.currentValue)
 		g.currentValue = g.currentBlock.NewICmp(enum.IPredNE, g.currentValue, zero)
 	default:
-		g.errors = append(g.errors, fmt.Errorf("unsupported token type: %+v", n.token))
+		g.errors = append(g.errors, fmt.Errorf("unsupported token type: %+v", n.Token()))
 	}
 }
 
-func (g *Generator) VisitDesignatorExpr(n *DesignatorExpr) {
-	if v, ok := g.consts[n.token.Text]; ok {
+func (g *Generator) VisitDesignatorExpr(n *ast.DesignatorExpr) {
+	if v, ok := g.consts[n.Token().Text]; ok {
 		switch v.Type() {
-		case TypeInt64, TypeSet:
+		case ast.TypeInt64, ast.TypeSet:
 			g.currentValue = constant.NewInt(types.I64, int64(v.Int()))
-		case TypeFloat64:
+		case ast.TypeFloat64:
 			g.currentValue = constant.NewFloat(types.Double, v.Real())
-		case TypeBoolean:
+		case ast.TypeBoolean:
 			g.currentValue = constant.NewBool(v.Bool())
 		}
-	} else if v, ok := g.vars[n.token.Text]; ok {
+	} else if v, ok := g.vars[n.Token().Text]; ok {
 		g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
 	}
 }
 
-func (g *Generator) VisitNumberExpr(n *NumberExpr) {
+func (g *Generator) VisitNumberExpr(n *ast.NumberExpr) {
 	switch n.Type() {
-	case TypeInt64:
-		g.currentValue = constant.NewInt(types.I64, int64(n.token.Int))
-	case TypeFloat64:
-		g.currentValue = constant.NewFloat(types.Double, n.token.Real)
+	case ast.TypeInt64:
+		g.currentValue = constant.NewInt(types.I64, int64(n.Token().Int))
+	case ast.TypeFloat64:
+		g.currentValue = constant.NewFloat(types.Double, n.Token().Real)
 	}
 }
 
-func (g *Generator) VisitStringExpr(n *StringExpr) {
-	str := g.internString(n.token.Text + "\000")
+func (g *Generator) VisitStringExpr(n *ast.StringExpr) {
+	str := g.internString(n.Token().Text + "\000")
 
 	g.currentValue = g.currentBlock.NewGetElementPtr(str.ContentType, str, zero, zero)
 }
 
-func (g *Generator) VisitCharExpr(n *CharExpr) {
-	g.currentValue = constant.NewInt(types.I8, int64(n.constValue.Int()))
+func (g *Generator) VisitCharExpr(n *ast.CharExpr) {
+	g.currentValue = constant.NewInt(types.I8, int64(n.ConstValue().Int()))
 }
 
-func (g *Generator) VisitBooleanExpr(n *BooleanExpr) {
-	if n.token.Bool {
+func (g *Generator) VisitBooleanExpr(n *ast.BooleanExpr) {
+	if n.Token().Bool {
 		g.currentValue = constant.True
 	} else {
 		g.currentValue = constant.False
 	}
 }
 
-func (g *Generator) VisitSetExpr(n *SetExpr) {
-	g.currentValue = constant.NewInt(types.I64, int64(n.constValue.Int()))
+func (g *Generator) VisitSetExpr(n *ast.SetExpr) {
+	g.currentValue = constant.NewInt(types.I64, int64(n.ConstValue().Int()))
 }
 
-func (g *Generator) VisitNotExpr(n *NotExpr) {
-	val := g.visitAndReturnValue(n.expr)
+func (g *Generator) VisitNotExpr(n *ast.NotExpr) {
+	val := g.visitAndReturnValue(n.Expr())
 
 	// TODO(daniel): is this how you do it?
 	g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, val, constant.NewInt(types.I1, 0))
 }
 
-func (g *Generator) visitAndReturnValue(n Node) value.Value {
+func (g *Generator) visitAndReturnValue(n ast.Node) value.Value {
 	n.Visit(g)
 
 	return g.currentValue
@@ -432,51 +436,51 @@ func (g *Generator) internString(s string) *ir.Global {
 
 // ----- builtin functions ----------------------------------------------------
 
-func (g *Generator) VisitBuiltinABS(f *BuiltinABS, args []Expr) {
+func (g *Generator) VisitBuiltinABS(f *ast.BuiltinABS, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinODD(f *BuiltinODD, args []Expr) {
+func (g *Generator) VisitBuiltinODD(f *ast.BuiltinODD, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinLSL(f *BuiltinLSL, args []Expr) {
+func (g *Generator) VisitBuiltinLSL(f *ast.BuiltinLSL, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinASR(f *BuiltinASR, args []Expr) {
+func (g *Generator) VisitBuiltinASR(f *ast.BuiltinASR, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinROR(f *BuiltinROR, args []Expr) {
+func (g *Generator) VisitBuiltinROR(f *ast.BuiltinROR, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinLEN(f *BuiltinLEN, args []Expr) {
+func (g *Generator) VisitBuiltinLEN(f *ast.BuiltinLEN, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinORD(f *BuiltinORD, args []Expr) {
+func (g *Generator) VisitBuiltinORD(f *ast.BuiltinORD, args []ast.Expr) {
 	switch args[0].Type() {
-	case TypeBoolean:
+	case ast.TypeBoolean:
 		v := g.visitAndReturnValue(args[0])
 		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
-	case TypeChar:
+	case ast.TypeChar:
 		v := g.visitAndReturnValue(args[0])
 		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
 	}
 }
 
-func (g *Generator) VisitBuiltinCHR(f *BuiltinCHR, args []Expr) {
+func (g *Generator) VisitBuiltinCHR(f *ast.BuiltinCHR, args []ast.Expr) {
 	v := g.visitAndReturnValue(args[0])
 	g.currentValue = g.currentBlock.NewTrunc(v, types.I8)
 }
 
-func (g *Generator) VisitBuiltinFLOOR(f *BuiltinFLOOR, args []Expr) {
+func (g *Generator) VisitBuiltinFLOOR(f *ast.BuiltinFLOOR, args []ast.Expr) {
 	v := g.visitAndReturnValue(args[0])
 	g.currentValue = g.currentBlock.NewFPToSI(v, types.I64)
 }
 
-func (g *Generator) VisitBuiltinFLT(f *BuiltinFLT, args []Expr) {
+func (g *Generator) VisitBuiltinFLT(f *ast.BuiltinFLT, args []ast.Expr) {
 	v := g.visitAndReturnValue(args[0])
 	g.currentValue = g.currentBlock.NewSIToFP(v, types.Double)
 }
 
-func (g *Generator) VisitBuiltinINC(f *BuiltinINC, args []Expr) {
+func (g *Generator) VisitBuiltinINC(f *ast.BuiltinINC, args []ast.Expr) {
 	offset := 1
 
 	if len(args) == 2 {
@@ -491,7 +495,7 @@ func (g *Generator) VisitBuiltinINC(f *BuiltinINC, args []Expr) {
 	}
 }
 
-func (g *Generator) VisitBuiltinDEC(f *BuiltinDEC, args []Expr) {
+func (g *Generator) VisitBuiltinDEC(f *ast.BuiltinDEC, args []ast.Expr) {
 	offset := 1
 
 	if len(args) == 2 {
@@ -506,7 +510,7 @@ func (g *Generator) VisitBuiltinDEC(f *BuiltinDEC, args []Expr) {
 	}
 }
 
-func (g *Generator) VisitBuiltinINCL(f *BuiltinINCL, args []Expr) {
+func (g *Generator) VisitBuiltinINCL(f *ast.BuiltinINCL, args []ast.Expr) {
 	v := g.visitAndReturnValue(args[0])
 	b := g.visitAndReturnValue(args[1])
 	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
@@ -514,7 +518,7 @@ func (g *Generator) VisitBuiltinINCL(f *BuiltinINCL, args []Expr) {
 	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
 }
 
-func (g *Generator) VisitBuiltinEXCL(f *BuiltinEXCL, args []Expr) {
+func (g *Generator) VisitBuiltinEXCL(f *ast.BuiltinEXCL, args []ast.Expr) {
 	v := g.visitAndReturnValue(args[0])
 	b := g.visitAndReturnValue(args[1])
 	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
@@ -523,34 +527,34 @@ func (g *Generator) VisitBuiltinEXCL(f *BuiltinEXCL, args []Expr) {
 	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
 }
 
-func (g *Generator) VisitBuiltinPACK(f *BuiltinPACK, args []Expr) {
+func (g *Generator) VisitBuiltinPACK(f *ast.BuiltinPACK, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinUNPK(f *BuiltinUNPK, args []Expr) {
+func (g *Generator) VisitBuiltinUNPK(f *ast.BuiltinUNPK, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinNEW(f *BuiltinNEW, args []Expr) {
+func (g *Generator) VisitBuiltinNEW(f *ast.BuiltinNEW, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinASSERT(f *BuiltinASSERT, args []Expr) {
+func (g *Generator) VisitBuiltinASSERT(f *ast.BuiltinASSERT, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinPrint(f *BuiltinPrint, args []Expr) {
+func (g *Generator) VisitBuiltinPrint(f *ast.BuiltinPrint, args []ast.Expr) {
 	arg := args[0]
 
 	// NOTE(daniel): we could probably do something smarter here, but for now this works.
 	switch arg.Type() {
-	case TypeInt64:
+	case ast.TypeInt64:
 		g.printInteger(arg)
-	case TypeFloat64:
+	case ast.TypeFloat64:
 		g.printReal(arg)
-	case TypeString:
+	case ast.TypeString:
 		g.printString(arg)
-	case TypeBoolean:
+	case ast.TypeBoolean:
 		g.printBoolean(arg)
-	case TypeChar:
+	case ast.TypeChar:
 		g.printChar(arg)
-	case TypeSet:
+	case ast.TypeSet:
 		g.printSet(arg)
 	default:
 		g.errors = append(g.errors, fmt.Errorf("don't know how to print type: %s",
@@ -558,7 +562,7 @@ func (g *Generator) VisitBuiltinPrint(f *BuiltinPrint, args []Expr) {
 	}
 }
 
-func (g *Generator) printInteger(arg Expr) {
+func (g *Generator) printInteger(arg ast.Expr) {
 	number := g.visitAndReturnValue(arg)
 
 	format := g.internString("%d\n\000")
@@ -567,7 +571,7 @@ func (g *Generator) printInteger(arg Expr) {
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
 }
 
-func (g *Generator) printReal(arg Expr) {
+func (g *Generator) printReal(arg ast.Expr) {
 	number := g.visitAndReturnValue(arg)
 
 	format := g.internString("%f\n\000")
@@ -576,13 +580,13 @@ func (g *Generator) printReal(arg Expr) {
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
 }
 
-func (g *Generator) printString(arg Expr) {
+func (g *Generator) printString(arg ast.Expr) {
 	str := g.visitAndReturnValue(arg)
 
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
 }
 
-func (g *Generator) printBoolean(arg Expr) {
+func (g *Generator) printBoolean(arg ast.Expr) {
 	TRUE := g.internString("TRUE\000")
 	FALSE := g.internString("FALSE\000")
 
@@ -607,7 +611,7 @@ func (g *Generator) printBoolean(arg Expr) {
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], strptr)
 }
 
-func (g *Generator) printChar(arg Expr) {
+func (g *Generator) printChar(arg ast.Expr) {
 	v := g.visitAndReturnValue(arg)
 
 	format := g.internString("%c\n\000")
@@ -616,7 +620,7 @@ func (g *Generator) printChar(arg Expr) {
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, v)
 }
 
-func (g *Generator) printSet(arg Expr) {
+func (g *Generator) printSet(arg ast.Expr) {
 	// TODO(daniel): can we get a better print for sets?
 	g.printInteger(arg)
 }

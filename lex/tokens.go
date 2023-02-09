@@ -1,4 +1,4 @@
-package main
+package lex
 
 import (
 	"fmt"
@@ -178,7 +178,7 @@ func (t Token) String() string {
 	return fmt.Sprintf("%s:%d:%d:\t%v\t%q\t%v\t%d\t%f\t%v", t.File, t.Range.FromRow, t.Range.FromCol, t.Type, t.Text, t.Bool, t.Int, t.Real, t.Range)
 }
 
-func (t Token) isRelation() bool {
+func (t Token) IsRelation() bool {
 	relations := []TokenType{TokenEQ, TokenNE, TokenLT, TokenLE, TokenGE, TokenGT, TokenIN, TokenIS}
 
 	for _, v := range relations {
