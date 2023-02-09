@@ -412,6 +412,7 @@ type CallExpr struct {
 	typ        Type
 	args       []Expr
 	constValue *Value
+	builtin    Function
 }
 
 var _ Expr = (*CallExpr)(nil)
