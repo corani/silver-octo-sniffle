@@ -201,8 +201,15 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 			return
 		}
 
+		cv, err := v.ConstValue(e.args)
+		if err != nil {
+			c.errors = append(c.errors, err)
+
+			return
+		}
+
 		e.typ = t
-		e.constValue = v.ConstValue(e.args)
+		e.constValue = cv
 	} else {
 		c.errors = append(c.errors, fmt.Errorf("builtin function %q not found", e.Token().Text))
 	}
