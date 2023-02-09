@@ -14,7 +14,7 @@ import (
 var zero = constant.NewInt(types.I64, 0)
 
 func generateIR(writer io.Writer, root Node) error {
-	g := &generator{
+	g := &Generator{
 		currentModule: ir.NewModule(),
 		currentBlock:  nil,
 		currentValue:  nil,
@@ -34,7 +34,7 @@ func generateIR(writer io.Writer, root Node) error {
 	return nil
 }
 
-type generator struct {
+type Generator struct {
 	currentModule *ir.Module
 	currentFunc   *ir.Func
 	currentBlock  *ir.Block
@@ -46,9 +46,9 @@ type generator struct {
 	errors        []error
 }
 
-var _ Visitor = (*generator)(nil)
+var _ Visitor = (*Generator)(nil)
 
-func (g *generator) Generate(root Node) (*ir.Module, error) {
+func (g *Generator) Generate(root Node) (*ir.Module, error) {
 	g.generateStdlib()
 
 	root.Visit(g)
@@ -57,7 +57,7 @@ func (g *generator) Generate(root Node) (*ir.Module, error) {
 }
 
 // TODO(daniel): improve error reporting. Maybe with a callback?
-func (g *generator) Error() error {
+func (g *Generator) Error() error {
 	if len(g.errors) == 0 {
 		return nil
 	}
@@ -71,7 +71,7 @@ func (g *generator) Error() error {
 	return fmt.Errorf(txt)
 }
 
-func (g *generator) VisitModule(n *Module) {
+func (g *Generator) VisitModule(n *Module) {
 	for _, decl := range n.consts {
 		g.consts[decl.token.Text] = decl.value
 	}
@@ -103,19 +103,19 @@ func (g *generator) VisitModule(n *Module) {
 	}
 }
 
-func (g *generator) VisitStmtSequence(n *StmtSequence) {
+func (g *Generator) VisitStmtSequence(n *StmtSequence) {
 	for _, stmt := range n.stmts {
 		stmt.Visit(g)
 	}
 }
 
-func (g *generator) VisitAssignStmt(n *AssignStmt) {
+func (g *Generator) VisitAssignStmt(n *AssignStmt) {
 	expr := g.visitAndReturnValue(n.expr)
 
 	g.currentBlock.NewStore(expr, g.vars[n.token.Text])
 }
 
-func (g *generator) VisitIfStmt(n *IfStmt) {
+func (g *Generator) VisitIfStmt(n *IfStmt) {
 	condition := g.visitAndReturnValue(n.expr)
 
 	trueBlk := g.currentFunc.NewBlock("")
@@ -135,7 +135,7 @@ func (g *generator) VisitIfStmt(n *IfStmt) {
 	g.currentBlock = endBlk
 }
 
-func (g *generator) VisitRepeatStmt(n *RepeatStmt) {
+func (g *Generator) VisitRepeatStmt(n *RepeatStmt) {
 	startBlk := g.currentFunc.NewBlock("")
 	doneBlk := g.currentFunc.NewBlock("")
 
@@ -150,7 +150,7 @@ func (g *generator) VisitRepeatStmt(n *RepeatStmt) {
 	g.currentBlock = doneBlk
 }
 
-func (g *generator) VisitWhileStmt(n *WhileStmt) {
+func (g *Generator) VisitWhileStmt(n *WhileStmt) {
 	var startBlk, condBlk, bodyBlk, doneBlk *ir.Block
 
 	condBlk = g.currentFunc.NewBlock("")
@@ -176,7 +176,7 @@ func (g *generator) VisitWhileStmt(n *WhileStmt) {
 	g.currentBlock = doneBlk
 }
 
-func (g *generator) VisitForStmt(n *ForStmt) {
+func (g *Generator) VisitForStmt(n *ForStmt) {
 	bodyBlk := g.currentFunc.NewBlock("")
 	doneBlk := g.currentFunc.NewBlock("")
 
@@ -207,38 +207,24 @@ func (g *generator) VisitForStmt(n *ForStmt) {
 	g.currentBlock = doneBlk
 }
 
-func (g *generator) VisitExprStmt(n *ExprStmt) {
+func (g *Generator) VisitExprStmt(n *ExprStmt) {
 	// NOTE(daniel): ignore the result.
 	n.expr.Visit(g)
 }
 
-func (g *generator) VisitCallExpr(n *CallExpr) {
-	switch n.Token().Text {
-	case "print":
-		g.callPrint(n.args)
-	case "INC":
-		g.callIncDec(n.args[0], 1)
-	case "DEC":
-		g.callIncDec(n.args[0], -1)
-	case "FLT":
-		g.callFLT(n.args[0])
-	case "FLOOR":
-		g.callFLOOR(n.args[0])
-	case "ORD":
-		g.callORD(n.args[0])
-	case "CHR":
-		g.callCHR(n.args[0])
-	case "INCL":
-		g.callINCL(n.args[0], n.args[1])
-	case "EXCL":
-		g.callEXCL(n.args[0], n.args[1])
-	default:
-		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q",
-			n.Token().Text))
+func (g *Generator) VisitCallExpr(n *CallExpr) {
+	name := n.Token().Text
+
+	if function, ok := builtin[name]; ok {
+		if err := function.Generate(g, n.args); err != nil {
+			g.errors = append(g.errors, err)
+		}
+	} else {
+		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q", name))
 	}
 }
 
-func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
+func (g *Generator) VisitBinaryExpr(n *BinaryExpr) {
 	left := g.visitAndReturnValue(n.args[0])
 	right := g.visitAndReturnValue(n.args[1])
 
@@ -356,7 +342,7 @@ func (g *generator) VisitBinaryExpr(n *BinaryExpr) {
 	}
 }
 
-func (g *generator) VisitDesignatorExpr(n *DesignatorExpr) {
+func (g *Generator) VisitDesignatorExpr(n *DesignatorExpr) {
 	if v, ok := g.consts[n.token.Text]; ok {
 		switch v.Type() {
 		case TypeInt64, TypeSet:
@@ -371,7 +357,7 @@ func (g *generator) VisitDesignatorExpr(n *DesignatorExpr) {
 	}
 }
 
-func (g *generator) VisitNumberExpr(n *NumberExpr) {
+func (g *Generator) VisitNumberExpr(n *NumberExpr) {
 	switch n.Type() {
 	case TypeInt64:
 		g.currentValue = constant.NewInt(types.I64, int64(n.token.Int))
@@ -380,17 +366,17 @@ func (g *generator) VisitNumberExpr(n *NumberExpr) {
 	}
 }
 
-func (g *generator) VisitStringExpr(n *StringExpr) {
+func (g *Generator) VisitStringExpr(n *StringExpr) {
 	str := g.internString(n.token.Text + "\000")
 
 	g.currentValue = g.currentBlock.NewGetElementPtr(str.ContentType, str, zero, zero)
 }
 
-func (g *generator) VisitCharExpr(n *CharExpr) {
+func (g *Generator) VisitCharExpr(n *CharExpr) {
 	g.currentValue = constant.NewInt(types.I8, int64(n.constValue.Int()))
 }
 
-func (g *generator) VisitBooleanExpr(n *BooleanExpr) {
+func (g *Generator) VisitBooleanExpr(n *BooleanExpr) {
 	if n.token.Bool {
 		g.currentValue = constant.True
 	} else {
@@ -398,172 +384,24 @@ func (g *generator) VisitBooleanExpr(n *BooleanExpr) {
 	}
 }
 
-func (g *generator) VisitSetExpr(n *SetExpr) {
+func (g *Generator) VisitSetExpr(n *SetExpr) {
 	g.currentValue = constant.NewInt(types.I64, int64(n.constValue.Int()))
 }
 
-func (g *generator) VisitNotExpr(n *NotExpr) {
+func (g *Generator) VisitNotExpr(n *NotExpr) {
 	val := g.visitAndReturnValue(n.expr)
 
 	// TODO(daniel): is this how you do it?
 	g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, val, constant.NewInt(types.I1, 0))
 }
 
-func (g *generator) visitAndReturnValue(n Node) value.Value {
+func (g *Generator) visitAndReturnValue(n Node) value.Value {
 	n.Visit(g)
 
 	return g.currentValue
 }
 
-func (g *generator) callIncDec(arg Expr, offset int64) {
-	if offset == 0 {
-		return
-	}
-
-	v := g.visitAndReturnValue(arg)
-
-	if offset > 0 {
-		g.currentValue = g.currentBlock.NewAdd(v, constant.NewInt(types.I64, offset))
-	} else {
-		g.currentValue = g.currentBlock.NewSub(v, constant.NewInt(types.I64, -offset))
-	}
-
-	g.currentBlock.NewStore(g.currentValue, g.vars[arg.Token().Text])
-}
-
-func (g *generator) callFLT(arg Expr) {
-	number := g.visitAndReturnValue(arg)
-	g.currentValue = g.currentBlock.NewSIToFP(number, types.Double)
-}
-
-func (g *generator) callFLOOR(arg Expr) {
-	number := g.visitAndReturnValue(arg)
-	g.currentValue = g.currentBlock.NewFPToSI(number, types.I64)
-}
-
-func (g *generator) callORD(arg Expr) {
-	switch arg.Type() {
-	case TypeBoolean:
-		v := g.visitAndReturnValue(arg)
-		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
-	case TypeChar:
-		v := g.visitAndReturnValue(arg)
-		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
-	default:
-		g.errors = append(g.errors, fmt.Errorf("don't know how to ORD type: %s", arg.Type()))
-	}
-}
-
-func (g *generator) callCHR(arg Expr) {
-	v := g.visitAndReturnValue(arg)
-	g.currentValue = g.currentBlock.NewTrunc(v, types.I8)
-}
-
-func (g *generator) callINCL(set Expr, val Expr) {
-	v := g.visitAndReturnValue(set)
-	b := g.visitAndReturnValue(val)
-	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
-	g.currentValue = g.currentBlock.NewOr(v, g.currentValue)
-	g.currentBlock.NewStore(g.currentValue, g.vars[set.Token().Text])
-}
-
-func (g *generator) callEXCL(set Expr, val Expr) {
-	v := g.visitAndReturnValue(set)
-	b := g.visitAndReturnValue(val)
-	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
-	g.currentValue = g.currentBlock.NewXor(g.currentValue, constant.NewInt(types.I64, -1))
-	g.currentValue = g.currentBlock.NewAnd(v, g.currentValue)
-	g.currentBlock.NewStore(g.currentValue, g.vars[set.Token().Text])
-}
-
-func (g *generator) callPrint(args []Expr) {
-	// TODO(daniel): make print a (polymorphic?) function in the "stdlib" and make an actual
-	// function call here.
-	for _, arg := range args {
-		// NOTE(daniel): we could probably do something smarter here, but for now this works.
-		switch arg.Type() {
-		case TypeInt64:
-			g.printInteger(arg)
-		case TypeFloat64:
-			g.printReal(arg)
-		case TypeString:
-			g.printString(arg)
-		case TypeBoolean:
-			g.printBoolean(arg)
-		case TypeChar:
-			g.printChar(arg)
-		case TypeSet:
-			g.printSet(arg)
-		default:
-			g.errors = append(g.errors, fmt.Errorf("don't know how to print type: %s", arg.Type()))
-		}
-	}
-}
-
-func (g *generator) printInteger(arg Expr) {
-	number := g.visitAndReturnValue(arg)
-
-	format := g.internString("%d\n\000")
-	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
-}
-
-func (g *generator) printReal(arg Expr) {
-	number := g.visitAndReturnValue(arg)
-
-	format := g.internString("%f\n\000")
-	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
-}
-
-func (g *generator) printString(arg Expr) {
-	str := g.visitAndReturnValue(arg)
-
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
-}
-
-func (g *generator) printBoolean(arg Expr) {
-	TRUE := g.internString("TRUE\000")
-	FALSE := g.internString("FALSE\000")
-
-	boolean := g.visitAndReturnValue(arg)
-
-	trueBlk := g.currentFunc.NewBlock("")
-	falseBlk := g.currentFunc.NewBlock("")
-	endBlk := g.currentFunc.NewBlock("")
-
-	g.currentBlock.NewCondBr(boolean, trueBlk, falseBlk)
-
-	g.currentBlock = trueBlk
-	truePtr := g.currentBlock.NewGetElementPtr(TRUE.ContentType, TRUE, zero, zero)
-	g.currentBlock.NewBr(endBlk)
-
-	g.currentBlock = falseBlk
-	falsePtr := g.currentBlock.NewGetElementPtr(FALSE.ContentType, FALSE, zero, zero)
-	g.currentBlock.NewBr(endBlk)
-
-	g.currentBlock = endBlk
-	strptr := g.currentBlock.NewPhi(ir.NewIncoming(truePtr, trueBlk), ir.NewIncoming(falsePtr, falseBlk))
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], strptr)
-}
-
-func (g *generator) printChar(arg Expr) {
-	v := g.visitAndReturnValue(arg)
-
-	format := g.internString("%c\n\000")
-	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
-
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, v)
-}
-
-func (g *generator) printSet(arg Expr) {
-	// TODO(daniel): can we get a better print for sets?
-	g.printInteger(arg)
-}
-
-func (g *generator) generateStdlib() {
+func (g *Generator) generateStdlib() {
 	g.stdlib["puts"] = g.currentModule.NewFunc("puts", types.I64,
 		ir.NewParam("str", types.I8Ptr))
 	g.stdlib["rand"] = g.currentModule.NewFunc("rand", types.I64)
@@ -580,7 +418,7 @@ func (g *generator) generateStdlib() {
 	g.stdlib["printf"] = printf
 }
 
-func (g *generator) internString(s string) *ir.Global {
+func (g *Generator) internString(s string) *ir.Global {
 	if v, ok := g.strings[s]; ok {
 		return v
 	}

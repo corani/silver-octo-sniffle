@@ -54,7 +54,8 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [X] support built-in `INCL` and `EXCL` procedures. 
 - [x] verify `SET` operations `+` / `-` / `*` / `/`.
 - [x] improve test coverage.
-- [ ] factor out builtin functions.
+- [x] factor out builtin functions.
+- [ ] use visitor pattern for builtin functions?
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
 - [ ] support local procedure calls (i.e. in the same module).
