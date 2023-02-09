@@ -13,12 +13,16 @@ func typeCheck(root Node) error {
 }
 
 type typeChecker struct {
-	consts map[string]ConstDecl
-	vars   map[string]VarDecl
-	errors []error
+	consts       map[string]ConstDecl
+	vars         map[string]VarDecl
+	errors       []error
+	currentValue *Value
 }
 
-var _ Visitor = (*typeChecker)(nil)
+var (
+	_ AstVisitor     = (*typeChecker)(nil)
+	_ BuiltinVisitor = (*typeChecker)(nil)
+)
 
 func (c *typeChecker) Check(root Node) error {
 	root.Visit(c)
@@ -201,15 +205,10 @@ func (c *typeChecker) VisitCallExpr(e *CallExpr) {
 			return
 		}
 
-		cv, err := v.ConstValue(e.args)
-		if err != nil {
-			c.errors = append(c.errors, err)
-
-			return
-		}
+		v.Visit(c, e.args)
 
 		e.typ = t
-		e.constValue = cv
+		e.constValue = c.currentValue
 	} else {
 		c.errors = append(c.errors, fmt.Errorf("builtin function %q not found", e.Token().Text))
 	}
@@ -312,4 +311,145 @@ func (c *typeChecker) VisitNotExpr(e *NotExpr) {
 	} else {
 		e.constValue = v
 	}
+}
+
+func (c *typeChecker) VisitBuiltinPrint(*BuiltinPrint, []Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinABS(f *BuiltinABS, args []Expr) {
+	c.currentValue = nil
+
+	if v := args[0].ConstValue(); v != nil {
+		if v.integer < 0 {
+			v.integer = -v.integer
+		}
+
+		if v.real < 0 {
+			v.real = -v.real
+		}
+
+		switch args[0].Type() {
+		case TypeInt64:
+			c.currentValue = &Value{
+				typ:     args[0].Type(),
+				integer: v.Int(),
+			}
+		case TypeFloat64:
+			c.currentValue = &Value{
+				typ:  args[0].Type(),
+				real: v.Real(),
+			}
+		}
+	}
+}
+
+func (c *typeChecker) VisitBuiltinODD(f *BuiltinODD, args []Expr) {
+	c.currentValue = nil
+
+	if v := args[0].ConstValue(); v != nil {
+		c.currentValue = &Value{
+			typ:     TypeBoolean,
+			boolean: v.Int()%2 == 1,
+		}
+	}
+}
+
+func (c *typeChecker) VisitBuiltinLSL(*BuiltinLSL, []Expr) {
+	c.errors = append(c.errors, fmt.Errorf("BuiltinLSL is not implemented"))
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinASR(*BuiltinASR, []Expr) {
+	c.errors = append(c.errors, fmt.Errorf("BuiltinASR is not implemented"))
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinROR(*BuiltinROR, []Expr) {
+	c.errors = append(c.errors, fmt.Errorf("BuiltinROR is not implemented"))
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinLEN(*BuiltinLEN, []Expr) {
+	c.errors = append(c.errors, fmt.Errorf("BuiltinLEN is not implemented"))
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinORD(f *BuiltinORD, args []Expr) {
+	c.currentValue = nil
+
+	if v := args[0].ConstValue(); v != nil {
+		switch args[0].Type() {
+		case TypeBoolean, TypeChar:
+			c.currentValue = &Value{
+				typ:     TypeInt64,
+				integer: v.Int(),
+			}
+		}
+	}
+}
+
+func (c *typeChecker) VisitBuiltinCHR(f *BuiltinCHR, args []Expr) {
+	c.currentValue = nil
+
+	if v := args[0].ConstValue(); v != nil {
+		c.currentValue = &Value{
+			typ:  TypeChar,
+			char: v.Char(),
+		}
+	}
+}
+
+func (c *typeChecker) VisitBuiltinFLOOR(f *BuiltinFLOOR, args []Expr) {
+	c.currentValue = nil
+
+	if v := args[0].ConstValue(); v != nil {
+		c.currentValue = &Value{
+			typ:     TypeInt64,
+			integer: v.Int(),
+		}
+	}
+}
+
+func (c *typeChecker) VisitBuiltinFLT(f *BuiltinFLT, args []Expr) {
+	c.currentValue = nil
+
+	if v := args[0].ConstValue(); v != nil {
+		c.currentValue = &Value{
+			typ:  TypeFloat64,
+			real: v.Real(),
+		}
+	}
+}
+
+func (c *typeChecker) VisitBuiltinINC(*BuiltinINC, []Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinDEC(*BuiltinDEC, []Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinINCL(*BuiltinINCL, []Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinEXCL(*BuiltinEXCL, []Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinPACK(*BuiltinPACK, []Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinUNPK(*BuiltinUNPK, []Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinNEW(*BuiltinNEW, []Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitBuiltinASSERT(*BuiltinASSERT, []Expr) {
+	c.currentValue = nil
 }

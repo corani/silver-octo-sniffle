@@ -23,7 +23,7 @@ func (k Kind) String() string {
 	}
 }
 
-type Visitor interface {
+type AstVisitor interface {
 	VisitModule(*Module)
 	VisitStmtSequence(*StmtSequence)
 	VisitIfStmt(*IfStmt)
@@ -64,7 +64,7 @@ type VarDecl struct {
 
 type Node interface {
 	Token() Token
-	Visit(Visitor)
+	Visit(AstVisitor)
 }
 
 type Expr interface {
@@ -92,7 +92,7 @@ func (n *Module) Token() Token {
 	return n.token
 }
 
-func (n *Module) Visit(v Visitor) {
+func (n *Module) Visit(v AstVisitor) {
 	v.VisitModule(n)
 }
 
@@ -110,7 +110,7 @@ func (n *StmtSequence) Token() Token {
 	return n.stmts[0].Token()
 }
 
-func (n *StmtSequence) Visit(v Visitor) {
+func (n *StmtSequence) Visit(v AstVisitor) {
 	v.VisitStmtSequence(n)
 }
 
@@ -127,7 +127,7 @@ func (n *IfStmt) Token() Token {
 	return n.token
 }
 
-func (n *IfStmt) Visit(v Visitor) {
+func (n *IfStmt) Visit(v AstVisitor) {
 	v.VisitIfStmt(n)
 }
 
@@ -147,7 +147,7 @@ func (n *RepeatStmt) Token() Token {
 	return n.token
 }
 
-func (n *RepeatStmt) Visit(v Visitor) {
+func (n *RepeatStmt) Visit(v AstVisitor) {
 	v.VisitRepeatStmt(n)
 }
 
@@ -162,7 +162,7 @@ func (n *WhileStmt) Token() Token {
 	return n.token
 }
 
-func (n *WhileStmt) Visit(v Visitor) {
+func (n *WhileStmt) Visit(v AstVisitor) {
 	v.VisitWhileStmt(n)
 }
 
@@ -181,7 +181,7 @@ func (n *ForStmt) Token() Token {
 	return n.token
 }
 
-func (n *ForStmt) Visit(v Visitor) {
+func (n *ForStmt) Visit(v AstVisitor) {
 	v.VisitForStmt(n)
 }
 
@@ -196,7 +196,7 @@ func (n *AssignStmt) Token() Token {
 	return n.token
 }
 
-func (n *AssignStmt) Visit(v Visitor) {
+func (n *AssignStmt) Visit(v AstVisitor) {
 	v.VisitAssignStmt(n)
 }
 
@@ -210,7 +210,7 @@ func (n *ExprStmt) Token() Token {
 	return n.expr.Token()
 }
 
-func (n *ExprStmt) Visit(v Visitor) {
+func (n *ExprStmt) Visit(v AstVisitor) {
 	v.VisitExprStmt(n)
 }
 
@@ -239,7 +239,7 @@ func (n *DesignatorExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *DesignatorExpr) Visit(v Visitor) {
+func (n *DesignatorExpr) Visit(v AstVisitor) {
 	v.VisitDesignatorExpr(n)
 }
 
@@ -263,7 +263,7 @@ func (n *NumberExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *NumberExpr) Visit(v Visitor) {
+func (n *NumberExpr) Visit(v AstVisitor) {
 	v.VisitNumberExpr(n)
 }
 
@@ -286,7 +286,7 @@ func (n *CharExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *CharExpr) Visit(v Visitor) {
+func (n *CharExpr) Visit(v AstVisitor) {
 	v.VisitCharExpr(n)
 }
 
@@ -309,7 +309,7 @@ func (n *StringExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *StringExpr) Visit(v Visitor) {
+func (n *StringExpr) Visit(v AstVisitor) {
 	v.VisitStringExpr(n)
 }
 
@@ -332,7 +332,7 @@ func (n *BooleanExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *BooleanExpr) Visit(v Visitor) {
+func (n *BooleanExpr) Visit(v AstVisitor) {
 	v.VisitBooleanExpr(n)
 }
 
@@ -354,7 +354,7 @@ func (n *SetExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *SetExpr) Visit(v Visitor) {
+func (n *SetExpr) Visit(v AstVisitor) {
 	v.VisitSetExpr(n)
 }
 
@@ -378,7 +378,7 @@ func (n *NotExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *NotExpr) Visit(v Visitor) {
+func (n *NotExpr) Visit(v AstVisitor) {
 	v.VisitNotExpr(n)
 }
 
@@ -403,7 +403,7 @@ func (n *BinaryExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *BinaryExpr) Visit(v Visitor) {
+func (n *BinaryExpr) Visit(v AstVisitor) {
 	v.VisitBinaryExpr(n)
 }
 
@@ -428,6 +428,6 @@ func (n *CallExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *CallExpr) Visit(v Visitor) {
+func (n *CallExpr) Visit(v AstVisitor) {
 	v.VisitCallExpr(n)
 }

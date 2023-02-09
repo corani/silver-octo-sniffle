@@ -46,7 +46,10 @@ type Generator struct {
 	errors        []error
 }
 
-var _ Visitor = (*Generator)(nil)
+var (
+	_ AstVisitor     = (*Generator)(nil)
+	_ BuiltinVisitor = (*Generator)(nil)
+)
 
 func (g *Generator) Generate(root Node) (*ir.Module, error) {
 	g.generateStdlib()
@@ -216,9 +219,7 @@ func (g *Generator) VisitCallExpr(n *CallExpr) {
 	name := n.Token().Text
 
 	if function, ok := builtin[name]; ok {
-		if err := function.Generate(g, n.args); err != nil {
-			g.errors = append(g.errors, err)
-		}
+		function.Visit(g, n.args)
 	} else {
 		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q", name))
 	}
@@ -427,4 +428,195 @@ func (g *Generator) internString(s string) *ir.Global {
 	g.strings[s] = def
 
 	return def
+}
+
+// ----- builtin functions ----------------------------------------------------
+
+func (g *Generator) VisitBuiltinABS(f *BuiltinABS, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinODD(f *BuiltinODD, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinLSL(f *BuiltinLSL, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinASR(f *BuiltinASR, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinROR(f *BuiltinROR, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinLEN(f *BuiltinLEN, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinORD(f *BuiltinORD, args []Expr) {
+	switch args[0].Type() {
+	case TypeBoolean:
+		v := g.visitAndReturnValue(args[0])
+		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
+	case TypeChar:
+		v := g.visitAndReturnValue(args[0])
+		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
+	}
+}
+
+func (g *Generator) VisitBuiltinCHR(f *BuiltinCHR, args []Expr) {
+	v := g.visitAndReturnValue(args[0])
+	g.currentValue = g.currentBlock.NewTrunc(v, types.I8)
+}
+
+func (g *Generator) VisitBuiltinFLOOR(f *BuiltinFLOOR, args []Expr) {
+	v := g.visitAndReturnValue(args[0])
+	g.currentValue = g.currentBlock.NewFPToSI(v, types.I64)
+}
+
+func (g *Generator) VisitBuiltinFLT(f *BuiltinFLT, args []Expr) {
+	v := g.visitAndReturnValue(args[0])
+	g.currentValue = g.currentBlock.NewSIToFP(v, types.Double)
+}
+
+func (g *Generator) VisitBuiltinINC(f *BuiltinINC, args []Expr) {
+	offset := 1
+
+	if len(args) == 2 {
+		offset = args[1].ConstValue().Int()
+	}
+
+	if offset > 0 {
+		v := g.visitAndReturnValue(args[0])
+
+		g.currentValue = g.currentBlock.NewAdd(v, constant.NewInt(types.I64, int64(offset)))
+		g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
+	}
+}
+
+func (g *Generator) VisitBuiltinDEC(f *BuiltinDEC, args []Expr) {
+	offset := 1
+
+	if len(args) == 2 {
+		offset = args[1].ConstValue().Int()
+	}
+
+	if offset > 0 {
+		v := g.visitAndReturnValue(args[0])
+
+		g.currentValue = g.currentBlock.NewSub(v, constant.NewInt(types.I64, int64(offset)))
+		g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
+	}
+}
+
+func (g *Generator) VisitBuiltinINCL(f *BuiltinINCL, args []Expr) {
+	v := g.visitAndReturnValue(args[0])
+	b := g.visitAndReturnValue(args[1])
+	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
+	g.currentValue = g.currentBlock.NewOr(v, g.currentValue)
+	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
+}
+
+func (g *Generator) VisitBuiltinEXCL(f *BuiltinEXCL, args []Expr) {
+	v := g.visitAndReturnValue(args[0])
+	b := g.visitAndReturnValue(args[1])
+	g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), b)
+	g.currentValue = g.currentBlock.NewXor(g.currentValue, constant.NewInt(types.I64, -1))
+	g.currentValue = g.currentBlock.NewAnd(v, g.currentValue)
+	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
+}
+
+func (g *Generator) VisitBuiltinPACK(f *BuiltinPACK, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinUNPK(f *BuiltinUNPK, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinNEW(f *BuiltinNEW, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinASSERT(f *BuiltinASSERT, args []Expr) {
+}
+
+func (g *Generator) VisitBuiltinPrint(f *BuiltinPrint, args []Expr) {
+	arg := args[0]
+
+	// NOTE(daniel): we could probably do something smarter here, but for now this works.
+	switch arg.Type() {
+	case TypeInt64:
+		g.printInteger(arg)
+	case TypeFloat64:
+		g.printReal(arg)
+	case TypeString:
+		g.printString(arg)
+	case TypeBoolean:
+		g.printBoolean(arg)
+	case TypeChar:
+		g.printChar(arg)
+	case TypeSet:
+		g.printSet(arg)
+	default:
+		g.errors = append(g.errors, fmt.Errorf("don't know how to print type: %s",
+			arg.Type()))
+	}
+}
+
+func (g *Generator) printInteger(arg Expr) {
+	number := g.visitAndReturnValue(arg)
+
+	format := g.internString("%d\n\000")
+	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+}
+
+func (g *Generator) printReal(arg Expr) {
+	number := g.visitAndReturnValue(arg)
+
+	format := g.internString("%f\n\000")
+	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
+}
+
+func (g *Generator) printString(arg Expr) {
+	str := g.visitAndReturnValue(arg)
+
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
+}
+
+func (g *Generator) printBoolean(arg Expr) {
+	TRUE := g.internString("TRUE\000")
+	FALSE := g.internString("FALSE\000")
+
+	boolean := g.visitAndReturnValue(arg)
+
+	trueBlk := g.currentFunc.NewBlock("")
+	falseBlk := g.currentFunc.NewBlock("")
+	endBlk := g.currentFunc.NewBlock("")
+
+	g.currentBlock.NewCondBr(boolean, trueBlk, falseBlk)
+
+	g.currentBlock = trueBlk
+	truePtr := g.currentBlock.NewGetElementPtr(TRUE.ContentType, TRUE, zero, zero)
+	g.currentBlock.NewBr(endBlk)
+
+	g.currentBlock = falseBlk
+	falsePtr := g.currentBlock.NewGetElementPtr(FALSE.ContentType, FALSE, zero, zero)
+	g.currentBlock.NewBr(endBlk)
+
+	g.currentBlock = endBlk
+	strptr := g.currentBlock.NewPhi(ir.NewIncoming(truePtr, trueBlk), ir.NewIncoming(falsePtr, falseBlk))
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], strptr)
+}
+
+func (g *Generator) printChar(arg Expr) {
+	v := g.visitAndReturnValue(arg)
+
+	format := g.internString("%c\n\000")
+	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
+
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, v)
+}
+
+func (g *Generator) printSet(arg Expr) {
+	// TODO(daniel): can we get a better print for sets?
+	g.printInteger(arg)
 }
