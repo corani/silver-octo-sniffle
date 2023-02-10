@@ -24,6 +24,12 @@ jobs:
           go-version: 1.19
       - uses: actions/checkout@v3
       - name: Build
-        run: go build -v -o compiler ./src/...
+        run: ./build.sh -b
       - name: Test
-        run: go test -v ./src/...
+        run: ./build.sh -t
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          files: gen/cover.out
