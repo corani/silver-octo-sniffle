@@ -1,29 +1,32 @@
 package checker
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/corani/silver-octo-sniffle/ast"
+	"github.com/corani/silver-octo-sniffle/reporter"
 	"github.com/corani/silver-octo-sniffle/token"
 )
 
-func TypeCheck(root ast.Node) error {
+var ErrChecking = errors.New("type check error")
+
+func TypeCheck(out *reporter.Reporter, root ast.Node) {
 	checker := &typeChecker{
+		out:          out,
 		consts:       make(map[string]*ast.ConstDecl),
 		vars:         make(map[string]*ast.VarDecl),
 		builtins:     ast.GetBuiltinFunctions(),
-		errors:       nil,
 		currentValue: nil,
 	}
 
-	return checker.Check(root)
+	checker.Check(root)
 }
 
 type typeChecker struct {
+	out          *reporter.Reporter
 	consts       map[string]*ast.ConstDecl
 	vars         map[string]*ast.VarDecl
 	builtins     map[string]ast.Function
-	errors       []error
 	currentValue *ast.Value
 }
 
@@ -32,25 +35,8 @@ var (
 	_ ast.BuiltinVisitor = (*typeChecker)(nil)
 )
 
-func (c *typeChecker) Check(root ast.Node) error {
+func (c *typeChecker) Check(root ast.Node) {
 	root.Visit(c)
-
-	return c.Error()
-}
-
-// TODO(daniel): improve error reporting. Maybe with a callback?
-func (c *typeChecker) Error() error {
-	if len(c.errors) == 0 {
-		return nil
-	}
-
-	txt := "type check errors"
-
-	for _, v := range c.errors {
-		txt = txt + ": " + v.Error()
-	}
-
-	return fmt.Errorf(txt)
 }
 
 func (c *typeChecker) VisitModule(m *ast.Module) {
@@ -60,7 +46,7 @@ func (c *typeChecker) VisitModule(m *ast.Module) {
 		if v := decl.Expr().ConstValue(); v != nil {
 			decl.Update(decl.Expr().Type(), v)
 		} else {
-			c.errors = append(c.errors, fmt.Errorf("initializer for %q is not constant", decl.Token().Text))
+			c.out.Errorf(decl.Token(), "initializer for %q is not constant", decl.Token().Text)
 		}
 
 		c.consts[decl.Token().Text] = decl
@@ -79,9 +65,8 @@ func (c *typeChecker) VisitModule(m *ast.Module) {
 		case "SET":
 			decl.Update(ast.TypeSet)
 		default:
-			// TODO(daniel): support "ARRAY", "RECORD", "POINTER", and custom types.
-			c.errors = append(c.errors, fmt.Errorf("unknown type %q for variable %q",
-				decl.TypeToken().Text, decl.Token().Text))
+			c.out.Errorf(decl.TypeToken(), "unknown type %q for variable %q",
+				decl.TypeToken().Text, decl.Token().Text)
 		}
 
 		c.vars[decl.Token().Text] = decl
@@ -108,18 +93,19 @@ func (c *typeChecker) VisitAssignStmt(s *ast.AssignStmt) {
 
 	if t, ok := c.vars[lhs.Text]; ok {
 		if rhs.Type() != t.Type() {
-			c.errors = append(c.errors, fmt.Errorf("can't assign type %q to variable %q (which is of type %q)",
-				rhs.Type(), lhs.Text, t.Type()))
+			c.out.Errorf(s.Token(), "can't assign type %q to variable %q (which is of type %q)",
+				rhs.Type(), lhs.Text, t.Type())
 		}
 	} else {
-		c.errors = append(c.errors, fmt.Errorf("undefined identifier %q", s.Token().Text))
+		c.out.Errorf(s.Token(), "undefined identifier %q", s.Token().Text)
 	}
 }
 
 func (c *typeChecker) VisitIfStmt(s *ast.IfStmt) {
 	s.Expr().Visit(c)
 	if s.Expr().Type() != ast.TypeBoolean {
-		c.errors = append(c.errors, fmt.Errorf("condition for IF must be boolean, got %v", s.Expr().Type()))
+		c.out.Errorf(s.Token(), "condition for IF must be boolean, got %v",
+			s.Expr().Type())
 	}
 
 	s.TrueBlock().Visit(c)
@@ -133,8 +119,8 @@ func (c *typeChecker) VisitRepeatStmt(s *ast.RepeatStmt) {
 	cond.Stmt().Visit(c)
 
 	if cond.Expr().Type() != ast.TypeBoolean {
-		c.errors = append(c.errors, fmt.Errorf("condition for REPEAT must be boolean, got %v",
-			cond.Expr().Type()))
+		c.out.Errorf(s.Token(), "condition for REPEAT must be boolean, got %v",
+			cond.Expr().Type())
 	}
 }
 
@@ -144,8 +130,8 @@ func (c *typeChecker) VisitWhileStmt(s *ast.WhileStmt) {
 		cond.Stmt().Visit(c)
 
 		if cond.Expr().Type() != ast.TypeBoolean {
-			c.errors = append(c.errors, fmt.Errorf("condition for WHILE must be boolean, got %v",
-				cond.Expr().Type()))
+			c.out.Errorf(s.Token(), "condition for WHILE must be boolean, got %v",
+				cond.Expr().Type())
 		}
 	}
 }
@@ -153,13 +139,13 @@ func (c *typeChecker) VisitWhileStmt(s *ast.WhileStmt) {
 func (c *typeChecker) VisitForStmt(s *ast.ForStmt) {
 	iter, ok := c.vars[s.Iter().Text]
 	if !ok {
-		c.errors = append(c.errors, fmt.Errorf("FOR iterator must be a variable"))
+		c.out.Errorf(s.Token(), "FOR iterator must be a variable")
 	}
 
 	// TODO(daniel): is this true?
 	if iter.Type() != ast.TypeInt64 {
-		c.errors = append(c.errors, fmt.Errorf("FOR iterator must be an integer, got %v",
-			iter.Type()))
+		c.out.Errorf(iter.Token(), "FOR iterator must be an integer, got %v",
+			iter.Type())
 	}
 
 	from := s.From()
@@ -171,24 +157,24 @@ func (c *typeChecker) VisitForStmt(s *ast.ForStmt) {
 	by.Visit(c)
 
 	if from.Type() != iter.Type() {
-		c.errors = append(c.errors, fmt.Errorf("FOR iterator FROM must be an integer, got %v",
-			from.Type()))
+		c.out.Errorf(from.Token(), "FOR iterator FROM must be an integer, got %v",
+			from.Type())
 	}
 
 	if to.Type() != iter.Type() {
-		c.errors = append(c.errors, fmt.Errorf("FOR iterator TO must be an integer, got %v",
-			to.Type()))
+		c.out.Errorf(to.Token(), "FOR iterator TO must be an integer, got %v",
+			to.Type())
 	}
 
 	if by.Type() != iter.Type() {
-		c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must be an integer, got %v",
-			by.Type()))
+		c.out.Errorf(by.Token(), "FOR iterator BY must be an integer, got %v",
+			by.Type())
 	}
 
 	if by.ConstValue() == nil {
-		c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must be a constant expression"))
+		c.out.Errorf(by.Token(), "FOR iterator BY must be a constant expression")
 	} else if by.ConstValue().Int() == 0 {
-		c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must not be zero"))
+		c.out.Errorf(by.Token(), "FOR iterator BY must not be zero")
 	}
 
 	if from.ConstValue() != nil && to.ConstValue() != nil && by.ConstValue() != nil {
@@ -197,9 +183,9 @@ func (c *typeChecker) VisitForStmt(s *ast.ForStmt) {
 		byVal := by.ConstValue().Int()
 
 		if fromVal > toVal && byVal > 0 {
-			c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must be negative if FROM > BY"))
+			c.out.Errorf(by.Token(), "FOR iterator BY must be negative if FROM > BY")
 		} else if fromVal < toVal && byVal < 0 {
-			c.errors = append(c.errors, fmt.Errorf("FOR iterator BY must be positive if FROM < BY"))
+			c.out.Errorf(by.Token(), "FOR iterator BY must be positive if FROM < BY")
 		}
 	}
 
@@ -222,7 +208,7 @@ func (c *typeChecker) VisitCallExpr(e *ast.CallExpr) {
 	if v, ok := c.builtins[e.Token().Text]; ok {
 		t, err := v.Validate(e.Args())
 		if err != nil {
-			c.errors = append(c.errors, err)
+			c.out.Errorf(e.Token(), "%v", err)
 
 			return
 		}
@@ -231,7 +217,8 @@ func (c *typeChecker) VisitCallExpr(e *ast.CallExpr) {
 
 		e.Update(t, c.currentValue, v)
 	} else {
-		c.errors = append(c.errors, fmt.Errorf("builtin function %q not found", e.Token().Text))
+		c.out.Errorf(e.Token(), "builtin function %q not found",
+			e.Token().Text)
 	}
 }
 
@@ -247,14 +234,15 @@ func (c *typeChecker) VisitBinaryExpr(e *ast.BinaryExpr) {
 
 	switch {
 	case len(e.Args()) != 2:
-		c.errors = append(c.errors, fmt.Errorf("binary expression with %d arguments", len(e.Args())))
+		c.out.Errorf(e.Token(), "binary expression with %d arguments",
+			len(e.Args()))
 	case e.Token().Type == token.TokenIN:
 		outType = ast.TypeBoolean
 	case e.Lhs().Type() != e.Rhs().Type():
 		outType = ast.TypeVoid
 
-		c.errors = append(c.errors, fmt.Errorf("different types for binary operator %s",
-			e.Token().Type))
+		c.out.Errorf(e.Token(), "different types for binary operator %s",
+			e.Token().Type)
 	case e.Token().Type == token.TokenSlash:
 		if e.Lhs().Type() == ast.TypeSet && e.Rhs().Type() == ast.TypeSet {
 			outType = ast.TypeSet
@@ -262,8 +250,8 @@ func (c *typeChecker) VisitBinaryExpr(e *ast.BinaryExpr) {
 			outType = ast.TypeFloat64
 
 			if e.Lhs().Type() != outType {
-				c.errors = append(c.errors, fmt.Errorf("unexpected type for binary operator %s",
-					e.Token().Type))
+				c.out.Errorf(e.Token(), "unexpected type for binary operator %s",
+					e.Token().Type)
 			}
 		}
 	case e.Token().IsRelation():
@@ -272,8 +260,8 @@ func (c *typeChecker) VisitBinaryExpr(e *ast.BinaryExpr) {
 		outType = ast.TypeBoolean
 
 		if e.Lhs().Type() != outType {
-			c.errors = append(c.errors, fmt.Errorf("unexpected type for binary operator %s",
-				e.Token().Type))
+			c.out.Errorf(e.Token(), "unexpected type for binary operator %s",
+				e.Token().Type)
 		}
 	default:
 		outType = e.Lhs().Type()
@@ -295,13 +283,15 @@ func (c *typeChecker) VisitDesignatorExpr(e *ast.DesignatorExpr) {
 	} else if t, ok := c.vars[e.Token().Text]; ok {
 		e.Update(t.Type(), ast.KindVar, nil)
 	} else {
-		c.errors = append(c.errors, fmt.Errorf("undefined identifier %q", e.Token().Text))
+		c.out.Errorf(e.Token(), "undefined identifier %q",
+			e.Token().Text)
+		c.out.Infof(e.Token(), "expected a variable or constant")
 	}
 }
 
 func (c *typeChecker) VisitNumberExpr(e *ast.NumberExpr) {
 	if v, err := evaluateNumberExpr(e.Token()); err != nil {
-		c.errors = append(c.errors, err)
+		c.out.Errorf(e.Token(), "%v", err)
 	} else {
 		e.Update(v.Type(), v)
 	}
@@ -317,7 +307,7 @@ func (c *typeChecker) VisitCharExpr(e *ast.CharExpr) {
 
 func (c *typeChecker) VisitBooleanExpr(e *ast.BooleanExpr) {
 	if v, err := evaluateBooleanExpr(e.Token()); err != nil {
-		c.errors = append(c.errors, err)
+		c.out.Errorf(e.Token(), "%v", err)
 	} else {
 		e.Update(v)
 	}
@@ -331,7 +321,7 @@ func (c *typeChecker) VisitNotExpr(e *ast.NotExpr) {
 	e.Expr().Visit(c)
 
 	if v, err := evaluateNotExpr(e.Expr()); err != nil {
-		c.errors = append(c.errors, err)
+		c.out.Errorf(e.Token(), "%v", err)
 	} else {
 		e.Update(v)
 	}
@@ -372,23 +362,23 @@ func (c *typeChecker) VisitBuiltinODD(f *ast.BuiltinODD, args []ast.Expr) {
 	}
 }
 
-func (c *typeChecker) VisitBuiltinLSL(*ast.BuiltinLSL, []ast.Expr) {
-	c.errors = append(c.errors, fmt.Errorf("BuiltinLSL is not implemented"))
+func (c *typeChecker) VisitBuiltinLSL(f *ast.BuiltinLSL, args []ast.Expr) {
+	c.out.Errorf(args[0].Token(), "BuiltinLSL is not implemented")
 	c.currentValue = nil
 }
 
-func (c *typeChecker) VisitBuiltinASR(*ast.BuiltinASR, []ast.Expr) {
-	c.errors = append(c.errors, fmt.Errorf("BuiltinASR is not implemented"))
+func (c *typeChecker) VisitBuiltinASR(f *ast.BuiltinASR, args []ast.Expr) {
+	c.out.Errorf(args[0].Token(), "BuiltinASR is not implemented")
 	c.currentValue = nil
 }
 
-func (c *typeChecker) VisitBuiltinROR(*ast.BuiltinROR, []ast.Expr) {
-	c.errors = append(c.errors, fmt.Errorf("BuiltinROR is not implemented"))
+func (c *typeChecker) VisitBuiltinROR(f *ast.BuiltinROR, args []ast.Expr) {
+	c.out.Errorf(args[0].Token(), "BuiltinROR is not implemented")
 	c.currentValue = nil
 }
 
-func (c *typeChecker) VisitBuiltinLEN(*ast.BuiltinLEN, []ast.Expr) {
-	c.errors = append(c.errors, fmt.Errorf("BuiltinLEN is not implemented"))
+func (c *typeChecker) VisitBuiltinLEN(f *ast.BuiltinLEN, args []ast.Expr) {
+	c.out.Errorf(args[0].Token(), "BuiltinLEN is not implemented")
 	c.currentValue = nil
 }
 

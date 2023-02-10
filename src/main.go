@@ -25,8 +25,9 @@ type CompilationResult struct {
 	ir     string
 	path   string
 
-	lexerOut  string
-	parserOut string
+	lexerOut   string
+	parserOut  string
+	checkerOut string
 }
 
 func do(srcName string, bs []byte) (CompilationResult, error) {
@@ -46,14 +47,18 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 		return CompilationResult{
 			tokens:    tokens,
 			parserOut: buf.String(),
-		}, err
+		}, parser.ErrParsing
 	}
 
-	if err := checker.TypeCheck(ast); err != nil {
+	buf.Reset()
+
+	checker.TypeCheck(reporter.NewReporter(&buf), ast)
+	if buf.Len() > 0 {
 		return CompilationResult{
-			tokens: tokens,
-			ast:    ast,
-		}, err
+			tokens:     tokens,
+			ast:        ast,
+			checkerOut: buf.String(),
+		}, checker.ErrChecking
 	}
 
 	baseName := strings.TrimSuffix(filepath.Base(srcName), filepath.Ext(srcName))
@@ -120,6 +125,10 @@ func main() {
 
 		if errors.Is(err, parser.ErrParsing) {
 			fmt.Fprintln(os.Stderr, result.parserOut)
+		}
+
+		if errors.Is(err, checker.ErrChecking) {
+			fmt.Fprintln(os.Stderr, result.checkerOut)
 		}
 
 		panic(err)
