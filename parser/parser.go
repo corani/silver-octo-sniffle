@@ -1,19 +1,19 @@
-package parse
+package parser
 
 import (
 	"fmt"
 
 	"github.com/corani/silver-octo-sniffle/ast"
-	"github.com/corani/silver-octo-sniffle/lex"
+	"github.com/corani/silver-octo-sniffle/token"
 )
 
 type Parser struct {
-	tokens lex.Tokens
+	tokens token.Tokens
 	index  int
 	errors []error
 }
 
-func Parse(tokens lex.Tokens) (ast.Node, error) {
+func Parse(tokens token.Tokens) (ast.Node, error) {
 	p := &Parser{
 		tokens: tokens,
 		index:  0,
@@ -42,17 +42,17 @@ func (p *Parser) Error() error {
 }
 
 func (p *Parser) parseModule() (ast.Node, error) {
-	t, err := p.require(lex.TokenMODULE)
+	t, err := p.require(token.TokenMODULE)
 	if err != nil {
 		return nil, err
 	}
 
-	name, err := p.require(lex.TokenIdent)
+	name, err := p.require(token.TokenIdent)
 	if err != nil {
 		return nil, err
 	}
 
-	if _, err := p.require(lex.TokenSemicolon); err != nil {
+	if _, err := p.require(token.TokenSemicolon); err != nil {
 		return nil, err
 	}
 
@@ -63,43 +63,43 @@ func (p *Parser) parseModule() (ast.Node, error) {
 		stmts  ast.Node
 	)
 
-	if p.expect(lex.TokenCONST) {
+	if p.expect(token.TokenCONST) {
 		consts, err = p.parseConsts()
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if p.expect(lex.TokenTYPE) {
+	if p.expect(token.TokenTYPE) {
 		types, err = p.parseTypes()
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if p.expect(lex.TokenVAR) {
+	if p.expect(token.TokenVAR) {
 		vars, err = p.parseVars()
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	for p.currentType() == lex.TokenPROCEDURE {
+	for p.currentType() == token.TokenPROCEDURE {
 		return nil, fmt.Errorf("PROCEDURE is unimplemented")
 	}
 
-	if p.expect(lex.TokenBEGIN) {
-		stmts, err = p.parseStmtSequence(lex.TokenEND)
+	if p.expect(token.TokenBEGIN) {
+		stmts, err = p.parseStmtSequence(token.TokenEND)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if _, err := p.require(lex.TokenEND); err != nil {
+	if _, err := p.require(token.TokenEND); err != nil {
 		return nil, err
 	}
 
-	if v, err := p.require(lex.TokenIdent); err != nil {
+	if v, err := p.require(token.TokenIdent); err != nil {
 		return nil, err
 	} else {
 		if v.Text != name.Text {
@@ -107,11 +107,11 @@ func (p *Parser) parseModule() (ast.Node, error) {
 		}
 	}
 
-	if _, err := p.require(lex.TokenDot); err != nil {
+	if _, err := p.require(token.TokenDot); err != nil {
 		return nil, err
 	}
 
-	if _, err := p.require(lex.TokenEOF); err != nil {
+	if _, err := p.require(token.TokenEOF); err != nil {
 		return nil, err
 	}
 
@@ -121,10 +121,10 @@ func (p *Parser) parseModule() (ast.Node, error) {
 func (p *Parser) parseConsts() ([]*ast.ConstDecl, error) {
 	var consts []*ast.ConstDecl
 
-	for p.currentType() == lex.TokenIdent {
-		t, _ := p.require(lex.TokenIdent)
+	for p.currentType() == token.TokenIdent {
+		t, _ := p.require(token.TokenIdent)
 
-		if _, err := p.require(lex.TokenEQ); err != nil {
+		if _, err := p.require(token.TokenEQ); err != nil {
 			return nil, err
 		}
 
@@ -133,7 +133,7 @@ func (p *Parser) parseConsts() ([]*ast.ConstDecl, error) {
 			return nil, err
 		}
 
-		if _, err := p.require(lex.TokenSemicolon); err != nil {
+		if _, err := p.require(token.TokenSemicolon); err != nil {
 			return nil, err
 		}
 
@@ -146,21 +146,21 @@ func (p *Parser) parseConsts() ([]*ast.ConstDecl, error) {
 func (p *Parser) parseTypes() ([]*ast.TypeDecl, error) {
 	var types []*ast.TypeDecl
 
-	for p.currentType() == lex.TokenIdent {
-		t, _ := p.require(lex.TokenIdent)
+	for p.currentType() == token.TokenIdent {
+		t, _ := p.require(token.TokenIdent)
 
-		if _, err := p.require(lex.TokenEQ); err != nil {
+		if _, err := p.require(token.TokenEQ); err != nil {
 			return nil, err
 		}
 
 		switch p.currentType() {
-		case lex.TokenARRAY:
+		case token.TokenARRAY:
 			p.errors = append(p.errors, fmt.Errorf("ARRAY types are not implemented"))
-		case lex.TokenRECORD:
+		case token.TokenRECORD:
 			p.errors = append(p.errors, fmt.Errorf("RECORD types are not implemented"))
-		case lex.TokenPOINTER:
+		case token.TokenPOINTER:
 			p.errors = append(p.errors, fmt.Errorf("POINTER types are not implemented"))
-		case lex.TokenPROCEDURE:
+		case token.TokenPROCEDURE:
 			p.errors = append(p.errors, fmt.Errorf("PROCEDURE types are not implemented"))
 		default:
 			return nil, fmt.Errorf("type declarations can only be `ARRAY`, `RECORD`, `POINTER` or `PROCEDURE`")
@@ -168,7 +168,7 @@ func (p *Parser) parseTypes() ([]*ast.TypeDecl, error) {
 
 		// TODO(daniel): the following is wrong!
 		typToken := p.currentToken()
-		for !p.expect(lex.TokenSemicolon) {
+		for !p.expect(token.TokenSemicolon) {
 			p.index++
 		}
 
@@ -181,13 +181,13 @@ func (p *Parser) parseTypes() ([]*ast.TypeDecl, error) {
 func (p *Parser) parseVars() ([]*ast.VarDecl, error) {
 	var vars []*ast.VarDecl
 
-	for p.currentType() == lex.TokenIdent {
+	for p.currentType() == token.TokenIdent {
 		varIdents, err := p.parseIdentList()
 		if err != nil {
 			return nil, err
 		}
 
-		if _, err := p.require(lex.TokenColon); err != nil {
+		if _, err := p.require(token.TokenColon); err != nil {
 			return nil, err
 		}
 
@@ -196,7 +196,7 @@ func (p *Parser) parseVars() ([]*ast.VarDecl, error) {
 			return nil, err
 		}
 
-		if _, err := p.require(lex.TokenSemicolon); err != nil {
+		if _, err := p.require(token.TokenSemicolon); err != nil {
 			return nil, err
 		}
 
@@ -208,18 +208,18 @@ func (p *Parser) parseVars() ([]*ast.VarDecl, error) {
 	return vars, nil
 }
 
-func (p *Parser) parseIdentList() (lex.Tokens, error) {
-	var varIdents lex.Tokens
+func (p *Parser) parseIdentList() (token.Tokens, error) {
+	var varIdents token.Tokens
 
 	for {
-		varIdent, err := p.require(lex.TokenIdent)
+		varIdent, err := p.require(token.TokenIdent)
 		if err != nil {
 			return nil, err
 		}
 
 		varIdents = append(varIdents, varIdent)
 
-		if !p.expect(lex.TokenComma) {
+		if !p.expect(token.TokenComma) {
 			break
 		}
 	}
@@ -227,12 +227,12 @@ func (p *Parser) parseIdentList() (lex.Tokens, error) {
 	return varIdents, nil
 }
 
-func (p *Parser) parseType() (lex.Token, error) {
-	// TODO(daniel): complex types.
-	return p.require(lex.TokenIdent)
+func (p *Parser) parseType() (token.Token, error) {
+	// TODO(daniel): complexer types.
+	return p.require(token.TokenIdent)
 }
 
-func (p *Parser) parseStmtSequence(terminator ...lex.TokenType) (ast.Stmt, error) {
+func (p *Parser) parseStmtSequence(terminator ...token.TokenType) (ast.Stmt, error) {
 	var stmts []ast.Stmt
 
 	for !p.tokenIs(terminator...) {
@@ -244,7 +244,7 @@ func (p *Parser) parseStmtSequence(terminator ...lex.TokenType) (ast.Stmt, error
 		stmts = append(stmts, stmt)
 
 		if !p.tokenIs(terminator...) {
-			if _, err := p.require(lex.TokenSemicolon); err != nil {
+			if _, err := p.require(token.TokenSemicolon); err != nil {
 				return nil, err
 			}
 		}
@@ -255,11 +255,11 @@ func (p *Parser) parseStmtSequence(terminator ...lex.TokenType) (ast.Stmt, error
 
 func (p *Parser) parseStmt() (ast.Stmt, error) {
 	switch p.currentType() {
-	case lex.TokenIdent:
-		ident, _ := p.require(lex.TokenIdent)
+	case token.TokenIdent:
+		ident, _ := p.require(token.TokenIdent)
 
 		switch p.currentType() {
-		case lex.TokenAssign:
+		case token.TokenAssign:
 			return p.parseAssignStmt(ident)
 		default:
 			expr, err := p.parseCallExpr(ast.NewDesignatorExpr(ident))
@@ -269,21 +269,21 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 
 			return ast.NewExprStmt(expr), nil
 		}
-	case lex.TokenIF:
+	case token.TokenIF:
 		return p.parseIfStmt()
-	case lex.TokenREPEAT:
+	case token.TokenREPEAT:
 		return p.parseRepeatStmt()
-	case lex.TokenWHILE:
+	case token.TokenWHILE:
 		return p.parseWhileStmt()
-	case lex.TokenFOR:
+	case token.TokenFOR:
 		return p.parseForStmt()
 	default:
 		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index].Type)
 	}
 }
 
-func (p *Parser) parseAssignStmt(ident lex.Token) (ast.Stmt, error) {
-	p.consume(lex.TokenAssign)
+func (p *Parser) parseAssignStmt(ident token.Token) (ast.Stmt, error) {
+	p.consume(token.TokenAssign)
 
 	expr, err := p.parseExpr()
 	if err != nil {
@@ -294,7 +294,7 @@ func (p *Parser) parseAssignStmt(ident lex.Token) (ast.Stmt, error) {
 }
 
 func (p *Parser) parseIfStmt() (ast.Stmt, error) {
-	t, err := p.require(lex.TokenIF)
+	t, err := p.require(token.TokenIF)
 	if err != nil {
 		return nil, err
 	}
@@ -302,42 +302,42 @@ func (p *Parser) parseIfStmt() (ast.Stmt, error) {
 	return p.parseIfTail(t)
 }
 
-func (p *Parser) parseIfTail(t lex.Token) (ast.Stmt, error) {
+func (p *Parser) parseIfTail(t token.Token) (ast.Stmt, error) {
 	expr, err := p.parseExpr()
 	if err != nil {
 		return nil, err
 	}
 
-	if _, err := p.require(lex.TokenTHEN); err != nil {
+	if _, err := p.require(token.TokenTHEN); err != nil {
 		return nil, err
 	}
 
 	var trueBlock, falseBlock ast.Stmt
 
-	trueBlock, err = p.parseStmtSequence(lex.TokenELSIF, lex.TokenELSE, lex.TokenEND)
+	trueBlock, err = p.parseStmtSequence(token.TokenELSIF, token.TokenELSE, token.TokenEND)
 	if err != nil {
 		return nil, err
 	}
 
 	switch p.currentType() {
-	case lex.TokenELSIF:
-		e, _ := p.require(lex.TokenELSIF)
+	case token.TokenELSIF:
+		e, _ := p.require(token.TokenELSIF)
 
 		falseBlock, err = p.parseIfTail(e)
 		if err != nil {
 			return nil, err
 		}
-	case lex.TokenELSE:
-		p.consume(lex.TokenELSE)
+	case token.TokenELSE:
+		p.consume(token.TokenELSE)
 
-		falseBlock, err = p.parseStmtSequence(lex.TokenEND)
+		falseBlock, err = p.parseStmtSequence(token.TokenEND)
 		if err != nil {
 			return nil, err
 		}
 
-		p.consume(lex.TokenEND)
-	case lex.TokenEND:
-		p.consume(lex.TokenEND)
+		p.consume(token.TokenEND)
+	case token.TokenEND:
+		p.consume(token.TokenEND)
 
 		falseBlock = ast.NewStmtSequence(nil)
 	default:
@@ -348,17 +348,17 @@ func (p *Parser) parseIfTail(t lex.Token) (ast.Stmt, error) {
 }
 
 func (p *Parser) parseRepeatStmt() (ast.Stmt, error) {
-	t, err := p.require(lex.TokenREPEAT)
+	t, err := p.require(token.TokenREPEAT)
 	if err != nil {
 		return nil, err
 	}
 
-	stmts, err := p.parseStmtSequence(lex.TokenUNTIL)
+	stmts, err := p.parseStmtSequence(token.TokenUNTIL)
 	if err != nil {
 		return nil, err
 	}
 
-	if _, err := p.require(lex.TokenUNTIL); err != nil {
+	if _, err := p.require(token.TokenUNTIL); err != nil {
 		return nil, err
 	}
 
@@ -373,7 +373,7 @@ func (p *Parser) parseRepeatStmt() (ast.Stmt, error) {
 }
 
 func (p *Parser) parseWhileStmt() (ast.Stmt, error) {
-	t, err := p.require(lex.TokenWHILE)
+	t, err := p.require(token.TokenWHILE)
 	if err != nil {
 		return nil, err
 	}
@@ -386,23 +386,23 @@ func (p *Parser) parseWhileStmt() (ast.Stmt, error) {
 			return nil, err
 		}
 
-		if _, err := p.require(lex.TokenDO); err != nil {
+		if _, err := p.require(token.TokenDO); err != nil {
 			return nil, err
 		}
 
-		stmts, err := p.parseStmtSequence(lex.TokenELSIF, lex.TokenEND)
+		stmts, err := p.parseStmtSequence(token.TokenELSIF, token.TokenEND)
 		if err != nil {
 			return nil, err
 		}
 
 		conds = append(conds, ast.NewCondition(expr, stmts))
 
-		if !p.expect(lex.TokenELSIF) {
+		if !p.expect(token.TokenELSIF) {
 			break
 		}
 	}
 
-	if _, err := p.require(lex.TokenEND); err != nil {
+	if _, err := p.require(token.TokenEND); err != nil {
 		return nil, err
 	}
 
@@ -410,17 +410,17 @@ func (p *Parser) parseWhileStmt() (ast.Stmt, error) {
 }
 
 func (p *Parser) parseForStmt() (ast.Stmt, error) {
-	t, err := p.require(lex.TokenFOR)
+	t, err := p.require(token.TokenFOR)
 	if err != nil {
 		return nil, err
 	}
 
-	iter, err := p.require(lex.TokenIdent)
+	iter, err := p.require(token.TokenIdent)
 	if err != nil {
 		return nil, err
 	}
 
-	if _, err := p.require(lex.TokenAssign); err != nil {
+	if _, err := p.require(token.TokenAssign); err != nil {
 		return nil, err
 	}
 
@@ -429,7 +429,7 @@ func (p *Parser) parseForStmt() (ast.Stmt, error) {
 		return nil, err
 	}
 
-	if _, err := p.require(lex.TokenTO); err != nil {
+	if _, err := p.require(token.TokenTO); err != nil {
 		return nil, err
 	}
 
@@ -440,32 +440,32 @@ func (p *Parser) parseForStmt() (ast.Stmt, error) {
 
 	var by ast.Expr
 
-	if p.expect(lex.TokenBY) {
+	if p.expect(token.TokenBY) {
 		by, err = p.parseExpr()
 		if err != nil {
 			return nil, err
 		}
 	} else {
 		// NOTE(daniel): if no `BY` is specified, synthesize a `BY 1`.
-		by = ast.NewNumberExpr(lex.Token{
+		by = ast.NewNumberExpr(token.Token{
 			File:  t.File,
 			Range: t.Range,
-			Type:  lex.TokenInteger,
+			Type:  token.TokenInteger,
 			Text:  "1",
 			Int:   1,
 		})
 	}
 
-	if _, err := p.require(lex.TokenDO); err != nil {
+	if _, err := p.require(token.TokenDO); err != nil {
 		return nil, err
 	}
 
-	stmt, err := p.parseStmtSequence(lex.TokenEND)
+	stmt, err := p.parseStmtSequence(token.TokenEND)
 	if err != nil {
 		return nil, err
 	}
 
-	if _, err := p.require(lex.TokenEND); err != nil {
+	if _, err := p.require(token.TokenEND); err != nil {
 		return nil, err
 	}
 
@@ -473,7 +473,7 @@ func (p *Parser) parseForStmt() (ast.Stmt, error) {
 }
 
 func (p *Parser) parseCallExpr(designator *ast.DesignatorExpr) (ast.Expr, error) {
-	if _, err := p.require(lex.TokenLParen); err != nil {
+	if _, err := p.require(token.TokenLParen); err != nil {
 		return nil, err
 	}
 
@@ -487,12 +487,12 @@ func (p *Parser) parseCallExpr(designator *ast.DesignatorExpr) (ast.Expr, error)
 
 		args = append(args, expr)
 
-		if !p.expect(lex.TokenComma) {
+		if !p.expect(token.TokenComma) {
 			break
 		}
 	}
 
-	if _, err := p.require(lex.TokenRParen); err != nil {
+	if _, err := p.require(token.TokenRParen); err != nil {
 		return nil, err
 	}
 
@@ -522,8 +522,8 @@ func (p *Parser) parseExpr() (ast.Expr, error) {
 
 func (p *Parser) parseSimpleExpr() (ast.Expr, error) {
 	// simpleExpr := term { '+' | '-' | 'OR' term }
-	addOperators := []lex.TokenType{
-		lex.TokenPlus, lex.TokenMinus, lex.TokenOR,
+	addOperators := []token.TokenType{
+		token.TokenPlus, token.TokenMinus, token.TokenOR,
 	}
 
 	lhs, err := p.parseTerm()
@@ -547,8 +547,8 @@ func (p *Parser) parseSimpleExpr() (ast.Expr, error) {
 
 func (p *Parser) parseTerm() (ast.Expr, error) {
 	// term := factor { '*' | '/' | 'DIV' | 'MUL' | '&' factor }
-	mulOperators := []lex.TokenType{
-		lex.TokenAsterisk, lex.TokenSlash, lex.TokenDIV, lex.TokenMOD, lex.TokenAmpersand,
+	mulOperators := []token.TokenType{
+		token.TokenAsterisk, token.TokenSlash, token.TokenDIV, token.TokenMOD, token.TokenAmpersand,
 	}
 
 	lhs, err := p.parseFactor()
@@ -573,27 +573,27 @@ func (p *Parser) parseTerm() (ast.Expr, error) {
 func (p *Parser) parseFactor() (ast.Expr, error) {
 	// factor := set | designator [actualParameters] | number | string | boolean | '(' expr ')' | '~' factor
 	switch p.currentType() {
-	case lex.TokenIdent:
+	case token.TokenIdent:
 		d, err := p.parseDesignator()
 		if err != nil {
 			return nil, err
 		}
 
-		if p.currentType() != lex.TokenLParen {
+		if p.currentType() != token.TokenLParen {
 			return d, nil
 		}
 
 		return p.parseCallExpr(d)
-	case lex.TokenInteger, lex.TokenReal, lex.TokenMinus, lex.TokenPlus:
+	case token.TokenInteger, token.TokenReal, token.TokenMinus, token.TokenPlus:
 		return p.parseNumberExpr()
-	case lex.TokenString:
+	case token.TokenString:
 		return p.parseStringLiteral()
-	case lex.TokenBoolean:
+	case token.TokenBoolean:
 		return p.parseBooleanLiteral()
-	case lex.TokenTilde:
+	case token.TokenTilde:
 		return p.parseNotExpr()
-	case lex.TokenLParen:
-		if _, err := p.require(lex.TokenLParen); err != nil {
+	case token.TokenLParen:
+		if _, err := p.require(token.TokenLParen); err != nil {
 			return nil, err
 		}
 
@@ -602,12 +602,12 @@ func (p *Parser) parseFactor() (ast.Expr, error) {
 			return expr, err
 		}
 
-		if _, err := p.require(lex.TokenRParen); err != nil {
+		if _, err := p.require(token.TokenRParen); err != nil {
 			return nil, err
 		}
 
 		return expr, nil
-	case lex.TokenLBrace:
+	case token.TokenLBrace:
 		return p.parseSetLiteral()
 	default:
 		return nil, fmt.Errorf("unexpected token in factor: %q", p.currentType())
@@ -615,38 +615,38 @@ func (p *Parser) parseFactor() (ast.Expr, error) {
 }
 
 func (p *Parser) parseDesignator() (*ast.DesignatorExpr, error) {
-	ident, _ := p.require(lex.TokenIdent)
+	ident, _ := p.require(token.TokenIdent)
 
 	return ast.NewDesignatorExpr(ident), nil
 }
 
 func (p *Parser) parseNumberExpr() (ast.Expr, error) {
 	var (
-		op lex.Token
-		t  lex.Token
+		op token.Token
+		t  token.Token
 	)
 
 	switch p.currentType() {
-	case lex.TokenMinus:
+	case token.TokenMinus:
 		// Unary Minus.
-		op, _ = p.require(lex.TokenMinus)
-	case lex.TokenPlus:
+		op, _ = p.require(token.TokenMinus)
+	case token.TokenPlus:
 		// Unary Plus is a no-op so we ignore it.
-		p.consume(lex.TokenPlus)
+		p.consume(token.TokenPlus)
 	}
 
 	switch p.currentType() {
-	case lex.TokenInteger:
-		t, _ = p.require(lex.TokenInteger)
-	case lex.TokenReal:
-		t, _ = p.require(lex.TokenReal)
+	case token.TokenInteger:
+		t, _ = p.require(token.TokenInteger)
+	case token.TokenReal:
+		t, _ = p.require(token.TokenReal)
 	default:
 		return nil, fmt.Errorf("expected number, got %v", p.currentType())
 	}
 
 	num := ast.NewNumberExpr(t)
 
-	if op.Type == lex.TokenInvalid {
+	if op.Type == token.TokenInvalid {
 		return num, nil
 	}
 
@@ -661,7 +661,7 @@ func (p *Parser) parseNumberExpr() (ast.Expr, error) {
 }
 
 func (p *Parser) parseStringLiteral() (ast.Expr, error) {
-	t, err := p.require(lex.TokenString)
+	t, err := p.require(token.TokenString)
 	if err != nil {
 		return nil, err
 	}
@@ -674,7 +674,7 @@ func (p *Parser) parseStringLiteral() (ast.Expr, error) {
 }
 
 func (p *Parser) parseBooleanLiteral() (ast.Expr, error) {
-	t, err := p.require(lex.TokenBoolean)
+	t, err := p.require(token.TokenBoolean)
 	if err != nil {
 		return nil, err
 	}
@@ -683,30 +683,30 @@ func (p *Parser) parseBooleanLiteral() (ast.Expr, error) {
 }
 
 func (p *Parser) parseSetLiteral() (ast.Expr, error) {
-	t, err := p.require(lex.TokenLBrace)
+	t, err := p.require(token.TokenLBrace)
 	if err != nil {
 		return nil, err
 	}
 
 	var bits []byte
 
-	for p.currentType() != lex.TokenRBrace {
-		i1, err := p.require(lex.TokenInteger)
+	for p.currentType() != token.TokenRBrace {
+		i1, err := p.require(token.TokenInteger)
 		if err != nil {
 			return nil, err
 		}
 
-		if !p.expect(lex.TokenDotDot) {
+		if !p.expect(token.TokenDotDot) {
 			bits = append(bits, byte(i1.Int))
 
-			if p.expect(lex.TokenComma) {
+			if p.expect(token.TokenComma) {
 				continue
 			}
 
 			break
 		}
 
-		i2, err := p.require(lex.TokenInteger)
+		i2, err := p.require(token.TokenInteger)
 		if err != nil {
 			return nil, err
 		}
@@ -715,12 +715,12 @@ func (p *Parser) parseSetLiteral() (ast.Expr, error) {
 			bits = append(bits, byte(i))
 		}
 
-		if p.expect(lex.TokenComma) {
+		if p.expect(token.TokenComma) {
 			continue
 		}
 	}
 
-	if _, err := p.require(lex.TokenRBrace); err != nil {
+	if _, err := p.require(token.TokenRBrace); err != nil {
 		return nil, err
 	}
 
@@ -728,7 +728,7 @@ func (p *Parser) parseSetLiteral() (ast.Expr, error) {
 }
 
 func (p *Parser) parseNotExpr() (ast.Expr, error) {
-	t, err := p.require(lex.TokenTilde)
+	t, err := p.require(token.TokenTilde)
 	if err != nil {
 		return nil, err
 	}
@@ -741,7 +741,7 @@ func (p *Parser) parseNotExpr() (ast.Expr, error) {
 	return ast.NewNotExpr(t, expr), nil
 }
 
-func (p *Parser) require(exp lex.TokenType) (lex.Token, error) {
+func (p *Parser) require(exp token.TokenType) (token.Token, error) {
 	if p.currentType() == exp {
 		token := p.currentToken()
 		p.index++
@@ -749,10 +749,10 @@ func (p *Parser) require(exp lex.TokenType) (lex.Token, error) {
 		return token, nil
 	}
 
-	return lex.Token{}, fmt.Errorf("unexpected token: %v (expected %v)", p.tokens[p.index].Type, exp)
+	return token.Token{}, fmt.Errorf("unexpected token: %v (expected %v)", p.tokens[p.index].Type, exp)
 }
 
-func (p *Parser) expect(exp lex.TokenType) bool {
+func (p *Parser) expect(exp token.TokenType) bool {
 	if p.currentType() == exp {
 		p.index++
 
@@ -762,7 +762,7 @@ func (p *Parser) expect(exp lex.TokenType) bool {
 	return false
 }
 
-func (p *Parser) consume(exp lex.TokenType) {
+func (p *Parser) consume(exp token.TokenType) {
 	if p.currentType() != exp {
 		panic(fmt.Sprintf("tried to consume %v but got %v", exp, p.currentType()))
 	}
@@ -770,15 +770,15 @@ func (p *Parser) consume(exp lex.TokenType) {
 	p.index++
 }
 
-func (p *Parser) currentToken() lex.Token {
+func (p *Parser) currentToken() token.Token {
 	return p.tokens[p.index]
 }
 
-func (p *Parser) currentType() lex.TokenType {
+func (p *Parser) currentType() token.TokenType {
 	return p.tokens[p.index].Type
 }
 
-func (p *Parser) tokenIs(opts ...lex.TokenType) bool {
+func (p *Parser) tokenIs(opts ...token.TokenType) bool {
 	current := p.currentType()
 
 	for _, opt := range opts {

@@ -1,8 +1,6 @@
 package ast
 
-import (
-	"github.com/corani/silver-octo-sniffle/lex"
-)
+import "github.com/corani/silver-octo-sniffle/token"
 
 type AstVisitor interface {
 	VisitModule(*Module)
@@ -25,7 +23,7 @@ type AstVisitor interface {
 }
 
 type Node interface {
-	Token() lex.Token
+	Token() token.Token
 	Visit(AstVisitor)
 }
 
@@ -64,7 +62,7 @@ func NewCondition(e Expr, s Stmt) Condition {
 // ----- Module ---------------------------------------------------------------
 
 type Module struct {
-	token  lex.Token
+	token  token.Token
 	name   string
 	block  Stmt
 	consts []*ConstDecl
@@ -75,7 +73,7 @@ type Module struct {
 var _ Node = (*Module)(nil)
 
 // TODO(daniel): maybe instead of passing all decls in the constructor, add some `NewXxx` methods?
-func NewModule(token lex.Token, n string, s Stmt, c []*ConstDecl, t []*TypeDecl, v []*VarDecl) *Module {
+func NewModule(token token.Token, n string, s Stmt, c []*ConstDecl, t []*TypeDecl, v []*VarDecl) *Module {
 	return &Module{
 		token:  token,
 		name:   n,
@@ -86,7 +84,7 @@ func NewModule(token lex.Token, n string, s Stmt, c []*ConstDecl, t []*TypeDecl,
 	}
 }
 
-func (n *Module) Token() lex.Token {
+func (n *Module) Token() token.Token {
 	return n.token
 }
 
@@ -124,9 +122,9 @@ func NewStmtSequence(s []Stmt) *StmtSequence {
 	}
 }
 
-func (n *StmtSequence) Token() lex.Token {
+func (n *StmtSequence) Token() token.Token {
 	if len(n.stmts) == 0 {
-		return lex.Token{}
+		return token.Token{}
 	}
 
 	return n.stmts[0].Token()
@@ -143,7 +141,7 @@ func (n *StmtSequence) Visit(v AstVisitor) {
 // ----- IfStmt ---------------------------------------------------------------
 
 type IfStmt struct {
-	token      lex.Token
+	token      token.Token
 	expr       Expr
 	trueBlock  Stmt
 	falseBlock Stmt
@@ -151,7 +149,7 @@ type IfStmt struct {
 
 var _ Stmt = (*IfStmt)(nil)
 
-func NewIfStmt(t lex.Token, e Expr, tb, fb Stmt) *IfStmt {
+func NewIfStmt(t token.Token, e Expr, tb, fb Stmt) *IfStmt {
 	return &IfStmt{
 		token:      t,
 		expr:       e,
@@ -160,7 +158,7 @@ func NewIfStmt(t lex.Token, e Expr, tb, fb Stmt) *IfStmt {
 	}
 }
 
-func (n *IfStmt) Token() lex.Token {
+func (n *IfStmt) Token() token.Token {
 	return n.token
 }
 
@@ -183,20 +181,20 @@ func (n *IfStmt) Visit(v AstVisitor) {
 // ----- RepeatStmt -----------------------------------------------------------
 
 type RepeatStmt struct {
-	token lex.Token
+	token token.Token
 	cond  Condition
 }
 
 var _ Stmt = (*RepeatStmt)(nil)
 
-func NewRepeatStmt(t lex.Token, c Condition) *RepeatStmt {
+func NewRepeatStmt(t token.Token, c Condition) *RepeatStmt {
 	return &RepeatStmt{
 		token: t,
 		cond:  c,
 	}
 }
 
-func (n *RepeatStmt) Token() lex.Token {
+func (n *RepeatStmt) Token() token.Token {
 	return n.token
 }
 
@@ -211,20 +209,20 @@ func (n *RepeatStmt) Visit(v AstVisitor) {
 // ----- WhileStmt ------------------------------------------------------------
 
 type WhileStmt struct {
-	token lex.Token
+	token token.Token
 	conds []Condition
 }
 
 var _ Stmt = (*WhileStmt)(nil)
 
-func NewWhileStmt(t lex.Token, c []Condition) *WhileStmt {
+func NewWhileStmt(t token.Token, c []Condition) *WhileStmt {
 	return &WhileStmt{
 		token: t,
 		conds: c,
 	}
 }
 
-func (n *WhileStmt) Token() lex.Token {
+func (n *WhileStmt) Token() token.Token {
 	return n.token
 }
 
@@ -239,8 +237,8 @@ func (n *WhileStmt) Visit(v AstVisitor) {
 // ----- ForStmt --------------------------------------------------------------
 
 type ForStmt struct {
-	token lex.Token
-	iter  lex.Token
+	token token.Token
+	iter  token.Token
 	from  Expr
 	to    Expr
 	by    Expr
@@ -249,7 +247,7 @@ type ForStmt struct {
 
 var _ Stmt = (*ForStmt)(nil)
 
-func NewForStmt(t, i lex.Token, fr, to, by Expr, s Stmt) *ForStmt {
+func NewForStmt(t, i token.Token, fr, to, by Expr, s Stmt) *ForStmt {
 	return &ForStmt{
 		token: t,
 		iter:  i,
@@ -260,11 +258,11 @@ func NewForStmt(t, i lex.Token, fr, to, by Expr, s Stmt) *ForStmt {
 	}
 }
 
-func (n *ForStmt) Token() lex.Token {
+func (n *ForStmt) Token() token.Token {
 	return n.token
 }
 
-func (n *ForStmt) Iter() lex.Token {
+func (n *ForStmt) Iter() token.Token {
 	return n.iter
 }
 
@@ -291,20 +289,20 @@ func (n *ForStmt) Visit(v AstVisitor) {
 // ----- AssignStmt -----------------------------------------------------------
 
 type AssignStmt struct {
-	token lex.Token
+	token token.Token
 	expr  Expr
 }
 
 var _ Stmt = (*AssignStmt)(nil)
 
-func NewAssignStmt(t lex.Token, e Expr) *AssignStmt {
+func NewAssignStmt(t token.Token, e Expr) *AssignStmt {
 	return &AssignStmt{
 		token: t,
 		expr:  e,
 	}
 }
 
-func (n *AssignStmt) Token() lex.Token {
+func (n *AssignStmt) Token() token.Token {
 	return n.token
 }
 
@@ -330,7 +328,7 @@ func NewExprStmt(e Expr) *ExprStmt {
 	}
 }
 
-func (n *ExprStmt) Token() lex.Token {
+func (n *ExprStmt) Token() token.Token {
 	return n.expr.Token()
 }
 
@@ -345,7 +343,7 @@ func (n *ExprStmt) Visit(v AstVisitor) {
 // ----- DesignatorExpr -------------------------------------------------------
 
 type DesignatorExpr struct {
-	token      lex.Token
+	token      token.Token
 	typ        Type
 	constValue *Value
 	kind       Kind
@@ -353,13 +351,13 @@ type DesignatorExpr struct {
 
 var _ Expr = (*DesignatorExpr)(nil)
 
-func NewDesignatorExpr(t lex.Token) *DesignatorExpr {
+func NewDesignatorExpr(t token.Token) *DesignatorExpr {
 	return &DesignatorExpr{
 		token: t,
 	}
 }
 
-func (n *DesignatorExpr) Token() lex.Token {
+func (n *DesignatorExpr) Token() token.Token {
 	return n.token
 }
 
@@ -388,20 +386,20 @@ func (n *DesignatorExpr) Update(t Type, k Kind, c *Value) {
 // ----- NumberExpr -----------------------------------------------------------
 
 type NumberExpr struct {
-	token      lex.Token
+	token      token.Token
 	typ        Type
 	constValue *Value
 }
 
 var _ Expr = (*NumberExpr)(nil)
 
-func NewNumberExpr(t lex.Token) *NumberExpr {
+func NewNumberExpr(t token.Token) *NumberExpr {
 	return &NumberExpr{
 		token: t,
 	}
 }
 
-func (n *NumberExpr) Token() lex.Token {
+func (n *NumberExpr) Token() token.Token {
 	return n.token
 }
 
@@ -425,19 +423,19 @@ func (n *NumberExpr) Update(t Type, c *Value) {
 // ----- CharExpr -------------------------------------------------------------
 
 type CharExpr struct {
-	token      lex.Token
+	token      token.Token
 	constValue *Value
 }
 
 var _ Expr = (*CharExpr)(nil)
 
-func NewCharExpr(t lex.Token) *CharExpr {
+func NewCharExpr(t token.Token) *CharExpr {
 	return &CharExpr{
 		token: t,
 	}
 }
 
-func (n *CharExpr) Token() lex.Token {
+func (n *CharExpr) Token() token.Token {
 	return n.token
 }
 
@@ -460,19 +458,19 @@ func (n *CharExpr) Update(c *Value) {
 // ----- StringExpr -----------------------------------------------------------
 
 type StringExpr struct {
-	token      lex.Token
+	token      token.Token
 	constValue *Value
 }
 
 var _ Expr = (*StringExpr)(nil)
 
-func NewStringExpr(t lex.Token) *StringExpr {
+func NewStringExpr(t token.Token) *StringExpr {
 	return &StringExpr{
 		token: t,
 	}
 }
 
-func (n *StringExpr) Token() lex.Token {
+func (n *StringExpr) Token() token.Token {
 	return n.token
 }
 
@@ -495,19 +493,19 @@ func (n *StringExpr) Update(c *Value) {
 // ----- BooleanExpr ----------------------------------------------------------
 
 type BooleanExpr struct {
-	token      lex.Token
+	token      token.Token
 	constValue *Value
 }
 
 var _ Expr = (*BooleanExpr)(nil)
 
-func NewBooleanExpr(t lex.Token) *BooleanExpr {
+func NewBooleanExpr(t token.Token) *BooleanExpr {
 	return &BooleanExpr{
 		token: t,
 	}
 }
 
-func (n *BooleanExpr) Token() lex.Token {
+func (n *BooleanExpr) Token() token.Token {
 	return n.token
 }
 
@@ -530,21 +528,21 @@ func (n *BooleanExpr) Update(c *Value) {
 // ----- SetExpr --------------------------------------------------------------
 
 type SetExpr struct {
-	token      lex.Token
+	token      token.Token
 	bits       []byte
 	constValue *Value
 }
 
 var _ Expr = (*SetExpr)(nil)
 
-func NewSetExpr(t lex.Token, b []byte) *SetExpr {
+func NewSetExpr(t token.Token, b []byte) *SetExpr {
 	return &SetExpr{
 		token: t,
 		bits:  b,
 	}
 }
 
-func (n *SetExpr) Token() lex.Token {
+func (n *SetExpr) Token() token.Token {
 	return n.token
 }
 
@@ -571,21 +569,21 @@ func (n *SetExpr) Update(c *Value) {
 // ----- NotExpr --------------------------------------------------------------
 
 type NotExpr struct {
-	token      lex.Token
+	token      token.Token
 	expr       Expr
 	constValue *Value
 }
 
 var _ Expr = (*NotExpr)(nil)
 
-func NewNotExpr(t lex.Token, e Expr) *NotExpr {
+func NewNotExpr(t token.Token, e Expr) *NotExpr {
 	return &NotExpr{
 		token: t,
 		expr:  e,
 	}
 }
 
-func (n *NotExpr) Token() lex.Token {
+func (n *NotExpr) Token() token.Token {
 	return n.token
 }
 
@@ -612,7 +610,7 @@ func (n *NotExpr) Update(c *Value) {
 // ----- BinaryExpr -----------------------------------------------------------
 
 type BinaryExpr struct {
-	token      lex.Token
+	token      token.Token
 	args       []Expr
 	typ        Type
 	constValue *Value
@@ -620,14 +618,14 @@ type BinaryExpr struct {
 
 var _ Expr = (*BinaryExpr)(nil)
 
-func NewBinaryExpr(t lex.Token, lhs, rhs Expr) *BinaryExpr {
+func NewBinaryExpr(t token.Token, lhs, rhs Expr) *BinaryExpr {
 	return &BinaryExpr{
 		token: t,
 		args:  []Expr{lhs, rhs},
 	}
 }
 
-func (n *BinaryExpr) Token() lex.Token {
+func (n *BinaryExpr) Token() token.Token {
 	return n.token
 }
 
@@ -679,7 +677,7 @@ func NewCallExpr(d *DesignatorExpr, a []Expr) *CallExpr {
 	}
 }
 
-func (n *CallExpr) Token() lex.Token {
+func (n *CallExpr) Token() token.Token {
 	return n.designator.Token()
 }
 
