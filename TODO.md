@@ -57,8 +57,9 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] factor out builtin functions.
 - [x] use visitor pattern for builtin functions.
 - [x] split code into packages.
-- [ ] better error reporting.
-- [ ] continue parsing if errors are found.
+- [x] better error reporting.
+- [x] continue parsing if errors are found.
+- [ ] better sync points during parser error recovery.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.

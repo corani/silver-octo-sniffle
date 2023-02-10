@@ -117,6 +117,13 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 	fmt.Fprint(w, result.ir)
 	fmt.Fprintln(w, "```")
 
+	if result.generatorOut != "" {
+		fmt.Fprintln(w, "## Generator errors")
+		fmt.Fprintf(w, "```\n%s```\n", result.generatorOut)
+
+		return
+	}
+
 	fmt.Fprintln(w, "## Run")
 	fmt.Fprintln(w, "```bash")
 
