@@ -25,9 +25,10 @@ type CompilationResult struct {
 	ir     string
 	path   string
 
-	lexerOut   string
-	parserOut  string
-	checkerOut string
+	lexerOut     string
+	parserOut    string
+	checkerOut   string
+	generatorOut string
 }
 
 func do(srcName string, bs []byte) (CompilationResult, error) {
@@ -86,11 +87,15 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 
 	var ir bytes.Buffer
 
-	if err := generator.GenerateIR(io.MultiWriter(&ir, out), ast); err != nil {
+	buf.Reset()
+
+	generator.GenerateIR(reporter.NewReporter(&buf), io.MultiWriter(&ir, out), ast)
+	if buf.Len() > 0 {
 		return CompilationResult{
-			tokens: tokens,
-			ast:    ast,
-		}, err
+			tokens:       tokens,
+			ast:          ast,
+			generatorOut: buf.String(),
+		}, generator.ErrGenerating
 	}
 
 	if err := compile(llName, outName); err != nil {
@@ -129,6 +134,10 @@ func main() {
 
 		if errors.Is(err, checker.ErrChecking) {
 			fmt.Fprintln(os.Stderr, result.checkerOut)
+		}
+
+		if errors.Is(err, generator.ErrGenerating) {
+			fmt.Fprintln(os.Stderr, result.generatorOut)
 		}
 
 		panic(err)

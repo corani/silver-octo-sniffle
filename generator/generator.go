@@ -1,10 +1,12 @@
 package generator
 
 import (
+	"errors"
 	"fmt"
 	"io"
 
 	"github.com/corani/silver-octo-sniffle/ast"
+	"github.com/corani/silver-octo-sniffle/reporter"
 	"github.com/corani/silver-octo-sniffle/token"
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
@@ -13,10 +15,13 @@ import (
 	"github.com/llir/llvm/ir/value"
 )
 
+var ErrGenerating = errors.New("generator error")
+
 var zero = constant.NewInt(types.I64, 0)
 
-func GenerateIR(writer io.Writer, root ast.Node) error {
+func GenerateIR(out *reporter.Reporter, writer io.Writer, root ast.Node) {
 	g := &Generator{
+		out:           out,
 		currentModule: ir.NewModule(),
 		currentBlock:  nil,
 		currentValue:  nil,
@@ -26,17 +31,13 @@ func GenerateIR(writer io.Writer, root ast.Node) error {
 		vars:          make(map[string]*ir.Global),
 	}
 
-	module, err := g.Generate(root)
-	if err != nil {
-		return err
-	}
+	module := g.Generate(root)
 
 	fmt.Fprintln(writer, module)
-
-	return nil
 }
 
 type Generator struct {
+	out           *reporter.Reporter
 	currentModule *ir.Module
 	currentFunc   *ir.Func
 	currentBlock  *ir.Block
@@ -45,7 +46,6 @@ type Generator struct {
 	strings       map[string]*ir.Global
 	consts        map[string]*ast.Value
 	vars          map[string]*ir.Global
-	errors        []error
 }
 
 var (
@@ -53,27 +53,12 @@ var (
 	_ ast.BuiltinVisitor = (*Generator)(nil)
 )
 
-func (g *Generator) Generate(root ast.Node) (*ir.Module, error) {
+func (g *Generator) Generate(root ast.Node) *ir.Module {
 	g.generateStdlib()
 
 	root.Visit(g)
 
-	return g.currentModule, g.Error()
-}
-
-// TODO(daniel): improve error reporting. Maybe with a callback?
-func (g *Generator) Error() error {
-	if len(g.errors) == 0 {
-		return nil
-	}
-
-	txt := "generate errors"
-
-	for _, v := range g.errors {
-		txt = txt + ": " + v.Error()
-	}
-
-	return fmt.Errorf(txt)
+	return g.currentModule
 }
 
 func (g *Generator) VisitModule(n *ast.Module) {
@@ -233,7 +218,7 @@ func (g *Generator) VisitCallExpr(n *ast.CallExpr) {
 	if fn := n.Builtin(); fn != nil {
 		fn.Visit(g, n.Args())
 	} else {
-		g.errors = append(g.errors, fmt.Errorf("don't know how to call %q", name))
+		g.out.Errorf(n.Token(), "don't know how to call %q", name)
 	}
 }
 
@@ -242,8 +227,8 @@ func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
 	right := g.visitAndReturnValue(n.Rhs())
 
 	if !left.Type().Equal(right.Type()) {
-		g.errors = append(g.errors, fmt.Errorf("types are different in %s",
-			n.Token().Type))
+		g.out.Errorf(n.Token(), "types are different in %s",
+			n.Token().Type)
 	}
 
 	// TODO(daniel): check if set operations are correct!
@@ -351,7 +336,7 @@ func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
 		g.currentValue = g.currentBlock.NewAnd(right, g.currentValue)
 		g.currentValue = g.currentBlock.NewICmp(enum.IPredNE, g.currentValue, zero)
 	default:
-		g.errors = append(g.errors, fmt.Errorf("unsupported token type: %+v", n.Token()))
+		g.out.Errorf(n.Token(), "unsupported token type: %+v", n.Token().Type)
 	}
 }
 
@@ -565,8 +550,8 @@ func (g *Generator) VisitBuiltinPrint(f *ast.BuiltinPrint, args []ast.Expr) {
 	case ast.TypeSet:
 		g.printSet(arg)
 	default:
-		g.errors = append(g.errors, fmt.Errorf("don't know how to print type: %s",
-			arg.Type()))
+		g.out.Errorf(arg.Token(), "don't know how to print type: %s",
+			arg.Type())
 	}
 }
 
