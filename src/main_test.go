@@ -79,13 +79,6 @@ func readGoldenTest(t *testing.T, path string) ([]byte, []byte) {
 
 func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 	result, err := do(srcName, bs)
-	if err != nil {
-		if result.ast != nil {
-			ast.PrintAST(os.Stdout, result.ast)
-		}
-
-		t.Fatal(err)
-	}
 
 	fmt.Fprintf(w, "# %s\n", srcName)
 
@@ -94,29 +87,34 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 	fmt.Fprint(w, string(bs))
 	fmt.Fprintln(w, "```")
 
-	fmt.Fprintln(w, result.tokens)
+	if err == nil {
+		fmt.Fprintln(w, result.tokens)
 
-	ast.PrintAST(w, result.ast)
+		ast.PrintAST(w, result.ast)
 
-	fmt.Fprintln(w, "## IR")
-	fmt.Fprintln(w, "```llvm")
-	fmt.Fprint(w, result.ir)
-	fmt.Fprintln(w, "```")
+		fmt.Fprintln(w, "## IR")
+		fmt.Fprintln(w, "```llvm")
+		fmt.Fprint(w, result.ir)
+		fmt.Fprintln(w, "```")
 
-	fmt.Fprintln(w, "## Run")
-	fmt.Fprintln(w, "```bash")
+		fmt.Fprintln(w, "## Run")
+		fmt.Fprintln(w, "```bash")
 
-	absName, err := filepath.Abs(result.path)
-	if err != nil {
-		t.Fatal(err)
+		absName, err := filepath.Abs(result.path)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := execute(w, absName); err != nil {
+			t.Log(result.ir)
+			t.Fatal(err)
+		}
+
+		fmt.Fprintln(w, "```")
+	} else {
+		fmt.Fprintln(w, "## Lexer errors")
+		fmt.Fprintf(w, "```\n%s```\n", result.lexerOut)
 	}
-
-	if err := execute(w, absName); err != nil {
-		t.Log(result.ir)
-		t.Fatal(err)
-	}
-
-	fmt.Fprintln(w, "```")
 }
 
 var update = flag.Bool("update", false, "update test cases")

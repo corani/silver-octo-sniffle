@@ -1,11 +1,11 @@
-package generate
+package generator
 
 import (
 	"fmt"
 	"io"
 
 	"github.com/corani/silver-octo-sniffle/ast"
-	"github.com/corani/silver-octo-sniffle/lex"
+	"github.com/corani/silver-octo-sniffle/token"
 	"github.com/llir/llvm/ir"
 	"github.com/llir/llvm/ir/constant"
 	"github.com/llir/llvm/ir/enum"
@@ -240,7 +240,7 @@ func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
 
 	// TODO(daniel): check if set operations are correct!
 	switch n.Token().Type {
-	case lex.TokenMinus:
+	case token.TokenMinus:
 		if left.Type().Equal(types.I64) {
 			if n.Lhs().Type() == ast.TypeSet {
 				// SET difference
@@ -254,7 +254,7 @@ func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
 			// REAL subtraction
 			g.currentValue = g.currentBlock.NewFSub(left, right)
 		}
-	case lex.TokenPlus:
+	case token.TokenPlus:
 		if left.Type().Equal(types.I64) {
 			if n.Lhs().Type() == ast.TypeSet {
 				// SET union
@@ -267,7 +267,7 @@ func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
 			// REAL addition
 			g.currentValue = g.currentBlock.NewFAdd(left, right)
 		}
-	case lex.TokenAsterisk:
+	case token.TokenAsterisk:
 		if left.Type().Equal(types.I64) {
 			if n.Lhs().Type() == ast.TypeSet {
 				// SET intersection
@@ -280,7 +280,7 @@ func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
 			// REAL multiplication
 			g.currentValue = g.currentBlock.NewFMul(left, right)
 		}
-	case lex.TokenSlash:
+	case token.TokenSlash:
 		if n.Lhs().Type() == ast.TypeSet {
 			// SET symmetric difference
 			g.currentValue = g.currentBlock.NewXor(left, right)
@@ -288,57 +288,57 @@ func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
 			// REAL division
 			g.currentValue = g.currentBlock.NewFDiv(left, right)
 		}
-	case lex.TokenDIV:
+	case token.TokenDIV:
 		// INTEGER division
 		g.currentValue = g.currentBlock.NewSDiv(left, right)
-	case lex.TokenMOD:
+	case token.TokenMOD:
 		// INTEGER modulus
 		g.currentValue = g.currentBlock.NewSRem(left, right)
-	case lex.TokenAmpersand:
+	case token.TokenAmpersand:
 		// logical AND
 		g.currentValue = g.currentBlock.NewAnd(left, right)
-	case lex.TokenOR:
+	case token.TokenOR:
 		// logical OR
 		g.currentValue = g.currentBlock.NewOr(left, right)
-	case lex.TokenEQ:
+	case token.TokenEQ:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, left, right)
 		} else {
 			// TODO(daniel): do we need "ordered" or "unordered" float compares?
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUEQ, left, right)
 		}
-	case lex.TokenNE:
+	case token.TokenNE:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredNE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUNE, left, right)
 		}
-	case lex.TokenLT:
+	case token.TokenLT:
 		if _, ok := left.Type().(*types.IntType); ok {
 			// TODO(daniel): "signed" or "unsigned" integer compares?
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLT, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULT, left, right)
 		}
-	case lex.TokenLE:
+	case token.TokenLE:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSLE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredULE, left, right)
 		}
-	case lex.TokenGE:
+	case token.TokenGE:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGE, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGE, left, right)
 		}
-	case lex.TokenGT:
+	case token.TokenGT:
 		if _, ok := left.Type().(*types.IntType); ok {
 			g.currentValue = g.currentBlock.NewICmp(enum.IPredSGT, left, right)
 		} else {
 			g.currentValue = g.currentBlock.NewFCmp(enum.FPredUGT, left, right)
 		}
-	case lex.TokenIN:
+	case token.TokenIN:
 		g.currentValue = g.currentBlock.NewShl(constant.NewInt(types.I64, 1), left)
 		g.currentValue = g.currentBlock.NewAnd(right, g.currentValue)
 		g.currentValue = g.currentBlock.NewICmp(enum.IPredNE, g.currentValue, zero)

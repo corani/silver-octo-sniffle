@@ -1,24 +1,24 @@
-package check
+package checker
 
 import (
 	"fmt"
 
 	"github.com/corani/silver-octo-sniffle/ast"
-	"github.com/corani/silver-octo-sniffle/lex"
+	"github.com/corani/silver-octo-sniffle/token"
 )
 
-func evaluateNumberExpr(lit lex.Token) (*ast.Value, error) {
+func evaluateNumberExpr(lit token.Token) (*ast.Value, error) {
 	switch lit.Type {
-	case lex.TokenInteger:
+	case token.TokenInteger:
 		return ast.NewInt(lit.Int), nil
-	case lex.TokenReal:
+	case token.TokenReal:
 		return ast.NewReal(lit.Real), nil
 	default:
 		return nil, fmt.Errorf("invalid number literal: %q", lit.Text)
 	}
 }
 
-func evaluateCharExpr(lit lex.Token) *ast.Value {
+func evaluateCharExpr(lit token.Token) *ast.Value {
 	if len(lit.Text) == 0 {
 		return nil
 	}
@@ -26,11 +26,11 @@ func evaluateCharExpr(lit lex.Token) *ast.Value {
 	return ast.NewChar(byte(lit.Text[0]))
 }
 
-func evaluateStringExpr(lit lex.Token) *ast.Value {
+func evaluateStringExpr(lit token.Token) *ast.Value {
 	return ast.NewString(lit.Text)
 }
 
-func evaluateBooleanExpr(lit lex.Token) (*ast.Value, error) {
+func evaluateBooleanExpr(lit token.Token) (*ast.Value, error) {
 	var v bool
 
 	switch lit.Text {
@@ -67,9 +67,9 @@ func evaluateNotExpr(expr ast.Expr) (*ast.Value, error) {
 	return nil, nil
 }
 
-func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) *ast.Value {
+func evaluateBinaryExpr(op token.TokenType, target ast.Type, lhs, rhs *ast.Value) *ast.Value {
 	switch op {
-	case lex.TokenPlus:
+	case token.TokenPlus:
 		switch target {
 		case ast.TypeInt64:
 			return ast.NewInt(lhs.Int() + rhs.Int())
@@ -80,7 +80,7 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenMinus:
+	case token.TokenMinus:
 		switch target {
 		case ast.TypeInt64:
 			return ast.NewInt(lhs.Int() - rhs.Int())
@@ -91,7 +91,7 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenAsterisk:
+	case token.TokenAsterisk:
 		switch target {
 		case ast.TypeInt64:
 			return ast.NewInt(lhs.Int() * rhs.Int())
@@ -102,7 +102,7 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenSlash:
+	case token.TokenSlash:
 		switch target {
 		case ast.TypeFloat64: // REAL division
 			return ast.NewReal(lhs.Real() / rhs.Real())
@@ -111,35 +111,35 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenDIV: // INTEGER division
+	case token.TokenDIV: // INTEGER division
 		switch target {
 		case ast.TypeInt64:
 			return ast.NewInt(lhs.Int() / rhs.Int())
 		default:
 			return nil
 		}
-	case lex.TokenMOD:
+	case token.TokenMOD:
 		switch target {
 		case ast.TypeInt64:
 			return ast.NewInt(lhs.Int() % rhs.Int())
 		default:
 			return nil
 		}
-	case lex.TokenOR:
+	case token.TokenOR:
 		switch target {
 		case ast.TypeBoolean:
 			return ast.NewBoolean(lhs.Bool() || rhs.Bool())
 		default:
 			return nil
 		}
-	case lex.TokenAmpersand:
+	case token.TokenAmpersand:
 		switch target {
 		case ast.TypeBoolean:
 			return ast.NewBoolean(lhs.Bool() && rhs.Bool())
 		default:
 			return nil
 		}
-	case lex.TokenEQ:
+	case token.TokenEQ:
 		switch target {
 		case ast.TypeBoolean:
 			if lhs.Type() == ast.TypeFloat64 || rhs.Type() == ast.TypeFloat64 {
@@ -150,7 +150,7 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenNE:
+	case token.TokenNE:
 		switch target {
 		case ast.TypeBoolean:
 			if lhs.Type() == ast.TypeFloat64 || rhs.Type() == ast.TypeFloat64 {
@@ -161,7 +161,7 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenLT:
+	case token.TokenLT:
 		switch target {
 		case ast.TypeBoolean:
 			if lhs.Type() == ast.TypeFloat64 || rhs.Type() == ast.TypeFloat64 {
@@ -172,7 +172,7 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenLE:
+	case token.TokenLE:
 		switch target {
 		case ast.TypeBoolean:
 			if lhs.Type() == ast.TypeFloat64 || rhs.Type() == ast.TypeFloat64 {
@@ -183,7 +183,7 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenGE:
+	case token.TokenGE:
 		switch target {
 		case ast.TypeBoolean:
 			if lhs.Type() == ast.TypeFloat64 || rhs.Type() == ast.TypeFloat64 {
@@ -194,7 +194,7 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenGT:
+	case token.TokenGT:
 		switch target {
 		case ast.TypeBoolean:
 			if lhs.Type() == ast.TypeFloat64 || rhs.Type() == ast.TypeFloat64 {
@@ -205,13 +205,13 @@ func evaluateBinaryExpr(op lex.TokenType, target ast.Type, lhs, rhs *ast.Value) 
 		default:
 			return nil
 		}
-	case lex.TokenIN:
+	case token.TokenIN:
 		if lhs.Type() == ast.TypeInt64 && rhs.Type() == ast.TypeSet {
 			return ast.NewBoolean(rhs.Set()&(1<<lhs.Int()) != 0)
 		} else {
 			return nil
 		}
-	case lex.TokenIS:
+	case token.TokenIS:
 		return nil
 	default:
 		return nil

@@ -1,10 +1,10 @@
-package check
+package checker
 
 import (
 	"fmt"
 
 	"github.com/corani/silver-octo-sniffle/ast"
-	"github.com/corani/silver-octo-sniffle/lex"
+	"github.com/corani/silver-octo-sniffle/token"
 )
 
 func TypeCheck(root ast.Node) error {
@@ -240,14 +240,14 @@ func (c *typeChecker) VisitBinaryExpr(e *ast.BinaryExpr) {
 	switch {
 	case len(e.Args()) != 2:
 		c.errors = append(c.errors, fmt.Errorf("binary expression with %d arguments", len(e.Args())))
-	case e.Token().Type == lex.TokenIN:
+	case e.Token().Type == token.TokenIN:
 		outType = ast.TypeBoolean
 	case e.Lhs().Type() != e.Rhs().Type():
 		outType = ast.TypeVoid
 
 		c.errors = append(c.errors, fmt.Errorf("different types for binary operator %s",
 			e.Token().Type))
-	case e.Token().Type == lex.TokenSlash:
+	case e.Token().Type == token.TokenSlash:
 		if e.Lhs().Type() == ast.TypeSet && e.Rhs().Type() == ast.TypeSet {
 			outType = ast.TypeSet
 		} else {
@@ -260,7 +260,7 @@ func (c *typeChecker) VisitBinaryExpr(e *ast.BinaryExpr) {
 		}
 	case e.Token().IsRelation():
 		outType = ast.TypeBoolean
-	case e.Token().Type == lex.TokenAmpersand || e.Token().Type == lex.TokenOR:
+	case e.Token().Type == token.TokenAmpersand || e.Token().Type == token.TokenOR:
 		outType = ast.TypeBoolean
 
 		if e.Lhs().Type() != outType {

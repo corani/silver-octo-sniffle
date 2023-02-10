@@ -2,40 +2,50 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/corani/silver-octo-sniffle/ast"
-	"github.com/corani/silver-octo-sniffle/check"
-	"github.com/corani/silver-octo-sniffle/generate"
-	"github.com/corani/silver-octo-sniffle/lex"
-	"github.com/corani/silver-octo-sniffle/parse"
+	"github.com/corani/silver-octo-sniffle/checker"
+	"github.com/corani/silver-octo-sniffle/generator"
+	"github.com/corani/silver-octo-sniffle/lexer"
+	"github.com/corani/silver-octo-sniffle/parser"
+	"github.com/corani/silver-octo-sniffle/reporter"
+	"github.com/corani/silver-octo-sniffle/token"
 )
 
 type CompilationResult struct {
-	tokens lex.Tokens
+	tokens token.Tokens
 	ast    ast.Node
 	ir     string
 	path   string
+
+	lexerOut string
 }
 
 func do(srcName string, bs []byte) (CompilationResult, error) {
-	tokens, err := lex.Tokenize(srcName, bs)
+	var buf bytes.Buffer
+
+	tokens, err := lexer.Lex(reporter.NewReporter(&buf), srcName, bs)
 	if err != nil {
-		return CompilationResult{}, err
+		return CompilationResult{
+			lexerOut: buf.String(),
+		}, err
 	}
 
-	ast, err := parse.Parse(tokens)
+	ast, err := parser.Parse(tokens)
 	if err != nil {
 		return CompilationResult{
 			tokens: tokens,
 		}, err
 	}
 
-	if err := check.TypeCheck(ast); err != nil {
+	if err := checker.TypeCheck(ast); err != nil {
 		return CompilationResult{
 			tokens: tokens,
 			ast:    ast,
@@ -67,7 +77,7 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 
 	var ir bytes.Buffer
 
-	if err := generate.GenerateIR(io.MultiWriter(&ir, out), ast); err != nil {
+	if err := generator.GenerateIR(io.MultiWriter(&ir, out), ast); err != nil {
 		return CompilationResult{
 			tokens: tokens,
 			ast:    ast,
@@ -99,7 +109,11 @@ func main() {
 		panic(err)
 	}
 
-	if _, err := do(*srcName, bs); err != nil {
+	if result, err := do(*srcName, bs); err != nil {
+		if errors.Is(err, lexer.ErrLexer) {
+			fmt.Fprintln(os.Stderr, result.lexerOut)
+		}
+
 		panic(err)
 	}
 }

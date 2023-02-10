@@ -1,4 +1,4 @@
-package lex
+package token
 
 import (
 	"fmt"
@@ -131,7 +131,13 @@ var mapIdentToToken = map[string]TokenType{
 	"BY":        TokenBY,
 }
 
-func checkKeyword(s string) TokenType {
+func CheckChar(c byte) (TokenType, bool) {
+	v, ok := mapCharToToken[c]
+
+	return v, ok
+}
+
+func CheckKeyword(s string) TokenType {
 	if v, ok := mapIdentToToken[s]; ok {
 		return v
 	}
@@ -142,6 +148,32 @@ func checkKeyword(s string) TokenType {
 type Range struct {
 	FromRow, FromCol int
 	ToRow, ToCol     int
+}
+
+func NewRange(args ...int) Range {
+	var fr, fc, tr, tc int
+
+	switch len(args) {
+	case 2:
+		fr = args[0]
+		fc = args[1]
+		tr = args[0]
+		tc = args[1]
+	case 4:
+		fr = args[0]
+		fc = args[1]
+		tr = args[2]
+		tc = args[3]
+	default:
+		panic("expected 2 or 4 arguments")
+	}
+
+	return Range{
+		FromRow: fr,
+		FromCol: fc,
+		ToRow:   tr,
+		ToCol:   tc,
+	}
 }
 
 func (r Range) String() string {
