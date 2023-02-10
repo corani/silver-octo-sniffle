@@ -75,6 +75,10 @@ func (p *astPrinter) VisitModule(n *Module) {
 	p.printf(")")
 }
 
+func (p *astPrinter) VisitInvalidStmt(n *InvalidStmt) {
+	p.printf("(invalid %v)", n.Token().Text)
+}
+
 func (p *astPrinter) VisitStmtSequence(n *StmtSequence) {
 	p.printf("(stmts")
 	p.indent++
@@ -161,6 +165,10 @@ func (p *astPrinter) VisitExprStmt(n *ExprStmt) {
 
 	p.indent--
 	p.printf(")")
+}
+
+func (p *astPrinter) VisitInvalidExpr(n *InvalidExpr) {
+	p.printf("(invalid %v)", n.Token().Text)
 }
 
 func (p *astPrinter) VisitCallExpr(n *CallExpr) {

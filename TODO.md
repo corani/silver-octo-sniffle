@@ -57,6 +57,9 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] factor out builtin functions.
 - [x] use visitor pattern for builtin functions.
 - [x] split code into packages.
+- [ ] better error reporting.
+- [ ] continue parsing if errors are found.
+- [ ] add "golden tests" for error conditions (e.g. invalid code).
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
 - [ ] support local procedure calls (i.e. in the same module).
@@ -68,9 +71,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [ ] support `CASE` / `OF` statement.
 - [ ] basic local variable and assignment support.
 - [ ] make `print` a real procedure.
-- [ ] better error reporting.
 - [ ] better command line arguments.
-- [ ] add "golden tests" for error conditions (e.g. invalid code).
 - [ ] update "golden test" files in-place, so any additional content doesn't get overwritten.
 - [ ] a magic "C" call built-in module?
 - [ ] a standard library.

@@ -108,6 +108,10 @@ func (g *Generator) VisitModule(n *ast.Module) {
 	}
 }
 
+func (g *Generator) VisitInvalidStmt(n *ast.InvalidStmt) {
+	// nothing
+}
+
 func (g *Generator) VisitStmtSequence(n *ast.StmtSequence) {
 	for _, stmt := range n.Stmts() {
 		stmt.Visit(g)
@@ -217,6 +221,10 @@ func (g *Generator) VisitForStmt(n *ast.ForStmt) {
 func (g *Generator) VisitExprStmt(n *ast.ExprStmt) {
 	// NOTE(daniel): ignore the result.
 	n.Expr().Visit(g)
+}
+
+func (g *Generator) VisitInvalidExpr(s *ast.InvalidExpr) {
+	// nothing
 }
 
 func (g *Generator) VisitCallExpr(n *ast.CallExpr) {

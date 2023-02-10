@@ -4,6 +4,7 @@ import "github.com/corani/silver-octo-sniffle/token"
 
 type AstVisitor interface {
 	VisitModule(*Module)
+	VisitInvalidStmt(*InvalidStmt)
 	VisitStmtSequence(*StmtSequence)
 	VisitIfStmt(*IfStmt)
 	VisitRepeatStmt(*RepeatStmt)
@@ -11,6 +12,7 @@ type AstVisitor interface {
 	VisitForStmt(*ForStmt)
 	VisitAssignStmt(*AssignStmt)
 	VisitExprStmt(*ExprStmt)
+	VisitInvalidExpr(*InvalidExpr)
 	VisitCallExpr(*CallExpr)
 	VisitBinaryExpr(*BinaryExpr)
 	VisitDesignatorExpr(*DesignatorExpr)
@@ -106,6 +108,28 @@ func (n *Module) Vars() []*VarDecl {
 
 func (n *Module) Visit(v AstVisitor) {
 	v.VisitModule(n)
+}
+
+// ----- InvalidStatement ---------------------------------------------------------
+
+type InvalidStmt struct {
+	token token.Token
+}
+
+var _ Stmt = (*InvalidStmt)(nil)
+
+func NewInvalidStmt(t token.Token) *InvalidStmt {
+	return &InvalidStmt{
+		token: t,
+	}
+}
+
+func (n *InvalidStmt) Token() token.Token {
+	return n.token
+}
+
+func (n *InvalidStmt) Visit(v AstVisitor) {
+	v.VisitInvalidStmt(n)
 }
 
 // ----- StmtSequence ---------------------------------------------------------
@@ -312,6 +336,38 @@ func (n *AssignStmt) Expr() Expr {
 
 func (n *AssignStmt) Visit(v AstVisitor) {
 	v.VisitAssignStmt(n)
+}
+
+// ----- InvalidExpr -----------------------------------------------------------
+
+type InvalidExpr struct {
+	token      token.Token
+	typ        Type
+	constValue *Value
+}
+
+var _ Expr = (*InvalidExpr)(nil)
+
+func NewInvalidExpr(t token.Token) *InvalidExpr {
+	return &InvalidExpr{
+		token: t,
+	}
+}
+
+func (n *InvalidExpr) Token() token.Token {
+	return n.token
+}
+
+func (n *InvalidExpr) Type() Type {
+	return n.typ
+}
+
+func (n *InvalidExpr) ConstValue() *Value {
+	return n.constValue
+}
+
+func (n *InvalidExpr) Visit(v AstVisitor) {
+	v.VisitInvalidExpr(n)
 }
 
 // ----- ExprStmt -------------------------------------------------------------
