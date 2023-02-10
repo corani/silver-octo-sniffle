@@ -58,7 +58,7 @@ function go_unit_test {
 
     do_echo go test -v -timeout 1m "${opts[@]}" \
         -cover -coverpkg=./... -coverprofile=gen/cover.out \
-        ./src/... | tee gen/test.out
+        ./... | tee gen/test.out
     sed -n -e '/^FAIL.*/p' -e '/^--- FAIL/p' gen/test.out > gen/summary.out
 
     coverage=$(go tool cover -func gen/cover.out | tail -1 | cut -d ')' -f2 | tr -d "[:space:]")
