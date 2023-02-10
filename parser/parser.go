@@ -1,44 +1,30 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/corani/silver-octo-sniffle/ast"
+	"github.com/corani/silver-octo-sniffle/reporter"
 	"github.com/corani/silver-octo-sniffle/token"
 )
 
+var ErrParsing = errors.New("error parsing")
+
 type Parser struct {
+	out    *reporter.Reporter
 	tokens token.Tokens
 	index  int
-	errors []error
 }
 
-func Parse(tokens token.Tokens) (ast.Node, error) {
+func Parse(out *reporter.Reporter, tokens token.Tokens) (ast.Node, error) {
 	p := &Parser{
+		out:    out,
 		tokens: tokens,
 		index:  0,
-		errors: nil,
 	}
 
-	if node, err := p.parseModule(); err != nil {
-		return node, err
-	} else {
-		return node, p.Error()
-	}
-}
-
-func (p *Parser) Error() error {
-	if len(p.errors) == 0 {
-		return nil
-	}
-
-	txt := "parse errors"
-
-	for _, v := range p.errors {
-		txt = txt + ": " + v.Error()
-	}
-
-	return fmt.Errorf(txt)
+	return p.parseModule()
 }
 
 func (p *Parser) parseModule() (ast.Node, error) {
@@ -49,11 +35,11 @@ func (p *Parser) parseModule() (ast.Node, error) {
 
 	name, err := p.require(token.TokenIdent)
 	if err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenSemicolon, token.TokenCONST, token.TokenTYPE, token.TokenVAR, token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
 	}
 
 	if _, err := p.require(token.TokenSemicolon); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenCONST, token.TokenTYPE, token.TokenVAR, token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
 	}
 
 	var (
@@ -64,140 +50,141 @@ func (p *Parser) parseModule() (ast.Node, error) {
 	)
 
 	if p.expect(token.TokenCONST) {
-		consts, err = p.parseConsts()
-		if err != nil {
-			return nil, err
-		}
+		consts = p.parseConsts()
 	}
 
 	if p.expect(token.TokenTYPE) {
-		types, err = p.parseTypes()
-		if err != nil {
-			return nil, err
-		}
+		types = p.parseTypes()
 	}
 
 	if p.expect(token.TokenVAR) {
-		vars, err = p.parseVars()
-		if err != nil {
-			return nil, err
-		}
+		vars = p.parseVars()
 	}
 
-	for p.currentType() == token.TokenPROCEDURE {
-		return nil, fmt.Errorf("PROCEDURE is unimplemented")
+	if p.expect(token.TokenPROCEDURE) {
+		p.parseProcedures()
 	}
 
 	if p.expect(token.TokenBEGIN) {
-		stmts, err = p.parseStmtSequence(token.TokenEND)
-		if err != nil {
-			return nil, err
-		}
+		stmts = p.parseStmtSequence(token.TokenEND)
 	}
 
 	if _, err := p.require(token.TokenEND); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenIdent, token.TokenDot)
 	}
 
 	if v, err := p.require(token.TokenIdent); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenDot)
 	} else {
 		if v.Text != name.Text {
-			return nil, fmt.Errorf("unexpected identifier %q at end of module %q", v.Text, name.Text)
+			p.out.Errorf(p.currentToken(), "unexpected identifier %q at end of module", v.Text)
+			p.out.Infof(p.currentToken(), "module name is %q", name.Text)
 		}
 	}
 
 	if _, err := p.require(token.TokenDot); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenEOF)
 	}
 
-	if _, err := p.require(token.TokenEOF); err != nil {
-		return nil, err
-	}
+	_, _ = p.require(token.TokenEOF)
 
 	return ast.NewModule(t, name.Text, stmts, consts, types, vars), nil
 }
 
-func (p *Parser) parseConsts() ([]*ast.ConstDecl, error) {
+func (p *Parser) parseConsts() []*ast.ConstDecl {
 	var consts []*ast.ConstDecl
 
 	for p.currentType() == token.TokenIdent {
 		t, _ := p.require(token.TokenIdent)
 
 		if _, err := p.require(token.TokenEQ); err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenSemicolon,
+				token.TokenVAR, token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
+
+			break
 		}
 
-		expr, err := p.parseExpr()
-		if err != nil {
-			return nil, err
-		}
+		expr := p.parseExpr()
 
 		if _, err := p.require(token.TokenSemicolon); err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenSemicolon,
+				token.TokenVAR, token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
+
+			break
 		}
 
 		consts = append(consts, ast.NewConstDecl(t, expr))
 	}
 
-	return consts, nil
+	return consts
 }
 
-func (p *Parser) parseTypes() ([]*ast.TypeDecl, error) {
+func (p *Parser) parseTypes() []*ast.TypeDecl {
 	var types []*ast.TypeDecl
 
 	for p.currentType() == token.TokenIdent {
 		t, _ := p.require(token.TokenIdent)
 
 		if _, err := p.require(token.TokenEQ); err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenSemicolon)
 		}
+
+		typToken := p.currentToken()
 
 		switch p.currentType() {
 		case token.TokenARRAY:
-			p.errors = append(p.errors, fmt.Errorf("ARRAY types are not implemented"))
+			p.out.Errorf(p.currentToken(), "ARRAY types are not implemented")
+			p.findNextSyncPoint(token.TokenSemicolon)
 		case token.TokenRECORD:
-			p.errors = append(p.errors, fmt.Errorf("RECORD types are not implemented"))
+			p.out.Errorf(p.currentToken(), "RECORD types are not implemented")
+			p.findNextSyncPoint(token.TokenSemicolon)
 		case token.TokenPOINTER:
-			p.errors = append(p.errors, fmt.Errorf("POINTER types are not implemented"))
+			p.out.Errorf(p.currentToken(), "POINTER types are not implemented")
+			p.findNextSyncPoint(token.TokenSemicolon)
 		case token.TokenPROCEDURE:
-			p.errors = append(p.errors, fmt.Errorf("PROCEDURE types are not implemented"))
+			p.out.Errorf(p.currentToken(), "PROCEDURE types are not implemented")
+			p.findNextSyncPoint(token.TokenSemicolon)
 		default:
-			return nil, fmt.Errorf("type declarations can only be `ARRAY`, `RECORD`, `POINTER` or `PROCEDURE`")
+			p.out.Errorf(p.currentToken(), "invalid type in type declaration: %v", p.currentType())
+			p.out.Infof(p.currentToken(), "valid types are `ARRAY`, `RECORD`, `POINTER` or `PROCEDURE`")
+			p.findNextSyncPoint(token.TokenSemicolon)
+
+			continue
 		}
 
 		// TODO(daniel): the following is wrong!
-		typToken := p.currentToken()
-		for !p.expect(token.TokenSemicolon) {
-			p.index++
-		}
-
 		types = append(types, ast.NewTypeDecl(t, typToken))
 	}
 
-	return types, nil
+	return types
 }
 
-func (p *Parser) parseVars() ([]*ast.VarDecl, error) {
+func (p *Parser) parseVars() []*ast.VarDecl {
 	var vars []*ast.VarDecl
 
 	for p.currentType() == token.TokenIdent {
-		varIdents, err := p.parseIdentList()
-		if err != nil {
-			return nil, err
-		}
+		varIdents := p.parseIdentList()
 
 		if _, err := p.require(token.TokenColon); err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenSemicolon,
+				token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
+
+			break
 		}
 
 		typeIdent, err := p.parseType()
 		if err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenSemicolon,
+				token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
+
+			break
 		}
 
 		if _, err := p.require(token.TokenSemicolon); err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenSemicolon,
+				token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
+
+			break
 		}
 
 		for _, varIdent := range varIdents {
@@ -205,16 +192,19 @@ func (p *Parser) parseVars() ([]*ast.VarDecl, error) {
 		}
 	}
 
-	return vars, nil
+	return vars
 }
 
-func (p *Parser) parseIdentList() (token.Tokens, error) {
+func (p *Parser) parseIdentList() token.Tokens {
 	var varIdents token.Tokens
 
 	for {
 		varIdent, err := p.require(token.TokenIdent)
 		if err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenColon, token.TokenSemicolon,
+				token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
+
+			break
 		}
 
 		varIdents = append(varIdents, varIdent)
@@ -224,7 +214,7 @@ func (p *Parser) parseIdentList() (token.Tokens, error) {
 		}
 	}
 
-	return varIdents, nil
+	return varIdents
 }
 
 func (p *Parser) parseType() (token.Token, error) {
@@ -232,28 +222,38 @@ func (p *Parser) parseType() (token.Token, error) {
 	return p.require(token.TokenIdent)
 }
 
-func (p *Parser) parseStmtSequence(terminator ...token.TokenType) (ast.Stmt, error) {
+func (p *Parser) parseStmtSequence(terminator ...token.TokenType) ast.Stmt {
 	var stmts []ast.Stmt
 
 	for !p.tokenIs(terminator...) {
-		stmt, err := p.parseStmt()
-		if err != nil {
-			return nil, err
-		}
+		stmt := p.parseStmt()
 
 		stmts = append(stmts, stmt)
 
 		if !p.tokenIs(terminator...) {
 			if _, err := p.require(token.TokenSemicolon); err != nil {
-				return nil, err
+				p.findNextSyncPoint(token.TokenSemicolon, token.TokenEND)
+
+				break
 			}
 		}
 	}
 
-	return ast.NewStmtSequence(stmts), nil
+	return ast.NewStmtSequence(stmts)
 }
 
-func (p *Parser) parseStmt() (ast.Stmt, error) {
+func (p *Parser) parseProcedures() {
+	for {
+		p.out.Errorf(p.currentToken(), "PROCEDURE is unimplemented")
+		p.findNextSyncPoint(token.TokenPROCEDURE, token.TokenBEGIN)
+
+		if !p.expect(token.TokenPROCEDURE) {
+			break
+		}
+	}
+}
+
+func (p *Parser) parseStmt() ast.Stmt {
 	switch p.currentType() {
 	case token.TokenIdent:
 		ident, _ := p.require(token.TokenIdent)
@@ -262,12 +262,9 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		case token.TokenAssign:
 			return p.parseAssignStmt(ident)
 		default:
-			expr, err := p.parseCallExpr(ast.NewDesignatorExpr(ident))
-			if err != nil {
-				return nil, err
-			}
+			expr := p.parseCallExpr(ast.NewDesignatorExpr(ident))
 
-			return ast.NewExprStmt(expr), nil
+			return ast.NewExprStmt(expr)
 		}
 	case token.TokenIF:
 		return p.parseIfStmt()
@@ -278,62 +275,48 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 	case token.TokenFOR:
 		return p.parseForStmt()
 	default:
-		return nil, fmt.Errorf("unexpected token: %v", p.tokens[p.index].Type)
+		t := p.currentToken()
+
+		p.out.Errorf(t, "unexpected token: %v", t.Text)
+		p.out.Infof(t, "expected a statement")
+		p.findNextSyncPoint(token.TokenSemicolon, token.TokenEND)
+
+		return ast.NewInvalidStmt(t)
 	}
 }
 
-func (p *Parser) parseAssignStmt(ident token.Token) (ast.Stmt, error) {
+func (p *Parser) parseAssignStmt(ident token.Token) ast.Stmt {
 	p.consume(token.TokenAssign)
 
-	expr, err := p.parseExpr()
-	if err != nil {
-		return nil, err
-	}
-
-	return ast.NewAssignStmt(ident, expr), nil
+	return ast.NewAssignStmt(ident, p.parseExpr())
 }
 
-func (p *Parser) parseIfStmt() (ast.Stmt, error) {
-	t, err := p.require(token.TokenIF)
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseIfStmt() ast.Stmt {
+	t, _ := p.require(token.TokenIF)
 
 	return p.parseIfTail(t)
 }
 
-func (p *Parser) parseIfTail(t token.Token) (ast.Stmt, error) {
-	expr, err := p.parseExpr()
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseIfTail(t token.Token) ast.Stmt {
+	expr := p.parseExpr()
 
 	if _, err := p.require(token.TokenTHEN); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenEND)
 	}
 
 	var trueBlock, falseBlock ast.Stmt
 
-	trueBlock, err = p.parseStmtSequence(token.TokenELSIF, token.TokenELSE, token.TokenEND)
-	if err != nil {
-		return nil, err
-	}
+	trueBlock = p.parseStmtSequence(token.TokenELSIF, token.TokenELSE, token.TokenEND)
 
 	switch p.currentType() {
 	case token.TokenELSIF:
 		e, _ := p.require(token.TokenELSIF)
 
-		falseBlock, err = p.parseIfTail(e)
-		if err != nil {
-			return nil, err
-		}
+		falseBlock = p.parseIfTail(e)
 	case token.TokenELSE:
 		p.consume(token.TokenELSE)
 
-		falseBlock, err = p.parseStmtSequence(token.TokenEND)
-		if err != nil {
-			return nil, err
-		}
+		falseBlock = p.parseStmtSequence(token.TokenEND)
 
 		p.consume(token.TokenEND)
 	case token.TokenEND:
@@ -341,59 +324,44 @@ func (p *Parser) parseIfTail(t token.Token) (ast.Stmt, error) {
 
 		falseBlock = ast.NewStmtSequence(nil)
 	default:
-		return nil, fmt.Errorf("expected ELSIF, ELSE or END after IF, got %v", p.currentType())
+		p.out.Errorf(p.currentToken(), "unexpected token after `IF`: %v", p.currentType())
+		p.out.Infof(p.currentToken(), "expected `ELSIF`, `ELSE` or `END`")
+
+		p.findNextSyncPoint(token.TokenEND)
 	}
 
-	return ast.NewIfStmt(t, expr, trueBlock, falseBlock), nil
+	return ast.NewIfStmt(t, expr, trueBlock, falseBlock)
 }
 
-func (p *Parser) parseRepeatStmt() (ast.Stmt, error) {
-	t, err := p.require(token.TokenREPEAT)
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseRepeatStmt() ast.Stmt {
+	t, _ := p.require(token.TokenREPEAT)
 
-	stmts, err := p.parseStmtSequence(token.TokenUNTIL)
-	if err != nil {
-		return nil, err
-	}
+	stmts := p.parseStmtSequence(token.TokenUNTIL)
 
 	if _, err := p.require(token.TokenUNTIL); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenSemicolon, token.TokenEND)
 	}
 
-	expr, err := p.parseExpr()
-	if err != nil {
-		return nil, err
-	}
+	expr := p.parseExpr()
 
 	cond := ast.NewCondition(expr, stmts)
 
-	return ast.NewRepeatStmt(t, cond), nil
+	return ast.NewRepeatStmt(t, cond)
 }
 
-func (p *Parser) parseWhileStmt() (ast.Stmt, error) {
-	t, err := p.require(token.TokenWHILE)
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseWhileStmt() ast.Stmt {
+	t, _ := p.require(token.TokenWHILE)
 
 	var conds []ast.Condition
 
 	for {
-		expr, err := p.parseExpr()
-		if err != nil {
-			return nil, err
-		}
+		expr := p.parseExpr()
 
 		if _, err := p.require(token.TokenDO); err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenELSIF, token.TokenEND, token.TokenSemicolon)
 		}
 
-		stmts, err := p.parseStmtSequence(token.TokenELSIF, token.TokenEND)
-		if err != nil {
-			return nil, err
-		}
+		stmts := p.parseStmtSequence(token.TokenELSIF, token.TokenEND)
 
 		conds = append(conds, ast.NewCondition(expr, stmts))
 
@@ -403,48 +371,36 @@ func (p *Parser) parseWhileStmt() (ast.Stmt, error) {
 	}
 
 	if _, err := p.require(token.TokenEND); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenSemicolon)
 	}
 
-	return ast.NewWhileStmt(t, conds), nil
+	return ast.NewWhileStmt(t, conds)
 }
 
-func (p *Parser) parseForStmt() (ast.Stmt, error) {
-	t, err := p.require(token.TokenFOR)
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseForStmt() ast.Stmt {
+	t, _ := p.require(token.TokenFOR)
 
 	iter, err := p.require(token.TokenIdent)
 	if err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenAssign, token.TokenTO, token.TokenBY, token.TokenDO, token.TokenEND, token.TokenSemicolon)
 	}
 
 	if _, err := p.require(token.TokenAssign); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenTO, token.TokenBY, token.TokenDO, token.TokenEND, token.TokenSemicolon)
 	}
 
-	from, err := p.parseExpr()
-	if err != nil {
-		return nil, err
-	}
+	from := p.parseExpr()
 
 	if _, err := p.require(token.TokenTO); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenBY, token.TokenDO, token.TokenEND, token.TokenSemicolon)
 	}
 
-	to, err := p.parseExpr()
-	if err != nil {
-		return nil, err
-	}
+	to := p.parseExpr()
 
 	var by ast.Expr
 
 	if p.expect(token.TokenBY) {
-		by, err = p.parseExpr()
-		if err != nil {
-			return nil, err
-		}
+		by = p.parseExpr()
 	} else {
 		// NOTE(daniel): if no `BY` is specified, synthesize a `BY 1`.
 		by = ast.NewNumberExpr(token.Token{
@@ -457,33 +413,25 @@ func (p *Parser) parseForStmt() (ast.Stmt, error) {
 	}
 
 	if _, err := p.require(token.TokenDO); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenEND, token.TokenSemicolon)
 	}
 
-	stmt, err := p.parseStmtSequence(token.TokenEND)
-	if err != nil {
-		return nil, err
-	}
+	stmt := p.parseStmtSequence(token.TokenEND)
 
 	if _, err := p.require(token.TokenEND); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenSemicolon)
 	}
 
-	return ast.NewForStmt(t, iter, from, to, by, stmt), nil
+	return ast.NewForStmt(t, iter, from, to, by, stmt)
 }
 
-func (p *Parser) parseCallExpr(designator *ast.DesignatorExpr) (ast.Expr, error) {
-	if _, err := p.require(token.TokenLParen); err != nil {
-		return nil, err
-	}
+func (p *Parser) parseCallExpr(designator *ast.DesignatorExpr) ast.Expr {
+	p.consume(token.TokenLParen)
 
 	var args []ast.Expr
 
-	for {
-		expr, err := p.parseExpr()
-		if err != nil {
-			return nil, err
-		}
+	for p.currentType() != token.TokenRParen {
+		expr := p.parseExpr()
 
 		args = append(args, expr)
 
@@ -493,94 +441,70 @@ func (p *Parser) parseCallExpr(designator *ast.DesignatorExpr) (ast.Expr, error)
 	}
 
 	if _, err := p.require(token.TokenRParen); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenSemicolon, token.TokenEND)
 	}
 
-	return ast.NewCallExpr(designator, args), nil
+	return ast.NewCallExpr(designator, args)
 }
 
-func (p *Parser) parseExpr() (ast.Expr, error) {
+func (p *Parser) parseExpr() ast.Expr {
 	// expr := simpleExpr [ '=' | '#' | '<' | '<=' | '>' | '>=' | 'IN' | 'IS'  simpleExpr ]
-	lhs, err := p.parseSimpleExpr()
-	if err != nil {
-		return lhs, err
-	}
+	lhs := p.parseSimpleExpr()
 
 	for op := p.currentToken(); op.IsRelation(); op = p.currentToken() {
 		p.index++
 
-		rhs, err := p.parseSimpleExpr()
-		if err != nil {
-			return rhs, err
-		}
-
+		rhs := p.parseSimpleExpr()
 		lhs = ast.NewBinaryExpr(op, lhs, rhs)
 	}
 
-	return lhs, nil
+	return lhs
 }
 
-func (p *Parser) parseSimpleExpr() (ast.Expr, error) {
+func (p *Parser) parseSimpleExpr() ast.Expr {
 	// simpleExpr := term { '+' | '-' | 'OR' term }
 	addOperators := []token.TokenType{
 		token.TokenPlus, token.TokenMinus, token.TokenOR,
 	}
 
-	lhs, err := p.parseTerm()
-	if err != nil {
-		return lhs, err
-	}
+	lhs := p.parseTerm()
 
 	for op := p.currentToken(); p.tokenIs(addOperators...); op = p.currentToken() {
 		p.index++
 
-		rhs, err := p.parseTerm()
-		if err != nil {
-			return rhs, err
-		}
-
+		rhs := p.parseTerm()
 		lhs = ast.NewBinaryExpr(op, lhs, rhs)
 	}
 
-	return lhs, nil
+	return lhs
 }
 
-func (p *Parser) parseTerm() (ast.Expr, error) {
+func (p *Parser) parseTerm() ast.Expr {
 	// term := factor { '*' | '/' | 'DIV' | 'MUL' | '&' factor }
 	mulOperators := []token.TokenType{
 		token.TokenAsterisk, token.TokenSlash, token.TokenDIV, token.TokenMOD, token.TokenAmpersand,
 	}
 
-	lhs, err := p.parseFactor()
-	if err != nil {
-		return lhs, err
-	}
+	lhs := p.parseFactor()
 
 	for op := p.currentToken(); p.tokenIs(mulOperators...); op = p.currentToken() {
 		p.index++
 
-		rhs, err := p.parseFactor()
-		if err != nil {
-			return rhs, err
-		}
-
+		rhs := p.parseFactor()
 		lhs = ast.NewBinaryExpr(op, lhs, rhs)
 	}
 
-	return lhs, nil
+	return lhs
 }
 
-func (p *Parser) parseFactor() (ast.Expr, error) {
+func (p *Parser) parseFactor() ast.Expr {
 	// factor := set | designator [actualParameters] | number | string | boolean | '(' expr ')' | '~' factor
 	switch p.currentType() {
 	case token.TokenIdent:
-		d, err := p.parseDesignator()
-		if err != nil {
-			return nil, err
-		}
+		d := p.parseDesignator()
 
 		if p.currentType() != token.TokenLParen {
-			return d, nil
+			return d
 		}
 
 		return p.parseCallExpr(d)
@@ -593,34 +517,35 @@ func (p *Parser) parseFactor() (ast.Expr, error) {
 	case token.TokenTilde:
 		return p.parseNotExpr()
 	case token.TokenLParen:
-		if _, err := p.require(token.TokenLParen); err != nil {
-			return nil, err
-		}
+		p.consume(token.TokenLParen)
 
-		expr, err := p.parseExpr()
-		if err != nil {
-			return expr, err
-		}
+		expr := p.parseExpr()
 
 		if _, err := p.require(token.TokenRParen); err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenRParen, token.TokenSemicolon, token.TokenEND)
 		}
 
-		return expr, nil
+		return expr
 	case token.TokenLBrace:
 		return p.parseSetLiteral()
 	default:
-		return nil, fmt.Errorf("unexpected token in factor: %q", p.currentType())
+		t := p.currentToken()
+
+		p.out.Errorf(t, "unexpected token in factor: %s", t.Text)
+		p.out.Infof(t, "expected an expression")
+		p.findNextSyncPoint(token.TokenSemicolon, token.TokenEND)
+
+		return ast.NewInvalidExpr(t)
 	}
 }
 
-func (p *Parser) parseDesignator() (*ast.DesignatorExpr, error) {
+func (p *Parser) parseDesignator() *ast.DesignatorExpr {
 	ident, _ := p.require(token.TokenIdent)
 
-	return ast.NewDesignatorExpr(ident), nil
+	return ast.NewDesignatorExpr(ident)
 }
 
-func (p *Parser) parseNumberExpr() (ast.Expr, error) {
+func (p *Parser) parseNumberExpr() ast.Expr {
 	var (
 		op token.Token
 		t  token.Token
@@ -641,59 +566,56 @@ func (p *Parser) parseNumberExpr() (ast.Expr, error) {
 	case token.TokenReal:
 		t, _ = p.require(token.TokenReal)
 	default:
-		return nil, fmt.Errorf("expected number, got %v", p.currentType())
+		p.out.Errorf(p.currentToken(), "expected number, got %q", p.currentToken().Text)
+
+		return ast.NewInvalidExpr(p.currentToken())
 	}
 
-	num := ast.NewNumberExpr(t)
+	num := ast.Expr(ast.NewNumberExpr(t))
 
-	if op.Type == token.TokenInvalid {
-		return num, nil
+	if op.Type == token.TokenMinus {
+		// NOTE(daniel): There is no negate for integers in LLVM IR, so we treat
+		// `-x` as `0 - x`. That means we don't need generator code either.
+		t.Int = 0
+		t.Text = ""
+
+		zero := ast.NewNumberExpr(t)
+
+		num = ast.NewBinaryExpr(op, zero, num)
 	}
 
-	// NOTE(daniel): There is no negate for integers in LLVM IR, so we treat
-	// `-x` as `0 - x`. That means we don't need generator code either.
-	t.Int = 0
-	t.Text = ""
-
-	zero := ast.NewNumberExpr(t)
-
-	return ast.NewBinaryExpr(op, zero, num), nil
+	return num
 }
 
-func (p *Parser) parseStringLiteral() (ast.Expr, error) {
-	t, err := p.require(token.TokenString)
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseStringLiteral() ast.Expr {
+	t, _ := p.require(token.TokenString)
 
 	if len(t.Text) == 1 {
-		return ast.NewCharExpr(t), nil
+		return ast.NewCharExpr(t)
 	} else {
-		return ast.NewStringExpr(t), nil
+		return ast.NewStringExpr(t)
 	}
 }
 
-func (p *Parser) parseBooleanLiteral() (ast.Expr, error) {
-	t, err := p.require(token.TokenBoolean)
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseBooleanLiteral() ast.Expr {
+	t, _ := p.require(token.TokenBoolean)
 
-	return ast.NewBooleanExpr(t), nil
+	return ast.NewBooleanExpr(t)
 }
 
-func (p *Parser) parseSetLiteral() (ast.Expr, error) {
-	t, err := p.require(token.TokenLBrace)
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseSetLiteral() ast.Expr {
+	t, _ := p.require(token.TokenLBrace)
 
 	var bits []byte
 
-	for p.currentType() != token.TokenRBrace {
+	terminators := []token.TokenType{token.TokenRBrace, token.TokenSemicolon, token.TokenEND}
+
+	for !p.tokenIs(terminators...) {
 		i1, err := p.require(token.TokenInteger)
 		if err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenRBrace, terminators...)
+
+			return ast.NewInvalidExpr(t)
 		}
 
 		if !p.expect(token.TokenDotDot) {
@@ -708,7 +630,9 @@ func (p *Parser) parseSetLiteral() (ast.Expr, error) {
 
 		i2, err := p.require(token.TokenInteger)
 		if err != nil {
-			return nil, err
+			p.findNextSyncPoint(token.TokenRBrace, terminators...)
+
+			return ast.NewInvalidExpr(t)
 		}
 
 		for i := i1.Int; i <= i2.Int; i++ {
@@ -721,24 +645,30 @@ func (p *Parser) parseSetLiteral() (ast.Expr, error) {
 	}
 
 	if _, err := p.require(token.TokenRBrace); err != nil {
-		return nil, err
+		p.findNextSyncPoint(token.TokenRBrace, terminators...)
 	}
 
-	return ast.NewSetExpr(t, bits), nil
+	return ast.NewSetExpr(t, bits)
 }
 
-func (p *Parser) parseNotExpr() (ast.Expr, error) {
-	t, err := p.require(token.TokenTilde)
-	if err != nil {
-		return nil, err
-	}
+func (p *Parser) parseNotExpr() ast.Expr {
+	t, _ := p.require(token.TokenTilde)
 
-	expr, err := p.parseExpr()
-	if err != nil {
-		return nil, err
-	}
+	expr := p.parseExpr()
 
-	return ast.NewNotExpr(t, expr), nil
+	return ast.NewNotExpr(t, expr)
+}
+
+func (p *Parser) findNextSyncPoint(arg token.TokenType, args ...token.TokenType) {
+	args = append(args, arg)
+
+	for p.index < len(p.tokens)-1 {
+		if p.tokenIs(args...) {
+			break
+		}
+
+		p.index++
+	}
 }
 
 func (p *Parser) require(exp token.TokenType) (token.Token, error) {
@@ -749,7 +679,10 @@ func (p *Parser) require(exp token.TokenType) (token.Token, error) {
 		return token, nil
 	}
 
-	return token.Token{}, fmt.Errorf("unexpected token: %v (expected %v)", p.tokens[p.index].Type, exp)
+	p.out.Errorf(p.currentToken(), "unexpected token: %v", p.currentToken().Text)
+	p.out.Infof(p.currentToken(), "expected: %v", exp)
+
+	return token.Token{}, ErrParsing
 }
 
 func (p *Parser) expect(exp token.TokenType) bool {

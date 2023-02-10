@@ -25,7 +25,8 @@ type CompilationResult struct {
 	ir     string
 	path   string
 
-	lexerOut string
+	lexerOut  string
+	parserOut string
 }
 
 func do(srcName string, bs []byte) (CompilationResult, error) {
@@ -38,10 +39,13 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 		}, err
 	}
 
-	ast, err := parser.Parse(tokens)
-	if err != nil {
+	buf.Reset()
+
+	ast, err := parser.Parse(reporter.NewReporter(&buf), tokens)
+	if err != nil || buf.Len() > 0 {
 		return CompilationResult{
-			tokens: tokens,
+			tokens:    tokens,
+			parserOut: buf.String(),
 		}, err
 	}
 
@@ -112,6 +116,10 @@ func main() {
 	if result, err := do(*srcName, bs); err != nil {
 		if errors.Is(err, lexer.ErrLexer) {
 			fmt.Fprintln(os.Stderr, result.lexerOut)
+		}
+
+		if errors.Is(err, parser.ErrParsing) {
+			fmt.Fprintln(os.Stderr, result.parserOut)
 		}
 
 		panic(err)

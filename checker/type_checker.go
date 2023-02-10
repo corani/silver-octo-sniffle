@@ -90,6 +90,10 @@ func (c *typeChecker) VisitModule(m *ast.Module) {
 	m.Block().Visit(c)
 }
 
+func (c *typeChecker) VisitInvalidStmt(s *ast.InvalidStmt) {
+	// nothing
+}
+
 func (c *typeChecker) VisitStmtSequence(s *ast.StmtSequence) {
 	for _, v := range s.Stmts() {
 		v.Visit(c)
@@ -204,6 +208,10 @@ func (c *typeChecker) VisitForStmt(s *ast.ForStmt) {
 
 func (c *typeChecker) VisitExprStmt(s *ast.ExprStmt) {
 	s.Expr().Visit(c)
+}
+
+func (c *typeChecker) VisitInvalidExpr(s *ast.InvalidExpr) {
+	// nothing
 }
 
 func (c *typeChecker) VisitCallExpr(e *ast.CallExpr) {
