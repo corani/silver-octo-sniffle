@@ -105,6 +105,13 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
 
 	ast.PrintAST(w, result.ast)
 
+	if result.checkerOut != "" {
+		fmt.Fprintln(w, "## Type Check errors")
+		fmt.Fprintf(w, "```\n%s```\n", result.checkerOut)
+
+		return
+	}
+
 	fmt.Fprintln(w, "## IR")
 	fmt.Fprintln(w, "```llvm")
 	fmt.Fprint(w, result.ir)
