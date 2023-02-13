@@ -300,34 +300,6 @@ func (c *typeChecker) VisitDesignatorExpr(e *ast.DesignatorExpr) {
 	}
 }
 
-func (c *typeChecker) VisitNumberExpr(e *ast.NumberExpr) {
-	if v, err := evaluateNumberExpr(e.Token()); err != nil {
-		c.out.Errorf(e.Token(), "%v", err)
-	} else {
-		e.Update(v.Type(), v)
-	}
-}
-
-func (c *typeChecker) VisitStringExpr(e *ast.StringExpr) {
-	e.Update(evaluateStringExpr(e.Token()))
-}
-
-func (c *typeChecker) VisitCharExpr(e *ast.CharExpr) {
-	e.Update(evaluateCharExpr(e.Token()))
-}
-
-func (c *typeChecker) VisitBooleanExpr(e *ast.BooleanExpr) {
-	if v, err := evaluateBooleanExpr(e.Token()); err != nil {
-		c.out.Errorf(e.Token(), "%v", err)
-	} else {
-		e.Update(v)
-	}
-}
-
-func (c *typeChecker) VisitSetExpr(e *ast.SetExpr) {
-	e.Update(evaluateSetExpr(e))
-}
-
 func (c *typeChecker) VisitNotExpr(e *ast.NotExpr) {
 	e.Expr().Visit(c)
 
@@ -336,6 +308,34 @@ func (c *typeChecker) VisitNotExpr(e *ast.NotExpr) {
 	} else {
 		e.Update(v)
 	}
+}
+
+func (c *typeChecker) VisitNumberLit(e *ast.NumberLit) {
+	if v, err := evaluateNumberLit(e); err != nil {
+		c.out.Errorf(e.Token(), "%v", err)
+	} else {
+		e.Update(v.Type(), v)
+	}
+}
+
+func (c *typeChecker) VisitStringLit(e *ast.StringLit) {
+	e.Update(evaluateStringLit(e))
+}
+
+func (c *typeChecker) VisitCharLit(e *ast.CharLit) {
+	e.Update(evaluateCharLit(e))
+}
+
+func (c *typeChecker) VisitBooleanLit(e *ast.BooleanLit) {
+	if v, err := evaluateBooleanLit(e); err != nil {
+		c.out.Errorf(e.Token(), "%v", err)
+	} else {
+		e.Update(v)
+	}
+}
+
+func (c *typeChecker) VisitSetLit(e *ast.SetLit) {
+	e.Update(evaluateSetLit(e))
 }
 
 func (c *typeChecker) VisitBuiltinPrint(*ast.BuiltinPrint, []ast.Expr) {

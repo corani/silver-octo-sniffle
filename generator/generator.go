@@ -355,7 +355,14 @@ func (g *Generator) VisitDesignatorExpr(n *ast.DesignatorExpr) {
 	}
 }
 
-func (g *Generator) VisitNumberExpr(n *ast.NumberExpr) {
+func (g *Generator) VisitNotExpr(n *ast.NotExpr) {
+	val := g.visitAndReturnValue(n.Expr())
+
+	// TODO(daniel): is this how you do it?
+	g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, val, constant.NewInt(types.I1, 0))
+}
+
+func (g *Generator) VisitNumberLit(n *ast.NumberLit) {
 	switch n.Type() {
 	case ast.TypeInt64:
 		g.currentValue = constant.NewInt(types.I64, int64(n.Token().Int))
@@ -364,17 +371,17 @@ func (g *Generator) VisitNumberExpr(n *ast.NumberExpr) {
 	}
 }
 
-func (g *Generator) VisitStringExpr(n *ast.StringExpr) {
+func (g *Generator) VisitStringLit(n *ast.StringLit) {
 	str := g.internString(n.Token().Text + "\000")
 
 	g.currentValue = g.currentBlock.NewGetElementPtr(str.ContentType, str, zero, zero)
 }
 
-func (g *Generator) VisitCharExpr(n *ast.CharExpr) {
+func (g *Generator) VisitCharLit(n *ast.CharLit) {
 	g.currentValue = constant.NewInt(types.I8, int64(n.ConstValue().Int()))
 }
 
-func (g *Generator) VisitBooleanExpr(n *ast.BooleanExpr) {
+func (g *Generator) VisitBooleanLit(n *ast.BooleanLit) {
 	if n.Token().Bool {
 		g.currentValue = constant.True
 	} else {
@@ -382,15 +389,8 @@ func (g *Generator) VisitBooleanExpr(n *ast.BooleanExpr) {
 	}
 }
 
-func (g *Generator) VisitSetExpr(n *ast.SetExpr) {
+func (g *Generator) VisitSetLit(n *ast.SetLit) {
 	g.currentValue = constant.NewInt(types.I64, int64(n.ConstValue().Int()))
-}
-
-func (g *Generator) VisitNotExpr(n *ast.NotExpr) {
-	val := g.visitAndReturnValue(n.Expr())
-
-	// TODO(daniel): is this how you do it?
-	g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, val, constant.NewInt(types.I1, 0))
 }
 
 func (g *Generator) visitAndReturnValue(n ast.Node) value.Value {

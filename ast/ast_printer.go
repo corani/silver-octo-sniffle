@@ -199,7 +199,17 @@ func (p *astPrinter) VisitDesignatorExpr(n *DesignatorExpr) {
 	p.printf("(%v [%v] %q)", n.kind, n.typ, n.Token().Text)
 }
 
-func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
+func (p *astPrinter) VisitNotExpr(n *NotExpr) {
+	p.printf("(not [%v]", n.Type())
+	p.indent++
+
+	n.Expr().Visit(p)
+
+	p.indent--
+	p.printf(")")
+}
+
+func (p *astPrinter) VisitNumberLit(n *NumberLit) {
 	switch n.Type() {
 	case TypeInt64:
 		p.printf("(number [%v] %d)", n.typ, n.Token().Int)
@@ -208,15 +218,15 @@ func (p *astPrinter) VisitNumberExpr(n *NumberExpr) {
 	}
 }
 
-func (p *astPrinter) VisitStringExpr(n *StringExpr) {
+func (p *astPrinter) VisitStringLit(n *StringLit) {
 	p.printf("(string %q)", n.Token().Text)
 }
 
-func (p *astPrinter) VisitCharExpr(n *CharExpr) {
+func (p *astPrinter) VisitCharLit(n *CharLit) {
 	p.printf("(char %q)", n.Token().Text)
 }
 
-func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
+func (p *astPrinter) VisitBooleanLit(n *BooleanLit) {
 	if n.Token().Bool {
 		p.printf("#true")
 	} else {
@@ -224,7 +234,7 @@ func (p *astPrinter) VisitBooleanExpr(n *BooleanExpr) {
 	}
 }
 
-func (p *astPrinter) VisitSetExpr(n *SetExpr) {
+func (p *astPrinter) VisitSetLit(n *SetLit) {
 	// condense ranges in the list of bits.
 	var parts []string
 
@@ -252,14 +262,4 @@ func (p *astPrinter) VisitSetExpr(n *SetExpr) {
 	}
 
 	p.printf("(set (%s))", strings.Join(parts, ", "))
-}
-
-func (p *astPrinter) VisitNotExpr(n *NotExpr) {
-	p.printf("(not [%v]", n.Type())
-	p.indent++
-
-	n.Expr().Visit(p)
-
-	p.indent--
-	p.printf(")")
 }
