@@ -13,6 +13,7 @@ const (
 	KindVar
 	KindConst
 	KindType
+	KindProc
 	KindModule
 )
 
@@ -48,6 +49,11 @@ func GetBuiltinSymbols() map[string]Symbol {
 	}
 }
 
+type Decl interface {
+	Symbol
+	Node
+}
+
 // ----- ConstDecl ------------------------------------------------------------
 
 func NewConstDecl(t token.Token, e Expr) *ConstDecl {
@@ -64,7 +70,7 @@ type ConstDecl struct {
 	value *Value
 }
 
-var _ Symbol = (*ConstDecl)(nil)
+var _ Decl = (*ConstDecl)(nil)
 
 func (d *ConstDecl) Kind() Kind {
 	return KindConst
@@ -89,6 +95,10 @@ func (d *ConstDecl) Value() *Value {
 func (d *ConstDecl) Update(t Type, v *Value) {
 	d.typ = t
 	d.value = v
+}
+
+func (d *ConstDecl) Visit(v AstVisitor) {
+	v.VisitConstDecl(d)
 }
 
 // ----- TypeDecl -------------------------------------------------------------
@@ -120,7 +130,7 @@ type TypeDecl struct {
 	typ       Type
 }
 
-var _ Symbol = (*TypeDecl)(nil)
+var _ Decl = (*TypeDecl)(nil)
 
 func (d *TypeDecl) Kind() Kind {
 	return KindType
@@ -142,6 +152,10 @@ func (d *TypeDecl) Update(t Type) {
 	d.typ = t
 }
 
+func (d *TypeDecl) Visit(v AstVisitor) {
+	v.VisitTypeDecl(d)
+}
+
 // ----- VarDecl --------------------------------------------------------------
 
 func NewVarDecl(token, typeToken token.Token) *VarDecl {
@@ -157,7 +171,7 @@ type VarDecl struct {
 	typ       Type
 }
 
-var _ Symbol = (*VarDecl)(nil)
+var _ Decl = (*VarDecl)(nil)
 
 func (d *VarDecl) Kind() Kind {
 	return KindVar
@@ -177,4 +191,39 @@ func (d *VarDecl) Type() Type {
 
 func (d *VarDecl) Update(t Type) {
 	d.typ = t
+}
+
+func (d *VarDecl) Visit(v AstVisitor) {
+	v.VisitVarDecl(d)
+}
+
+// ----- VarDecl --------------------------------------------------------------
+
+func NewProcDecl(token token.Token) *ProcDecl {
+	return &ProcDecl{
+		token: token,
+	}
+}
+
+type ProcDecl struct {
+	token token.Token
+	typ   Type
+}
+
+var _ Decl = (*ProcDecl)(nil)
+
+func (d *ProcDecl) Kind() Kind {
+	return KindProc
+}
+
+func (d *ProcDecl) Token() token.Token {
+	return d.token
+}
+
+func (d *ProcDecl) Type() Type {
+	return d.typ
+}
+
+func (d *ProcDecl) Visit(v AstVisitor) {
+	v.VisitProcDecl(d)
 }

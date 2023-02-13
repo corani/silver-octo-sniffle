@@ -37,40 +37,18 @@ func (c *typeChecker) Check(root ast.Node) {
 	root.Visit(c)
 }
 
-func (c *typeChecker) VisitModule(m *ast.Module) {
-	for _, decl := range m.Consts() {
-		decl.Expr().Visit(c)
-
-		if v := decl.Expr().ConstValue(); v != nil {
-			decl.Update(decl.Expr().Type(), v)
-		} else {
-			c.out.Errorf(decl.Token(), "initializer for %q is not constant", decl.Token().Text)
-		}
-
-		c.symbols[decl.Token().Text] = decl
-	}
-
-	for _, decl := range m.Vars() {
-		if typeDecl, ok := c.symbols[decl.TypeToken().Text]; ok && typeDecl.Kind() == ast.KindType {
-			decl.Update(typeDecl.Type())
-
-			c.symbols[decl.Token().Text] = decl
-		} else if ok {
-			c.out.Errorf(decl.TypeToken(), "unknown type %q for variable %q",
-				decl.TypeToken().Text, decl.Token().Text)
-			c.out.Infof(decl.TypeToken(), "%q is a %s, not a type",
-				decl.TypeToken().Text, typeDecl.Kind())
-		} else {
-			c.out.Errorf(decl.TypeToken(), "unknown type %q for variable %q",
-				decl.TypeToken().Text, decl.Token().Text)
-		}
-	}
-
-	m.Block().Visit(c)
-}
+// ----- statements -------------------------------------------------------------------------------
 
 func (c *typeChecker) VisitInvalidStmt(s *ast.InvalidStmt) {
 	// nothing
+}
+
+func (c *typeChecker) VisitModule(m *ast.Module) {
+	for _, decl := range m.Decls() {
+		decl.Visit(c)
+	}
+
+	m.Block().Visit(c)
 }
 
 func (c *typeChecker) VisitStmtSequence(s *ast.StmtSequence) {
@@ -202,6 +180,8 @@ func (c *typeChecker) VisitExprStmt(s *ast.ExprStmt) {
 	s.Expr().Visit(c)
 }
 
+// ----- expressions ------------------------------------------------------------------------------
+
 func (c *typeChecker) VisitInvalidExpr(s *ast.InvalidExpr) {
 	// nothing
 }
@@ -310,6 +290,8 @@ func (c *typeChecker) VisitNotExpr(e *ast.NotExpr) {
 	}
 }
 
+// ----- literals ---------------------------------------------------------------------------------
+
 func (c *typeChecker) VisitNumberLit(e *ast.NumberLit) {
 	if v, err := evaluateNumberLit(e); err != nil {
 		c.out.Errorf(e.Token(), "%v", err)
@@ -337,6 +319,44 @@ func (c *typeChecker) VisitBooleanLit(e *ast.BooleanLit) {
 func (c *typeChecker) VisitSetLit(e *ast.SetLit) {
 	e.Update(evaluateSetLit(e))
 }
+
+// ----- declarations -----------------------------------------------------------------------------
+
+func (c *typeChecker) VisitConstDecl(decl *ast.ConstDecl) {
+	decl.Expr().Visit(c)
+
+	if v := decl.Expr().ConstValue(); v != nil {
+		decl.Update(decl.Expr().Type(), v)
+	} else {
+		c.out.Errorf(decl.Token(), "initializer for %q is not constant", decl.Token().Text)
+	}
+
+	c.symbols[decl.Token().Text] = decl
+}
+
+func (c *typeChecker) VisitTypeDecl(decl *ast.TypeDecl) {
+}
+
+func (c *typeChecker) VisitVarDecl(decl *ast.VarDecl) {
+	if typeDecl, ok := c.symbols[decl.TypeToken().Text]; ok && typeDecl.Kind() == ast.KindType {
+		decl.Update(typeDecl.Type())
+
+		c.symbols[decl.Token().Text] = decl
+	} else if ok {
+		c.out.Errorf(decl.TypeToken(), "unknown type %q for variable %q",
+			decl.TypeToken().Text, decl.Token().Text)
+		c.out.Infof(decl.TypeToken(), "%q is a %s, not a type",
+			decl.TypeToken().Text, typeDecl.Kind())
+	} else {
+		c.out.Errorf(decl.TypeToken(), "unknown type %q for variable %q",
+			decl.TypeToken().Text, decl.Token().Text)
+	}
+}
+
+func (c *typeChecker) VisitProcDecl(decl *ast.ProcDecl) {
+}
+
+// ----- builtin functions ------------------------------------------------------------------------
 
 func (c *typeChecker) VisitBuiltinPrint(*ast.BuiltinPrint, []ast.Expr) {
 	c.currentValue = nil
