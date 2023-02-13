@@ -7,48 +7,48 @@ import (
 	"github.com/corani/silver-octo-sniffle/token"
 )
 
-func evaluateNumberExpr(lit token.Token) (*ast.Value, error) {
-	switch lit.Type {
+func evaluateNumberLit(lit *ast.NumberLit) (*ast.Value, error) {
+	switch lit.Token().Type {
 	case token.TokenInteger:
-		return ast.NewInt(lit.Int), nil
+		return ast.NewInt(lit.Token().Int), nil
 	case token.TokenReal:
-		return ast.NewReal(lit.Real), nil
+		return ast.NewReal(lit.Token().Real), nil
 	default:
-		return nil, fmt.Errorf("invalid number literal: %q", lit.Text)
+		return nil, fmt.Errorf("invalid number literal: %q", lit.Token().Text)
 	}
 }
 
-func evaluateCharExpr(lit token.Token) *ast.Value {
-	if len(lit.Text) == 0 {
+func evaluateCharLit(lit *ast.CharLit) *ast.Value {
+	if len(lit.Token().Text) == 0 {
 		return nil
 	}
 
-	return ast.NewChar(byte(lit.Text[0]))
+	return ast.NewChar(byte(lit.Token().Text[0]))
 }
 
-func evaluateStringExpr(lit token.Token) *ast.Value {
-	return ast.NewString(lit.Text)
+func evaluateStringLit(lit *ast.StringLit) *ast.Value {
+	return ast.NewString(lit.Token().Text)
 }
 
-func evaluateBooleanExpr(lit token.Token) (*ast.Value, error) {
+func evaluateBooleanLit(lit *ast.BooleanLit) (*ast.Value, error) {
 	var v bool
 
-	switch lit.Text {
+	switch lit.Token().Text {
 	case "TRUE":
 		v = true
 	case "FALSE":
 		v = false
 	default:
-		return nil, fmt.Errorf("invalid boolean literal: %q", lit.Text)
+		return nil, fmt.Errorf("invalid boolean literal: %q", lit.Token().Text)
 	}
 
 	return ast.NewBoolean(v), nil
 }
 
-func evaluateSetExpr(expr *ast.SetExpr) *ast.Value {
+func evaluateSetLit(lit *ast.SetLit) *ast.Value {
 	var val int64
 
-	for _, bit := range expr.Bits() {
+	for _, bit := range lit.Bits() {
 		val |= 1 << bit
 	}
 

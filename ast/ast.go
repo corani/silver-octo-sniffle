@@ -16,12 +16,12 @@ type AstVisitor interface {
 	VisitCallExpr(*CallExpr)
 	VisitBinaryExpr(*BinaryExpr)
 	VisitDesignatorExpr(*DesignatorExpr)
-	VisitNumberExpr(*NumberExpr)
-	VisitStringExpr(*StringExpr)
-	VisitCharExpr(*CharExpr)
-	VisitBooleanExpr(*BooleanExpr)
-	VisitSetExpr(*SetExpr)
 	VisitNotExpr(*NotExpr)
+	VisitNumberLit(*NumberLit)
+	VisitStringLit(*StringLit)
+	VisitCharLit(*CharLit)
+	VisitBooleanLit(*BooleanLit)
+	VisitSetLit(*SetLit)
 }
 
 type Node interface {
@@ -396,271 +396,53 @@ func (n *ExprStmt) Visit(v AstVisitor) {
 	v.VisitExprStmt(n)
 }
 
-// ----- DesignatorExpr -------------------------------------------------------
+// ----- CallExpr -------------------------------------------------------------
 
-type DesignatorExpr struct {
-	token      token.Token
+type CallExpr struct {
+	designator *DesignatorExpr
 	typ        Type
+	args       []Expr
 	constValue *Value
-	kind       Kind
+	builtin    Function
 }
 
-var _ Expr = (*DesignatorExpr)(nil)
+var _ Expr = (*CallExpr)(nil)
 
-func NewDesignatorExpr(t token.Token) *DesignatorExpr {
-	return &DesignatorExpr{
-		token: t,
+func NewCallExpr(d *DesignatorExpr, a []Expr) *CallExpr {
+	return &CallExpr{
+		designator: d,
+		args:       a,
 	}
 }
 
-func (n *DesignatorExpr) Token() token.Token {
-	return n.token
+func (n *CallExpr) Token() token.Token {
+	return n.designator.Token()
 }
 
-func (n *DesignatorExpr) Type() Type {
+func (n *CallExpr) Type() Type {
 	return n.typ
 }
 
-func (n *DesignatorExpr) Kind() Kind {
-	return n.kind
-}
-
-func (n *DesignatorExpr) ConstValue() *Value {
+func (n *CallExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *DesignatorExpr) Visit(v AstVisitor) {
-	v.VisitDesignatorExpr(n)
+func (n *CallExpr) Args() []Expr {
+	return n.args
 }
 
-func (n *DesignatorExpr) Update(t Type, k Kind, c *Value) {
-	n.typ = t
-	n.kind = k
-	n.constValue = c
+func (n *CallExpr) Builtin() Function {
+	return n.builtin
 }
 
-// ----- NumberExpr -----------------------------------------------------------
-
-type NumberExpr struct {
-	token      token.Token
-	typ        Type
-	constValue *Value
+func (n *CallExpr) Visit(v AstVisitor) {
+	v.VisitCallExpr(n)
 }
 
-var _ Expr = (*NumberExpr)(nil)
-
-func NewNumberExpr(t token.Token) *NumberExpr {
-	return &NumberExpr{
-		token: t,
-	}
-}
-
-func (n *NumberExpr) Token() token.Token {
-	return n.token
-}
-
-func (n *NumberExpr) Type() Type {
-	return n.typ
-}
-
-func (n *NumberExpr) ConstValue() *Value {
-	return n.constValue
-}
-
-func (n *NumberExpr) Visit(v AstVisitor) {
-	v.VisitNumberExpr(n)
-}
-
-func (n *NumberExpr) Update(t Type, c *Value) {
+func (n *CallExpr) Update(t Type, c *Value, b Function) {
 	n.typ = t
 	n.constValue = c
-}
-
-// ----- CharExpr -------------------------------------------------------------
-
-type CharExpr struct {
-	token      token.Token
-	constValue *Value
-}
-
-var _ Expr = (*CharExpr)(nil)
-
-func NewCharExpr(t token.Token) *CharExpr {
-	return &CharExpr{
-		token: t,
-	}
-}
-
-func (n *CharExpr) Token() token.Token {
-	return n.token
-}
-
-func (n *CharExpr) Type() Type {
-	return TypeChar
-}
-
-func (n *CharExpr) ConstValue() *Value {
-	return n.constValue
-}
-
-func (n *CharExpr) Visit(v AstVisitor) {
-	v.VisitCharExpr(n)
-}
-
-func (n *CharExpr) Update(c *Value) {
-	n.constValue = c
-}
-
-// ----- StringExpr -----------------------------------------------------------
-
-type StringExpr struct {
-	token      token.Token
-	constValue *Value
-}
-
-var _ Expr = (*StringExpr)(nil)
-
-func NewStringExpr(t token.Token) *StringExpr {
-	return &StringExpr{
-		token: t,
-	}
-}
-
-func (n *StringExpr) Token() token.Token {
-	return n.token
-}
-
-func (n *StringExpr) Type() Type {
-	return TypeString
-}
-
-func (n *StringExpr) ConstValue() *Value {
-	return n.constValue
-}
-
-func (n *StringExpr) Visit(v AstVisitor) {
-	v.VisitStringExpr(n)
-}
-
-func (n *StringExpr) Update(c *Value) {
-	n.constValue = c
-}
-
-// ----- BooleanExpr ----------------------------------------------------------
-
-type BooleanExpr struct {
-	token      token.Token
-	constValue *Value
-}
-
-var _ Expr = (*BooleanExpr)(nil)
-
-func NewBooleanExpr(t token.Token) *BooleanExpr {
-	return &BooleanExpr{
-		token: t,
-	}
-}
-
-func (n *BooleanExpr) Token() token.Token {
-	return n.token
-}
-
-func (n *BooleanExpr) Type() Type {
-	return TypeBoolean
-}
-
-func (n *BooleanExpr) ConstValue() *Value {
-	return n.constValue
-}
-
-func (n *BooleanExpr) Visit(v AstVisitor) {
-	v.VisitBooleanExpr(n)
-}
-
-func (n *BooleanExpr) Update(c *Value) {
-	n.constValue = c
-}
-
-// ----- SetExpr --------------------------------------------------------------
-
-type SetExpr struct {
-	token      token.Token
-	bits       []byte
-	constValue *Value
-}
-
-var _ Expr = (*SetExpr)(nil)
-
-func NewSetExpr(t token.Token, b []byte) *SetExpr {
-	return &SetExpr{
-		token: t,
-		bits:  b,
-	}
-}
-
-func (n *SetExpr) Token() token.Token {
-	return n.token
-}
-
-func (n *SetExpr) Type() Type {
-	return TypeSet
-}
-
-func (n *SetExpr) ConstValue() *Value {
-	return n.constValue
-}
-
-func (n *SetExpr) Bits() []byte {
-	return n.bits
-}
-
-func (n *SetExpr) Visit(v AstVisitor) {
-	v.VisitSetExpr(n)
-}
-
-func (n *SetExpr) Update(c *Value) {
-	n.constValue = c
-}
-
-// ----- NotExpr --------------------------------------------------------------
-
-type NotExpr struct {
-	token      token.Token
-	expr       Expr
-	constValue *Value
-}
-
-var _ Expr = (*NotExpr)(nil)
-
-func NewNotExpr(t token.Token, e Expr) *NotExpr {
-	return &NotExpr{
-		token: t,
-		expr:  e,
-	}
-}
-
-func (n *NotExpr) Token() token.Token {
-	return n.token
-}
-
-func (n *NotExpr) Type() Type {
-	return TypeBoolean
-}
-
-func (n *NotExpr) ConstValue() *Value {
-	return n.constValue
-}
-
-func (n *NotExpr) Expr() Expr {
-	return n.expr
-}
-
-func (n *NotExpr) Visit(v AstVisitor) {
-	v.VisitNotExpr(n)
-}
-
-func (n *NotExpr) Update(c *Value) {
-	n.constValue = c
+	n.builtin = b
 }
 
 // ----- BinaryExpr -----------------------------------------------------------
@@ -714,51 +496,269 @@ func (n *BinaryExpr) Update(t Type, c *Value) {
 	n.constValue = c
 }
 
-// ----- CallExpr -------------------------------------------------------------
+// ----- DesignatorExpr -------------------------------------------------------
 
-type CallExpr struct {
-	designator *DesignatorExpr
+type DesignatorExpr struct {
+	token      token.Token
 	typ        Type
-	args       []Expr
 	constValue *Value
-	builtin    Function
+	kind       Kind
 }
 
-var _ Expr = (*CallExpr)(nil)
+var _ Expr = (*DesignatorExpr)(nil)
 
-func NewCallExpr(d *DesignatorExpr, a []Expr) *CallExpr {
-	return &CallExpr{
-		designator: d,
-		args:       a,
+func NewDesignatorExpr(t token.Token) *DesignatorExpr {
+	return &DesignatorExpr{
+		token: t,
 	}
 }
 
-func (n *CallExpr) Token() token.Token {
-	return n.designator.Token()
+func (n *DesignatorExpr) Token() token.Token {
+	return n.token
 }
 
-func (n *CallExpr) Type() Type {
+func (n *DesignatorExpr) Type() Type {
 	return n.typ
 }
 
-func (n *CallExpr) ConstValue() *Value {
+func (n *DesignatorExpr) Kind() Kind {
+	return n.kind
+}
+
+func (n *DesignatorExpr) ConstValue() *Value {
 	return n.constValue
 }
 
-func (n *CallExpr) Args() []Expr {
-	return n.args
+func (n *DesignatorExpr) Visit(v AstVisitor) {
+	v.VisitDesignatorExpr(n)
 }
 
-func (n *CallExpr) Builtin() Function {
-	return n.builtin
+func (n *DesignatorExpr) Update(t Type, k Kind, c *Value) {
+	n.typ = t
+	n.kind = k
+	n.constValue = c
 }
 
-func (n *CallExpr) Visit(v AstVisitor) {
-	v.VisitCallExpr(n)
+// ----- NotExpr --------------------------------------------------------------
+
+type NotExpr struct {
+	token      token.Token
+	expr       Expr
+	constValue *Value
 }
 
-func (n *CallExpr) Update(t Type, c *Value, b Function) {
+var _ Expr = (*NotExpr)(nil)
+
+func NewNotExpr(t token.Token, e Expr) *NotExpr {
+	return &NotExpr{
+		token: t,
+		expr:  e,
+	}
+}
+
+func (n *NotExpr) Token() token.Token {
+	return n.token
+}
+
+func (n *NotExpr) Type() Type {
+	return TypeBoolean
+}
+
+func (n *NotExpr) ConstValue() *Value {
+	return n.constValue
+}
+
+func (n *NotExpr) Expr() Expr {
+	return n.expr
+}
+
+func (n *NotExpr) Visit(v AstVisitor) {
+	v.VisitNotExpr(n)
+}
+
+func (n *NotExpr) Update(c *Value) {
+	n.constValue = c
+}
+
+// ----- NumberLit -----------------------------------------------------------
+
+type NumberLit struct {
+	token      token.Token
+	typ        Type
+	constValue *Value
+}
+
+var _ Expr = (*NumberLit)(nil)
+
+func NewNumberExpr(t token.Token) *NumberLit {
+	return &NumberLit{
+		token: t,
+	}
+}
+
+func (n *NumberLit) Token() token.Token {
+	return n.token
+}
+
+func (n *NumberLit) Type() Type {
+	return n.typ
+}
+
+func (n *NumberLit) ConstValue() *Value {
+	return n.constValue
+}
+
+func (n *NumberLit) Visit(v AstVisitor) {
+	v.VisitNumberLit(n)
+}
+
+func (n *NumberLit) Update(t Type, c *Value) {
 	n.typ = t
 	n.constValue = c
-	n.builtin = b
+}
+
+// ----- StringLit -----------------------------------------------------------
+
+type StringLit struct {
+	token      token.Token
+	constValue *Value
+}
+
+var _ Expr = (*StringLit)(nil)
+
+func NewStringExpr(t token.Token) *StringLit {
+	return &StringLit{
+		token: t,
+	}
+}
+
+func (n *StringLit) Token() token.Token {
+	return n.token
+}
+
+func (n *StringLit) Type() Type {
+	return TypeString
+}
+
+func (n *StringLit) ConstValue() *Value {
+	return n.constValue
+}
+
+func (n *StringLit) Visit(v AstVisitor) {
+	v.VisitStringLit(n)
+}
+
+func (n *StringLit) Update(c *Value) {
+	n.constValue = c
+}
+
+// ----- CharLit -------------------------------------------------------------
+
+type CharLit struct {
+	token      token.Token
+	constValue *Value
+}
+
+var _ Expr = (*CharLit)(nil)
+
+func NewCharExpr(t token.Token) *CharLit {
+	return &CharLit{
+		token: t,
+	}
+}
+
+func (n *CharLit) Token() token.Token {
+	return n.token
+}
+
+func (n *CharLit) Type() Type {
+	return TypeChar
+}
+
+func (n *CharLit) ConstValue() *Value {
+	return n.constValue
+}
+
+func (n *CharLit) Visit(v AstVisitor) {
+	v.VisitCharLit(n)
+}
+
+func (n *CharLit) Update(c *Value) {
+	n.constValue = c
+}
+
+// ----- BooleanLit ----------------------------------------------------------
+
+type BooleanLit struct {
+	token      token.Token
+	constValue *Value
+}
+
+var _ Expr = (*BooleanLit)(nil)
+
+func NewBooleanExpr(t token.Token) *BooleanLit {
+	return &BooleanLit{
+		token: t,
+	}
+}
+
+func (n *BooleanLit) Token() token.Token {
+	return n.token
+}
+
+func (n *BooleanLit) Type() Type {
+	return TypeBoolean
+}
+
+func (n *BooleanLit) ConstValue() *Value {
+	return n.constValue
+}
+
+func (n *BooleanLit) Visit(v AstVisitor) {
+	v.VisitBooleanLit(n)
+}
+
+func (n *BooleanLit) Update(c *Value) {
+	n.constValue = c
+}
+
+// ----- SetLit --------------------------------------------------------------
+
+type SetLit struct {
+	token      token.Token
+	bits       []byte
+	constValue *Value
+}
+
+var _ Expr = (*SetLit)(nil)
+
+func NewSetExpr(t token.Token, b []byte) *SetLit {
+	return &SetLit{
+		token: t,
+		bits:  b,
+	}
+}
+
+func (n *SetLit) Token() token.Token {
+	return n.token
+}
+
+func (n *SetLit) Type() Type {
+	return TypeSet
+}
+
+func (n *SetLit) ConstValue() *Value {
+	return n.constValue
+}
+
+func (n *SetLit) Bits() []byte {
+	return n.bits
+}
+
+func (n *SetLit) Visit(v AstVisitor) {
+	v.VisitSetLit(n)
+}
+
+func (n *SetLit) Update(c *Value) {
+	n.constValue = c
 }
