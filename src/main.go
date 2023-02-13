@@ -31,10 +31,10 @@ type CompilationResult struct {
 	generatorOut string
 }
 
-func do(srcName string, bs []byte) (CompilationResult, error) {
+func do(srcName string, bs []byte, debug bool) (CompilationResult, error) {
 	var buf bytes.Buffer
 
-	tokens, err := lexer.Lex(reporter.NewReporter(&buf), srcName, bs)
+	tokens, err := lexer.Lex(reporter.NewReporter(&buf, debug), srcName, bs)
 	if err != nil {
 		return CompilationResult{
 			lexerOut: buf.String(),
@@ -43,7 +43,7 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 
 	buf.Reset()
 
-	ast, err := parser.Parse(reporter.NewReporter(&buf), tokens)
+	ast, err := parser.Parse(reporter.NewReporter(&buf, debug), tokens)
 	if err != nil || buf.Len() > 0 {
 		return CompilationResult{
 			tokens:    tokens,
@@ -53,7 +53,7 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 
 	buf.Reset()
 
-	checker.TypeCheck(reporter.NewReporter(&buf), ast)
+	checker.TypeCheck(reporter.NewReporter(&buf, debug), ast)
 	if buf.Len() > 0 {
 		return CompilationResult{
 			tokens:     tokens,
@@ -89,7 +89,7 @@ func do(srcName string, bs []byte) (CompilationResult, error) {
 
 	buf.Reset()
 
-	generator.GenerateIR(reporter.NewReporter(&buf), io.MultiWriter(&ir, out), ast)
+	generator.GenerateIR(reporter.NewReporter(&buf, debug), io.MultiWriter(&ir, out), ast)
 	if buf.Len() > 0 {
 		return CompilationResult{
 			tokens:       tokens,
@@ -123,7 +123,7 @@ func main() {
 		panic(err)
 	}
 
-	if result, err := do(*srcName, bs); err != nil {
+	if result, err := do(*srcName, bs, false); err != nil {
 		if errors.Is(err, lexer.ErrLexer) {
 			fmt.Fprintln(os.Stderr, result.lexerOut)
 		}

@@ -8,12 +8,21 @@ import (
 )
 
 type Reporter struct {
-	out io.Writer
+	out   io.Writer
+	debug bool
 }
 
-func NewReporter(out io.Writer) *Reporter {
+func NewReporter(out io.Writer, debug bool) *Reporter {
 	return &Reporter{
-		out: out,
+		out:   out,
+		debug: debug,
+	}
+}
+
+func (r *Reporter) Debugf(t token.Token, format string, args ...any) {
+	if r.debug {
+		str := fmt.Sprintf(format, args...)
+		fmt.Fprintf(r.out, "%s:%d:%d: DEBUG: %s\n", t.File, t.Range.FromRow, t.Range.FromCol, str)
 	}
 }
 

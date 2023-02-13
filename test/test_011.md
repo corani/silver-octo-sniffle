@@ -81,8 +81,12 @@ test/test_011.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
 ```scheme
 (module "FltFloor"
   (vars
-    (x [i64])
-    (y [f64])
+    (x 
+      (INTEGER [i64])
+    )
+    (y 
+      (REAL [f64])
+    )
   )
   (stmts
     (assign
@@ -151,6 +155,8 @@ declare i64 @rand()
 declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
 declare i64 @printf(i8* %format, ...)
+
+declare i8* @malloc(i64 %size)
 
 define i64 @main() {
 entry:

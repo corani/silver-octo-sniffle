@@ -123,8 +123,12 @@ test/test_016.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
 ```scheme
 (module "Chars"
   (vars
-    (x [char])
-    (y [i64])
+    (x 
+      (CHAR [char])
+    )
+    (y 
+      (INTEGER [i64])
+    )
   )
   (stmts
     (expr2stmt
@@ -230,6 +234,8 @@ declare i64 @rand()
 declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
 declare i64 @printf(i8* %format, ...)
+
+declare i8* @malloc(i64 %size)
 
 define i64 @main() {
 entry:

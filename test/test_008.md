@@ -71,9 +71,15 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 ```scheme
 (module "GlobalVars"
   (vars
-    (x [i64])
-    (y [i64])
-    (res [boolean])
+    (x 
+      (INTEGER [i64])
+    )
+    (y 
+      (INTEGER [i64])
+    )
+    (res 
+      (BOOLEAN [boolean])
+    )
   )
   (stmts
     (assign
@@ -128,6 +134,8 @@ declare i64 @rand()
 declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
 declare i64 @printf(i8* %format, ...)
+
+declare i8* @malloc(i64 %size)
 
 define i64 @main() {
 entry:

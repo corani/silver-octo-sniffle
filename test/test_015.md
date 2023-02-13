@@ -80,7 +80,9 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
 ```scheme
 (module "ForBy"
   (vars
-    (x [i64])
+    (x 
+      (INTEGER [i64])
+    )
   )
   (stmts
     (for x
@@ -140,6 +142,8 @@ declare i64 @rand()
 declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
 declare i64 @printf(i8* %format, ...)
+
+declare i8* @malloc(i64 %size)
 
 define i64 @main() {
 entry:

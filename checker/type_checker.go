@@ -341,22 +341,40 @@ func (c *typeChecker) VisitConstDecl(decl *ast.ConstDecl) {
 	c.symbols[decl.Token().Text] = decl
 }
 
-func (c *typeChecker) VisitTypeDecl(decl *ast.TypeDecl) {
+func (c *typeChecker) VisitTypeBaseDecl(decl *ast.TypeBaseDecl) {
+	c.out.Debugf(decl.Token(), ">VisitTypeBaseDecl(%+v)", decl)
+	typeToken := decl.TypeToken()
+
+	if typeDecl, ok := c.symbols[typeToken.Text]; ok && typeDecl.Kind() == ast.KindType {
+		decl.Update(typeToken, typeDecl.Type())
+	} else if ok {
+		decl.Update(typeToken, ast.TypeVoid)
+		c.out.Errorf(typeToken, "unknown type %q", typeToken.Text)
+		c.out.Infof(typeToken, "%q is a %s, not a type", typeToken.Text, typeDecl.Kind())
+	} else {
+		decl.Update(typeToken, ast.TypeVoid)
+		c.out.Errorf(typeToken, "unknown type %q", typeToken.Text)
+	}
+	c.out.Debugf(decl.Token(), "<VisitTypeBaseDecl(%+v)", decl)
+}
+
+func (c *typeChecker) VisitTypePointerDecl(decl *ast.TypePointerDecl) {
+	decl.To().Visit(c)
+
+	if decl.Token().Type == token.TokenIdent {
+		c.symbols[decl.Token().Text] = decl
+	}
 }
 
 func (c *typeChecker) VisitVarDecl(decl *ast.VarDecl) {
-	if typeDecl, ok := c.symbols[decl.TypeToken().Text]; ok && typeDecl.Kind() == ast.KindType {
-		decl.Update(typeDecl.Type())
+	decl.TypeDecl().Visit(c)
+	decl.Update(decl.TypeDecl().Type())
 
+	if decl.TypeDecl().Type() != ast.TypeVoid {
 		c.symbols[decl.Token().Text] = decl
-	} else if ok {
-		c.out.Errorf(decl.TypeToken(), "unknown type %q for variable %q",
-			decl.TypeToken().Text, decl.Token().Text)
-		c.out.Infof(decl.TypeToken(), "%q is a %s, not a type",
-			decl.TypeToken().Text, typeDecl.Kind())
 	} else {
-		c.out.Errorf(decl.TypeToken(), "unknown type %q for variable %q",
-			decl.TypeToken().Text, decl.Token().Text)
+		c.out.Errorf(decl.Token(), "unknown type %q for variable %q",
+			decl.TypeDecl().Token().Text, decl.Token().Text)
 	}
 }
 

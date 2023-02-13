@@ -23,7 +23,8 @@ type AstVisitor interface {
 	VisitBooleanLit(*BooleanLit)
 	VisitSetLit(*SetLit)
 	VisitConstDecl(*ConstDecl)
-	VisitTypeDecl(*TypeDecl)
+	VisitTypeBaseDecl(*TypeBaseDecl)
+	VisitTypePointerDecl(*TypePointerDecl)
 	VisitVarDecl(*VarDecl)
 	VisitProcDecl(*ProcDecl)
 }
