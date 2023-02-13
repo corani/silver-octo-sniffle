@@ -59,12 +59,16 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] split code into packages.
 - [x] better error reporting.
 - [x] continue parsing if errors are found.
+- [x] combine constants and vars into symbol-table.
+- [x] add types to symbol-table.
+- [ ] use a type node instead of a token.
+- [ ] support `POINTER` types.
+- [ ] support qualified-identifiers.
 - [ ] better sync points during parser error recovery.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
 - [ ] support local procedure calls (i.e. in the same module).
-- [ ] support `POINTER` types.
 - [ ] support `ARRAY` types.
 - [ ] support built-in `LEN` procedure.
 - [ ] support `RECORD` types.

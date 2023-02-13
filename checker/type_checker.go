@@ -13,8 +13,7 @@ var ErrChecking = errors.New("type check error")
 func TypeCheck(out *reporter.Reporter, root ast.Node) {
 	checker := &typeChecker{
 		out:          out,
-		consts:       make(map[string]*ast.ConstDecl),
-		vars:         make(map[string]*ast.VarDecl),
+		symbols:      ast.GetBuiltinSymbols(),
 		builtins:     ast.GetBuiltinFunctions(),
 		currentValue: nil,
 	}
@@ -24,8 +23,7 @@ func TypeCheck(out *reporter.Reporter, root ast.Node) {
 
 type typeChecker struct {
 	out          *reporter.Reporter
-	consts       map[string]*ast.ConstDecl
-	vars         map[string]*ast.VarDecl
+	symbols      map[string]ast.Symbol
 	builtins     map[string]ast.Function
 	currentValue *ast.Value
 }
@@ -49,27 +47,23 @@ func (c *typeChecker) VisitModule(m *ast.Module) {
 			c.out.Errorf(decl.Token(), "initializer for %q is not constant", decl.Token().Text)
 		}
 
-		c.consts[decl.Token().Text] = decl
+		c.symbols[decl.Token().Text] = decl
 	}
 
 	for _, decl := range m.Vars() {
-		switch decl.TypeToken().Text {
-		case "INTEGER":
-			decl.Update(ast.TypeInt64)
-		case "REAL":
-			decl.Update(ast.TypeFloat64)
-		case "BOOLEAN":
-			decl.Update(ast.TypeBoolean)
-		case "CHAR":
-			decl.Update(ast.TypeChar)
-		case "SET":
-			decl.Update(ast.TypeSet)
-		default:
+		if typeDecl, ok := c.symbols[decl.TypeToken().Text]; ok && typeDecl.Kind() == ast.KindType {
+			decl.Update(typeDecl.Type())
+
+			c.symbols[decl.Token().Text] = decl
+		} else if ok {
+			c.out.Errorf(decl.TypeToken(), "unknown type %q for variable %q",
+				decl.TypeToken().Text, decl.Token().Text)
+			c.out.Infof(decl.TypeToken(), "%q is a %s, not a type",
+				decl.TypeToken().Text, typeDecl.Kind())
+		} else {
 			c.out.Errorf(decl.TypeToken(), "unknown type %q for variable %q",
 				decl.TypeToken().Text, decl.Token().Text)
 		}
-
-		c.vars[decl.Token().Text] = decl
 	}
 
 	m.Block().Visit(c)
@@ -91,11 +85,16 @@ func (c *typeChecker) VisitAssignStmt(s *ast.AssignStmt) {
 
 	rhs.Visit(c)
 
-	if t, ok := c.vars[lhs.Text]; ok {
-		if rhs.Type() != t.Type() {
+	if sym, ok := c.symbols[lhs.Text]; ok && sym.Kind() == ast.KindVar {
+		v := sym.(*ast.VarDecl)
+
+		if rhs.Type() != v.Type() {
 			c.out.Errorf(s.Token(), "can't assign type %q to variable %q (which is of type %q)",
-				rhs.Type(), lhs.Text, t.Type())
+				rhs.Type(), lhs.Text, v.Type())
 		}
+	} else if ok {
+		c.out.Errorf(s.Token(), "undefined identifier %q", s.Token().Text)
+		c.out.Infof(s.Token(), "expected a variable, got a %s", sym.Kind())
 	} else {
 		c.out.Errorf(s.Token(), "undefined identifier %q", s.Token().Text)
 	}
@@ -137,15 +136,20 @@ func (c *typeChecker) VisitWhileStmt(s *ast.WhileStmt) {
 }
 
 func (c *typeChecker) VisitForStmt(s *ast.ForStmt) {
-	iter, ok := c.vars[s.Iter().Text]
+	sym, ok := c.symbols[s.Iter().Text]
 	if !ok {
-		c.out.Errorf(s.Token(), "FOR iterator must be a variable")
+		c.out.Errorf(s.Iter(), "undefined identifier %q", s.Iter().Text)
 	}
 
-	// TODO(daniel): is this true?
-	if iter.Type() != ast.TypeInt64 {
-		c.out.Errorf(iter.Token(), "FOR iterator must be an integer, got %v",
-			iter.Type())
+	iter, ok := sym.(*ast.VarDecl)
+	if !ok {
+		c.out.Errorf(s.Token(), "FOR iterator must be a variable, got %s", sym.Kind())
+	} else {
+		// TODO(daniel): is this true?
+		if iter.Type() != ast.TypeInt64 {
+			c.out.Errorf(iter.Token(), "FOR iterator must be an integer, got %v",
+				iter.Type())
+		}
 	}
 
 	from := s.From()
@@ -156,19 +160,21 @@ func (c *typeChecker) VisitForStmt(s *ast.ForStmt) {
 	to.Visit(c)
 	by.Visit(c)
 
-	if from.Type() != iter.Type() {
-		c.out.Errorf(from.Token(), "FOR iterator FROM must be an integer, got %v",
-			from.Type())
-	}
+	if iter != nil {
+		if from.Type() != iter.Type() {
+			c.out.Errorf(from.Token(), "FOR iterator FROM must be an integer, got %v",
+				from.Type())
+		}
 
-	if to.Type() != iter.Type() {
-		c.out.Errorf(to.Token(), "FOR iterator TO must be an integer, got %v",
-			to.Type())
-	}
+		if to.Type() != iter.Type() {
+			c.out.Errorf(to.Token(), "FOR iterator TO must be an integer, got %v",
+				to.Type())
+		}
 
-	if by.Type() != iter.Type() {
-		c.out.Errorf(by.Token(), "FOR iterator BY must be an integer, got %v",
-			by.Type())
+		if by.Type() != iter.Type() {
+			c.out.Errorf(by.Token(), "FOR iterator BY must be an integer, got %v",
+				by.Type())
+		}
 	}
 
 	if by.ConstValue() == nil {
@@ -278,14 +284,19 @@ func (c *typeChecker) VisitBinaryExpr(e *ast.BinaryExpr) {
 }
 
 func (c *typeChecker) VisitDesignatorExpr(e *ast.DesignatorExpr) {
-	if t, ok := c.consts[e.Token().Text]; ok {
-		e.Update(t.Type(), ast.KindConst, t.Expr().ConstValue())
-	} else if t, ok := c.vars[e.Token().Text]; ok {
-		e.Update(t.Type(), ast.KindVar, nil)
+	if sym, ok := c.symbols[e.Token().Text]; ok {
+		switch t := sym.(type) {
+		case *ast.VarDecl:
+			e.Update(t.Type(), ast.KindVar, nil)
+		case *ast.ConstDecl:
+			e.Update(t.Type(), ast.KindConst, t.Expr().ConstValue())
+		default:
+			c.out.Errorf(e.Token(), "unsupported kind %q for identifier %q",
+				sym.Kind(), e.Token().Text)
+		}
 	} else {
 		c.out.Errorf(e.Token(), "undefined identifier %q",
 			e.Token().Text)
-		c.out.Infof(e.Token(), "expected a variable or constant")
 	}
 }
 
