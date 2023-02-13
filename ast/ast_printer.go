@@ -39,30 +39,38 @@ func (p *astPrinter) VisitModule(n *Module) {
 	p.printf("(module %q", n.name)
 	p.indent++
 
-	if len(n.Consts()) != 0 {
+	var (
+		consts []*ConstDecl
+		vars   []*VarDecl
+	)
+
+	for _, decl := range n.Decls() {
+		switch d := decl.(type) {
+		case *ConstDecl:
+			consts = append(consts, d)
+		case *VarDecl:
+			vars = append(vars, d)
+		}
+	}
+
+	if len(consts) != 0 {
 		p.printf("(consts")
 		p.indent++
 
-		for _, decl := range n.Consts() {
-			p.printf("(%v [%v]", decl.Token().Text, decl.Type())
-			p.indent++
-
-			decl.Expr().Visit(p)
-
-			p.indent--
-			p.printf(")")
+		for _, decl := range consts {
+			decl.Visit(p)
 		}
 
 		p.indent--
 		p.printf(")")
 	}
 
-	if len(n.Vars()) != 0 {
+	if len(vars) != 0 {
 		p.printf("(vars")
 		p.indent++
 
-		for _, decl := range n.Vars() {
-			p.printf("(%v [%v])", decl.Token().Text, decl.Type())
+		for _, decl := range vars {
+			decl.Visit(p)
 		}
 
 		p.indent--
@@ -262,4 +270,24 @@ func (p *astPrinter) VisitSetLit(n *SetLit) {
 	}
 
 	p.printf("(set (%s))", strings.Join(parts, ", "))
+}
+
+func (p *astPrinter) VisitConstDecl(decl *ConstDecl) {
+	p.printf("(%v [%v]", decl.Token().Text, decl.Type())
+	p.indent++
+
+	decl.Expr().Visit(p)
+
+	p.indent--
+	p.printf(")")
+}
+
+func (p *astPrinter) VisitTypeDecl(decl *TypeDecl) {
+}
+
+func (p *astPrinter) VisitVarDecl(decl *VarDecl) {
+	p.printf("(%v [%v])", decl.Token().Text, decl.Type())
+}
+
+func (p *astPrinter) VisitProcDecl(decl *ProcDecl) {
 }

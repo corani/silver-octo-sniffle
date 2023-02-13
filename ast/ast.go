@@ -22,6 +22,10 @@ type AstVisitor interface {
 	VisitCharLit(*CharLit)
 	VisitBooleanLit(*BooleanLit)
 	VisitSetLit(*SetLit)
+	VisitConstDecl(*ConstDecl)
+	VisitTypeDecl(*TypeDecl)
+	VisitVarDecl(*VarDecl)
+	VisitProcDecl(*ProcDecl)
 }
 
 type Node interface {
@@ -64,25 +68,21 @@ func NewCondition(e Expr, s Stmt) Condition {
 // ----- Module ---------------------------------------------------------------
 
 type Module struct {
-	token  token.Token
-	name   string
-	block  Stmt
-	consts []*ConstDecl
-	types  []*TypeDecl
-	vars   []*VarDecl
+	token token.Token
+	name  string
+	block Stmt
+	decls []Decl
 }
 
 var _ Node = (*Module)(nil)
 
 // TODO(daniel): maybe instead of passing all decls in the constructor, add some `NewXxx` methods?
-func NewModule(token token.Token, n string, s Stmt, c []*ConstDecl, t []*TypeDecl, v []*VarDecl) *Module {
+func NewModule(token token.Token, n string, s Stmt, d []Decl) *Module {
 	return &Module{
-		token:  token,
-		name:   n,
-		block:  s,
-		consts: c,
-		types:  t,
-		vars:   v,
+		token: token,
+		name:  n,
+		block: s,
+		decls: d,
 	}
 }
 
@@ -94,16 +94,8 @@ func (n *Module) Block() Stmt {
 	return n.block
 }
 
-func (n *Module) Consts() []*ConstDecl {
-	return n.consts
-}
-
-func (n *Module) Types() []*TypeDecl {
-	return n.types
-}
-
-func (n *Module) Vars() []*VarDecl {
-	return n.vars
+func (n *Module) Decls() []Decl {
+	return n.decls
 }
 
 func (n *Module) Visit(v AstVisitor) {

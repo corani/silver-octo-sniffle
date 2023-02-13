@@ -43,22 +43,26 @@ func (p *Parser) parseModule() (ast.Node, error) {
 	}
 
 	var (
-		consts []*ast.ConstDecl
-		types  []*ast.TypeDecl
-		vars   []*ast.VarDecl
-		stmts  ast.Node
+		decls []ast.Decl
+		stmts ast.Node
 	)
 
 	if p.expect(token.TokenCONST) {
-		consts = p.parseConsts()
+		for _, v := range p.parseConsts() {
+			decls = append(decls, v)
+		}
 	}
 
 	if p.expect(token.TokenTYPE) {
-		types = p.parseTypes()
+		for _, v := range p.parseTypes() {
+			decls = append(decls, v)
+		}
 	}
 
 	if p.expect(token.TokenVAR) {
-		vars = p.parseVars()
+		for _, v := range p.parseVars() {
+			decls = append(decls, v)
+		}
 	}
 
 	if p.expect(token.TokenPROCEDURE) {
@@ -88,7 +92,7 @@ func (p *Parser) parseModule() (ast.Node, error) {
 
 	_, _ = p.require(token.TokenEOF)
 
-	return ast.NewModule(t, name.Text, stmts, consts, types, vars), nil
+	return ast.NewModule(t, name.Text, stmts, decls), nil
 }
 
 func (p *Parser) parseConsts() []*ast.ConstDecl {

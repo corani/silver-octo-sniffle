@@ -62,36 +62,27 @@ func (g *Generator) Generate(root ast.Node) *ir.Module {
 }
 
 func (g *Generator) VisitModule(n *ast.Module) {
-	for _, decl := range n.Consts() {
-		g.consts[decl.Token().Text] = decl.Value()
-	}
-
-	for _, decl := range n.Vars() {
-		switch decl.Type() {
-		case ast.TypeInt64, ast.TypeSet:
-			g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I64, 0))
-		case ast.TypeFloat64:
-			g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewFloat(types.Double, 0))
-		case ast.TypeBoolean:
-			g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I1, 0))
-		case ast.TypeChar:
-			g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I8, 0))
-		default:
-			panic(fmt.Sprintf("don't know how to declare global variable of type %s", decl.Type()))
-		}
+	for _, decl := range n.Decls() {
+		decl.Visit(g)
 	}
 
 	// TODO(daniel): is it correct that only the "main" module has statements, so that we can
 	// generate an entry-point from them?
 	if n.Block() != nil {
-		g.currentFunc = g.currentModule.NewFunc("main", types.I64)
-		g.currentBlock = g.currentFunc.NewBlock("entry")
-
-		n.Block().Visit(g)
-
-		g.currentBlock.NewRet(zero)
+		g.generateMain(n.Block())
 	}
 }
+
+func (g *Generator) generateMain(body ast.Stmt) {
+	g.currentFunc = g.currentModule.NewFunc("main", types.I64)
+	g.currentBlock = g.currentFunc.NewBlock("entry")
+
+	body.Visit(g)
+
+	g.currentBlock.NewRet(zero)
+}
+
+// ----- statements --------------------------------------------------------------------------------
 
 func (g *Generator) VisitInvalidStmt(n *ast.InvalidStmt) {
 	// nothing
@@ -207,6 +198,8 @@ func (g *Generator) VisitExprStmt(n *ast.ExprStmt) {
 	// NOTE(daniel): ignore the result.
 	n.Expr().Visit(g)
 }
+
+// ----- expressions -------------------------------------------------------------------------------
 
 func (g *Generator) VisitInvalidExpr(s *ast.InvalidExpr) {
 	// nothing
@@ -362,6 +355,8 @@ func (g *Generator) VisitNotExpr(n *ast.NotExpr) {
 	g.currentValue = g.currentBlock.NewICmp(enum.IPredEQ, val, constant.NewInt(types.I1, 0))
 }
 
+// ----- literals ----------------------------------------------------------------------------------
+
 func (g *Generator) VisitNumberLit(n *ast.NumberLit) {
 	switch n.Type() {
 	case ast.TypeInt64:
@@ -393,38 +388,37 @@ func (g *Generator) VisitSetLit(n *ast.SetLit) {
 	g.currentValue = constant.NewInt(types.I64, int64(n.ConstValue().Int()))
 }
 
+// ----- declarations ------------------------------------------------------------------------------
+
+func (g *Generator) VisitConstDecl(decl *ast.ConstDecl) {
+	g.consts[decl.Token().Text] = decl.Value()
+}
+
+func (g *Generator) VisitTypeDecl(decl *ast.TypeDecl) {
+}
+
+func (g *Generator) VisitVarDecl(decl *ast.VarDecl) {
+	switch decl.Type() {
+	case ast.TypeInt64, ast.TypeSet:
+		g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I64, 0))
+	case ast.TypeFloat64:
+		g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewFloat(types.Double, 0))
+	case ast.TypeBoolean:
+		g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I1, 0))
+	case ast.TypeChar:
+		g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I8, 0))
+	default:
+		panic(fmt.Sprintf("don't know how to declare global variable of type %s", decl.Type()))
+	}
+}
+
+func (g *Generator) VisitProcDecl(decl *ast.ProcDecl) {
+}
+
 func (g *Generator) visitAndReturnValue(n ast.Node) value.Value {
 	n.Visit(g)
 
 	return g.currentValue
-}
-
-func (g *Generator) generateStdlib() {
-	g.stdlib["puts"] = g.currentModule.NewFunc("puts", types.I64,
-		ir.NewParam("str", types.I8Ptr))
-	g.stdlib["rand"] = g.currentModule.NewFunc("rand", types.I64)
-
-	sprintf := g.currentModule.NewFunc("sprintf", types.I64,
-		ir.NewParam("buf", types.I8Ptr),
-		ir.NewParam("format", types.I8Ptr))
-	sprintf.Sig.Variadic = true
-	g.stdlib["sprintf"] = sprintf
-
-	printf := g.currentModule.NewFunc("printf", types.I64,
-		ir.NewParam("format", types.I8Ptr))
-	printf.Sig.Variadic = true
-	g.stdlib["printf"] = printf
-}
-
-func (g *Generator) internString(s string) *ir.Global {
-	if v, ok := g.strings[s]; ok {
-		return v
-	}
-
-	def := g.currentModule.NewGlobalDef("", constant.NewCharArrayFromString(s))
-	g.strings[s] = def
-
-	return def
 }
 
 // ----- builtin functions ----------------------------------------------------
@@ -616,4 +610,34 @@ func (g *Generator) printChar(arg ast.Expr) {
 func (g *Generator) printSet(arg ast.Expr) {
 	// TODO(daniel): can we get a better print for sets?
 	g.printInteger(arg)
+}
+
+// ----- helper functions --------------------------------------------------------------------------
+
+func (g *Generator) generateStdlib() {
+	g.stdlib["puts"] = g.currentModule.NewFunc("puts", types.I64,
+		ir.NewParam("str", types.I8Ptr))
+	g.stdlib["rand"] = g.currentModule.NewFunc("rand", types.I64)
+
+	sprintf := g.currentModule.NewFunc("sprintf", types.I64,
+		ir.NewParam("buf", types.I8Ptr),
+		ir.NewParam("format", types.I8Ptr))
+	sprintf.Sig.Variadic = true
+	g.stdlib["sprintf"] = sprintf
+
+	printf := g.currentModule.NewFunc("printf", types.I64,
+		ir.NewParam("format", types.I8Ptr))
+	printf.Sig.Variadic = true
+	g.stdlib["printf"] = printf
+}
+
+func (g *Generator) internString(s string) *ir.Global {
+	if v, ok := g.strings[s]; ok {
+		return v
+	}
+
+	def := g.currentModule.NewGlobalDef("", constant.NewCharArrayFromString(s))
+	g.strings[s] = def
+
+	return def
 }
