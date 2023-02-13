@@ -212,9 +212,15 @@ test/test_017.md:40:0:	eof	""	false	0	0.000000	(40, 0) -> (40, 0)
     )
   )
   (vars
-    (x [set])
-    (y [set])
-    (z [set])
+    (x 
+      (SET [set])
+    )
+    (y 
+      (SET [set])
+    )
+    (z 
+      (SET [set])
+    )
   )
   (stmts
     (expr2stmt
@@ -371,6 +377,8 @@ declare i64 @rand()
 declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
 declare i64 @printf(i8* %format, ...)
+
+declare i8* @malloc(i64 %size)
 
 define i64 @main() {
 entry:

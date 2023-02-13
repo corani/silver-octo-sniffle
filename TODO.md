@@ -61,8 +61,11 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] continue parsing if errors are found.
 - [x] combine constants and vars into symbol-table.
 - [x] add types to symbol-table.
-- [ ] use a type node instead of a token.
+- [x] use a type node instead of a token.
+- [ ] resolve variable types during type checking.
 - [ ] support `POINTER` types.
+- [ ] support built-in `NEW` procedure.
+- [ ] support pointer dereferences. 
 - [ ] support qualified-identifiers.
 - [ ] better sync points during parser error recovery.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).

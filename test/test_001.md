@@ -135,6 +135,8 @@ declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
 declare i64 @printf(i8* %format, ...)
 
+declare i8* @malloc(i64 %size)
+
 define i64 @main() {
 entry:
 	%0 = getelementptr [4 x i8], [4 x i8]* @0, i64 0, i64 0

@@ -77,8 +77,8 @@ func readGoldenTest(t *testing.T, path string) ([]byte, []byte) {
 	return exp, source
 }
 
-func doTest(t *testing.T, srcName string, w io.Writer, bs []byte) {
-	result, _ := do(srcName, bs)
+func doTest(t *testing.T, srcName string, w io.Writer, bs []byte, debug bool) {
+	result, _ := do(srcName, bs, debug)
 
 	fmt.Fprintf(w, "# %s\n", srcName)
 
@@ -145,6 +145,8 @@ var update = flag.Bool("update", false, "update test cases")
 func TestMain(t *testing.T) {
 	t.Parallel()
 
+	debug := false
+
 	// NOTE(daniel): as we're writing the source filename to the expected output,
 	// we need to change directory rather than doing a walk starting at `../test`.
 	if err := os.Chdir(".."); err != nil {
@@ -171,7 +173,7 @@ func TestMain(t *testing.T) {
 
 			var out bytes.Buffer
 
-			doTest(t, path, &out, source)
+			doTest(t, path, &out, source, debug)
 
 			if *update {
 				if err := os.WriteFile(path, out.Bytes(), 0664); err != nil {

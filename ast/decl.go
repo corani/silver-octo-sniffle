@@ -43,11 +43,11 @@ type Symbol interface {
 
 func GetBuiltinSymbols() map[string]Symbol {
 	return map[string]Symbol{
-		"INTEGER": newBuiltinTypeDecl("INTEGER", TypeInt64),
-		"REAL":    newBuiltinTypeDecl("REAL", TypeFloat64),
-		"BOOLEAN": newBuiltinTypeDecl("BOOLEAN", TypeBoolean),
-		"CHAR":    newBuiltinTypeDecl("CHAR", TypeChar),
-		"SET":     newBuiltinTypeDecl("SET", TypeSet),
+		"INTEGER": newBuiltinTypeBaseDecl("INTEGER", TypeInt64),
+		"REAL":    newBuiltinTypeBaseDecl("REAL", TypeFloat64),
+		"BOOLEAN": newBuiltinTypeBaseDecl("BOOLEAN", TypeBoolean),
+		"CHAR":    newBuiltinTypeBaseDecl("CHAR", TypeChar),
+		"SET":     newBuiltinTypeBaseDecl("SET", TypeSet),
 	}
 }
 
@@ -103,74 +103,19 @@ func (d *ConstDecl) Visit(v AstVisitor) {
 	v.VisitConstDecl(d)
 }
 
-// ----- TypeDecl -------------------------------------------------------------
-
-func NewTypeDecl(token, typeToken token.Token) *TypeDecl {
-	return &TypeDecl{
-		token:     token,
-		typeToken: typeToken,
-	}
-}
-
-func newBuiltinTypeDecl(name string, typ Type) *TypeDecl {
-	t := token.Token{
-		Type: token.TokenIdent,
-		File: "<builtin>",
-		Text: name,
-	}
-
-	return &TypeDecl{
-		token:     t,
-		typeToken: t,
-		typ:       typ,
-	}
-}
-
-type TypeDecl struct {
-	token     token.Token
-	typeToken token.Token
-	typ       Type
-}
-
-var _ Decl = (*TypeDecl)(nil)
-
-func (d *TypeDecl) Kind() Kind {
-	return KindType
-}
-
-func (d *TypeDecl) Token() token.Token {
-	return d.token
-}
-
-func (d *TypeDecl) TypeToken() token.Token {
-	return d.typeToken
-}
-
-func (d *TypeDecl) Type() Type {
-	return d.typ
-}
-
-func (d *TypeDecl) Update(t Type) {
-	d.typ = t
-}
-
-func (d *TypeDecl) Visit(v AstVisitor) {
-	v.VisitTypeDecl(d)
-}
-
 // ----- VarDecl --------------------------------------------------------------
 
-func NewVarDecl(token, typeToken token.Token) *VarDecl {
+func NewVarDecl(token token.Token, typeDecl TypeDecl) *VarDecl {
 	return &VarDecl{
-		token:     token,
-		typeToken: typeToken,
+		token:    token,
+		typeDecl: typeDecl,
 	}
 }
 
 type VarDecl struct {
-	token     token.Token
-	typeToken token.Token
-	typ       Type
+	token    token.Token
+	typeDecl TypeDecl
+	typ      Type
 }
 
 var _ Decl = (*VarDecl)(nil)
@@ -183,8 +128,8 @@ func (d *VarDecl) Token() token.Token {
 	return d.token
 }
 
-func (d *VarDecl) TypeToken() token.Token {
-	return d.typeToken
+func (d *VarDecl) TypeDecl() TypeDecl {
+	return d.typeDecl
 }
 
 func (d *VarDecl) Type() Type {

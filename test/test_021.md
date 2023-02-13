@@ -45,8 +45,12 @@ test/test_021.md:10:0:	eof	""	false	0	0.000000	(10, 0) -> (10, 0)
     )
   )
   (vars
-    (y [void])
-    (z [void])
+    (y 
+      (x [void])
+    )
+    (z 
+      (bla [void])
+    )
   )
   (stmts
   )
@@ -54,7 +58,9 @@ test/test_021.md:10:0:	eof	""	false	0	0.000000	(10, 0) -> (10, 0)
 ```
 ## Type Check errors
 ```
-test/test_021.md:5:8: ERROR: unknown type "x" for variable "y"
+test/test_021.md:5:8: ERROR: unknown type "x"
 test/test_021.md:5:8: INFO : "x" is a constant, not a type
-test/test_021.md:6:8: ERROR: unknown type "bla" for variable "z"
+test/test_021.md:5:4: ERROR: unknown type "x" for variable "y"
+test/test_021.md:6:8: ERROR: unknown type "bla"
+test/test_021.md:6:4: ERROR: unknown type "bla" for variable "z"
 ```

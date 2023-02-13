@@ -123,41 +123,27 @@ func (p *Parser) parseConsts() []*ast.ConstDecl {
 	return consts
 }
 
-func (p *Parser) parseTypes() []*ast.TypeDecl {
-	var types []*ast.TypeDecl
+func (p *Parser) parseTypes() []ast.TypeDecl {
+	var types []ast.TypeDecl
 
 	for p.currentType() == token.TokenIdent {
 		t, _ := p.require(token.TokenIdent)
 
 		if _, err := p.require(token.TokenEQ); err != nil {
 			p.findNextSyncPoint(token.TokenSemicolon)
+
+			continue
 		}
 
-		typToken := p.currentToken()
+		typeDecl := p.parseType(t)
 
-		switch p.currentType() {
-		case token.TokenARRAY:
-			p.out.Errorf(p.currentToken(), "ARRAY types are not implemented")
-			p.findNextSyncPoint(token.TokenSemicolon)
-		case token.TokenRECORD:
-			p.out.Errorf(p.currentToken(), "RECORD types are not implemented")
-			p.findNextSyncPoint(token.TokenSemicolon)
-		case token.TokenPOINTER:
-			p.out.Errorf(p.currentToken(), "POINTER types are not implemented")
-			p.findNextSyncPoint(token.TokenSemicolon)
-		case token.TokenPROCEDURE:
-			p.out.Errorf(p.currentToken(), "PROCEDURE types are not implemented")
-			p.findNextSyncPoint(token.TokenSemicolon)
-		default:
-			p.out.Errorf(p.currentToken(), "invalid type in type declaration: %v", p.currentType())
-			p.out.Infof(p.currentToken(), "valid types are `ARRAY`, `RECORD`, `POINTER` or `PROCEDURE`")
+		if _, err := p.require(token.TokenSemicolon); err != nil {
 			p.findNextSyncPoint(token.TokenSemicolon)
 
 			continue
 		}
 
-		// TODO(daniel): the following is wrong!
-		types = append(types, ast.NewTypeDecl(t, typToken))
+		types = append(types, typeDecl)
 	}
 
 	return types
@@ -176,13 +162,7 @@ func (p *Parser) parseVars() []*ast.VarDecl {
 			break
 		}
 
-		typeIdent, err := p.parseType()
-		if err != nil {
-			p.findNextSyncPoint(token.TokenSemicolon,
-				token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
-
-			break
-		}
+		typeDecl := p.parseType(token.Token{})
 
 		if _, err := p.require(token.TokenSemicolon); err != nil {
 			p.findNextSyncPoint(token.TokenSemicolon,
@@ -192,7 +172,7 @@ func (p *Parser) parseVars() []*ast.VarDecl {
 		}
 
 		for _, varIdent := range varIdents {
-			vars = append(vars, ast.NewVarDecl(varIdent, typeIdent))
+			vars = append(vars, ast.NewVarDecl(varIdent, typeDecl))
 		}
 	}
 
@@ -221,9 +201,34 @@ func (p *Parser) parseIdentList() token.Tokens {
 	return varIdents
 }
 
-func (p *Parser) parseType() (token.Token, error) {
-	// TODO(daniel): complexer types.
-	return p.require(token.TokenIdent)
+func (p *Parser) parseType(name token.Token) ast.TypeDecl {
+	// TODO(daniel): break these out into separate methods?
+	switch p.currentType() {
+	case token.TokenIdent:
+		t, _ := p.require(token.TokenIdent)
+
+		return ast.NewTypeBaseDecl(name, t)
+	case token.TokenARRAY:
+	case token.TokenRECORD:
+	case token.TokenPOINTER:
+		p.consume(token.TokenPOINTER)
+
+		if _, err := p.require(token.TokenTO); err != nil {
+			p.findNextSyncPoint(token.TokenSemicolon)
+
+			return ast.NewInvalidTypeDecl(name)
+		}
+
+		to := p.parseType(token.Token{})
+
+		return ast.NewTypePointerDecl(name, to)
+	case token.TokenPROCEDURE:
+	}
+
+	p.out.Errorf(p.currentToken(), "invalid type in type declaration: %v", p.currentType())
+	p.findNextSyncPoint(token.TokenSemicolon)
+
+	return ast.NewInvalidTypeDecl(name)
 }
 
 func (p *Parser) parseStmtSequence(terminator ...token.TokenType) ast.Stmt {

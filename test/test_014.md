@@ -78,8 +78,12 @@ test/test_014.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
 ```scheme
 (module "ExtendedWhile"
   (vars
-    (x [i64])
-    (y [i64])
+    (x 
+      (INTEGER [i64])
+    )
+    (y 
+      (INTEGER [i64])
+    )
   )
   (stmts
     (assign
@@ -149,6 +153,8 @@ declare i64 @rand()
 declare i64 @sprintf(i8* %buf, i8* %format, ...)
 
 declare i64 @printf(i8* %format, ...)
+
+declare i8* @malloc(i64 %size)
 
 define i64 @main() {
 entry:

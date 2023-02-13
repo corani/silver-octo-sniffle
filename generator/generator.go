@@ -394,7 +394,10 @@ func (g *Generator) VisitConstDecl(decl *ast.ConstDecl) {
 	g.consts[decl.Token().Text] = decl.Value()
 }
 
-func (g *Generator) VisitTypeDecl(decl *ast.TypeDecl) {
+func (g *Generator) VisitTypeBaseDecl(decl *ast.TypeBaseDecl) {
+}
+
+func (g *Generator) VisitTypePointerDecl(decl *ast.TypePointerDecl) {
 }
 
 func (g *Generator) VisitVarDecl(decl *ast.VarDecl) {
@@ -407,8 +410,11 @@ func (g *Generator) VisitVarDecl(decl *ast.VarDecl) {
 		g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I1, 0))
 	case ast.TypeChar:
 		g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I8, 0))
+	case ast.TypePointer:
+		g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("",
+			constant.NewIntToPtr(constant.NewInt(types.I64, 0), types.I64Ptr))
 	default:
-		panic(fmt.Sprintf("don't know how to declare global variable of type %s", decl.Type()))
+		g.out.Errorf(decl.Token(), "don't know how to declare global variable of type %s", decl.Type())
 	}
 }
 
@@ -521,6 +527,10 @@ func (g *Generator) VisitBuiltinUNPK(f *ast.BuiltinUNPK, args []ast.Expr) {
 }
 
 func (g *Generator) VisitBuiltinNEW(f *ast.BuiltinNEW, args []ast.Expr) {
+	// TODO(daniel): hardcoded malloc size
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["malloc"], constant.NewInt(types.I64, 8))
+	g.currentValue = g.currentBlock.NewBitCast(g.currentValue, types.I64Ptr)
+	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
 }
 
 func (g *Generator) VisitBuiltinASSERT(f *ast.BuiltinASSERT, args []ast.Expr) {
@@ -629,6 +639,10 @@ func (g *Generator) generateStdlib() {
 		ir.NewParam("format", types.I8Ptr))
 	printf.Sig.Variadic = true
 	g.stdlib["printf"] = printf
+
+	malloc := g.currentModule.NewFunc("malloc", types.I8Ptr,
+		ir.NewParam("size", types.I64))
+	g.stdlib["malloc"] = malloc
 }
 
 func (g *Generator) internString(s string) *ir.Global {
