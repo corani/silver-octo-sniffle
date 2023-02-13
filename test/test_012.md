@@ -56,18 +56,21 @@ test/test_012.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
     (x [i64])
   )
   (stmts
-    (assign x
+    (assign
+      (variable [i64] "x")
       (number [i64] 10)
     )
     (repeat
       (stmts
         (expr2stmt
-          (call "DEC" [void]
+          (call
+            (procedure [void] "DEC")
             (variable [i64] "x")
           )
         )
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (variable [i64] "x")
           )
         )

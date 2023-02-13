@@ -27,6 +27,8 @@ func (k Kind) String() string {
 		return "constant"
 	case KindType:
 		return "type"
+	case KindProc:
+		return "procedure"
 	case KindModule:
 		return "module"
 	default:

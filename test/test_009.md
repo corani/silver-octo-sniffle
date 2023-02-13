@@ -134,7 +134,8 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
     )
     (z [f64]
       (plus [f64]
-        (call "FLT" [f64]
+        (call
+          (procedure [f64] "FLT")
           (constant [i64] "x")
         )
         (constant [f64] "y")
@@ -142,7 +143,8 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
     )
     (ne [boolean]
       (ne [boolean]
-        (call "FLT" [f64]
+        (call
+          (procedure [f64] "FLT")
           (constant [i64] "x")
         )
         (constant [f64] "y")
@@ -152,21 +154,24 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
   (stmts
     (if
       (eq [boolean]
-        (call "FLT" [f64]
+        (call
+          (procedure [f64] "FLT")
           (constant [i64] "x")
         )
         (constant [f64] "y")
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (string "Equal")
           )
         )
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (string "Not Equal")
           )
         )
@@ -175,7 +180,8 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
     (if
       (eq [boolean]
         (plus [f64]
-          (call "FLT" [f64]
+          (call
+            (procedure [f64] "FLT")
             (constant [i64] "x")
           )
           (constant [f64] "y")
@@ -184,14 +190,16 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (string "Equal")
           )
         )
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (string "Not Equal")
           )
         )
@@ -201,14 +209,16 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (constant [boolean] "ne")
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (string "Not Equal")
           )
         )
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (string "Equal")
           )
         )

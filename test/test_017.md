@@ -218,17 +218,20 @@ test/test_017.md:40:0:	eof	""	false	0	0.000000	(40, 0) -> (40, 0)
   )
   (stmts
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (constant [set] "xc")
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (constant [set] "yc")
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (plus [set]
           (constant [set] "xc")
           (constant [set] "yc")
@@ -236,7 +239,8 @@ test/test_017.md:40:0:	eof	""	false	0	0.000000	(40, 0) -> (40, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (minus [set]
           (constant [set] "xc")
           (constant [set] "yc")
@@ -244,7 +248,8 @@ test/test_017.md:40:0:	eof	""	false	0	0.000000	(40, 0) -> (40, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (asterisk [set]
           (constant [set] "xc")
           (constant [set] "yc")
@@ -252,56 +257,66 @@ test/test_017.md:40:0:	eof	""	false	0	0.000000	(40, 0) -> (40, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (slash [set]
           (constant [set] "xc")
           (constant [set] "yc")
         )
       )
     )
-    (assign x
+    (assign
+      (variable [set] "x")
       (constant [set] "xc")
     )
-    (assign y
+    (assign
+      (variable [set] "y")
       (constant [set] "yc")
     )
     (expr2stmt
-      (call "INCL" [void]
+      (call
+        (procedure [void] "INCL")
         (variable [set] "x")
         (number [i64] 4)
       )
     )
     (expr2stmt
-      (call "EXCL" [void]
+      (call
+        (procedure [void] "EXCL")
         (variable [set] "y")
         (number [i64] 30)
       )
     )
-    (assign z
+    (assign
+      (variable [set] "z")
       (plus [set]
         (variable [set] "x")
         (variable [set] "y")
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (variable [set] "z")
       )
     )
     (expr2stmt
-      (call "INCL" [void]
+      (call
+        (procedure [void] "INCL")
         (variable [set] "z")
         (number [i64] 30)
       )
     )
     (expr2stmt
-      (call "EXCL" [void]
+      (call
+        (procedure [void] "EXCL")
         (variable [set] "z")
         (number [i64] 4)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (variable [set] "z")
       )
     )
@@ -312,7 +327,8 @@ test/test_017.md:40:0:	eof	""	false	0	0.000000	(40, 0) -> (40, 0)
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (number [i64] 30)
           )
         )
@@ -329,7 +345,8 @@ test/test_017.md:40:0:	eof	""	false	0	0.000000	(40, 0) -> (40, 0)
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (number [i64] 31)
           )
         )

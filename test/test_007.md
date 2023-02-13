@@ -71,7 +71,8 @@ test/test_007.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (number [i64] 3)
           )
         )
@@ -83,14 +84,16 @@ test/test_007.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
         )
         (stmts
           (expr2stmt
-            (call "print" [void]
+            (call
+              (procedure [void] "print")
               (number [i64] 2)
             )
           )
         )
         (stmts
           (expr2stmt
-            (call "print" [void]
+            (call
+              (procedure [void] "print")
               (number [i64] 1)
             )
           )
@@ -101,7 +104,8 @@ test/test_007.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
       #true
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             #true
           )
         )

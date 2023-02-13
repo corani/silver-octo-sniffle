@@ -85,42 +85,52 @@ test/test_011.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
     (y [f64])
   )
   (stmts
-    (assign x
+    (assign
+      (variable [i64] "x")
       (number [i64] 1)
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (variable [i64] "x")
       )
     )
-    (assign y
-      (call "FLT" [f64]
+    (assign
+      (variable [f64] "y")
+      (call
+        (procedure [f64] "FLT")
         (variable [i64] "x")
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (variable [f64] "y")
       )
     )
-    (assign y
+    (assign
+      (variable [f64] "y")
       (plus [f64]
         (variable [f64] "y")
         (number [f64] 1.100000)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (variable [f64] "y")
       )
     )
-    (assign x
-      (call "FLOOR" [i64]
+    (assign
+      (variable [i64] "x")
+      (call
+        (procedure [i64] "FLOOR")
         (variable [f64] "y")
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (variable [i64] "x")
       )
     )

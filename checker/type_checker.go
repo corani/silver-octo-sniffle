@@ -58,17 +58,18 @@ func (c *typeChecker) VisitStmtSequence(s *ast.StmtSequence) {
 }
 
 func (c *typeChecker) VisitAssignStmt(s *ast.AssignStmt) {
-	lhs := s.Token()
+	lhs := s.Designator()
 	rhs := s.Expr()
 
+	lhs.Visit(c)
 	rhs.Visit(c)
 
-	if sym, ok := c.symbols[lhs.Text]; ok && sym.Kind() == ast.KindVar {
+	if sym, ok := c.symbols[lhs.Token().Text]; ok && sym.Kind() == ast.KindVar {
 		v := sym.(*ast.VarDecl)
 
 		if rhs.Type() != v.Type() {
 			c.out.Errorf(s.Token(), "can't assign type %q to variable %q (which is of type %q)",
-				rhs.Type(), lhs.Text, v.Type())
+				rhs.Type(), lhs.Token().Text, v.Type())
 		}
 	} else if ok {
 		c.out.Errorf(s.Token(), "undefined identifier %q", s.Token().Text)
@@ -187,11 +188,15 @@ func (c *typeChecker) VisitInvalidExpr(s *ast.InvalidExpr) {
 }
 
 func (c *typeChecker) VisitCallExpr(e *ast.CallExpr) {
+	lhs := e.Designator()
+
+	lhs.Visit(c)
+
 	for _, v := range e.Args() {
 		v.Visit(c)
 	}
 
-	if v, ok := c.builtins[e.Token().Text]; ok {
+	if v, ok := c.builtins[lhs.Token().Text]; ok {
 		t, err := v.Validate(e.Args())
 		if err != nil {
 			c.out.Errorf(e.Token(), "%v", err)
@@ -203,7 +208,7 @@ func (c *typeChecker) VisitCallExpr(e *ast.CallExpr) {
 
 		e.Update(t, c.currentValue, v)
 	} else {
-		c.out.Errorf(e.Token(), "builtin function %q not found",
+		c.out.Errorf(lhs.Token(), "builtin function %q not found",
 			e.Token().Text)
 	}
 }
@@ -274,6 +279,8 @@ func (c *typeChecker) VisitDesignatorExpr(e *ast.DesignatorExpr) {
 			c.out.Errorf(e.Token(), "unsupported kind %q for identifier %q",
 				sym.Kind(), e.Token().Text)
 		}
+	} else if fn, ok := c.builtins[e.Token().Text]; ok {
+		e.Update(fn.Type(), ast.KindProc, nil)
 	} else {
 		c.out.Errorf(e.Token(), "undefined identifier %q",
 			e.Token().Text)

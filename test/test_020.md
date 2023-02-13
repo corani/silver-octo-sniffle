@@ -41,7 +41,8 @@ test/test_020.md:8:0:	eof	""	false	0	0.000000	(8, 0) -> (8, 0)
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (string "wut")
           )
         )

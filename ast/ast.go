@@ -305,21 +305,25 @@ func (n *ForStmt) Visit(v AstVisitor) {
 // ----- AssignStmt -----------------------------------------------------------
 
 type AssignStmt struct {
-	token token.Token
-	expr  Expr
+	designator *DesignatorExpr
+	expr       Expr
 }
 
 var _ Stmt = (*AssignStmt)(nil)
 
-func NewAssignStmt(t token.Token, e Expr) *AssignStmt {
+func NewAssignStmt(d *DesignatorExpr, e Expr) *AssignStmt {
 	return &AssignStmt{
-		token: t,
-		expr:  e,
+		designator: d,
+		expr:       e,
 	}
 }
 
 func (n *AssignStmt) Token() token.Token {
-	return n.token
+	return n.designator.Token()
+}
+
+func (n *AssignStmt) Designator() *DesignatorExpr {
+	return n.designator
 }
 
 func (n *AssignStmt) Expr() Expr {
@@ -409,6 +413,10 @@ func NewCallExpr(d *DesignatorExpr, a []Expr) *CallExpr {
 
 func (n *CallExpr) Token() token.Token {
 	return n.designator.Token()
+}
+
+func (n *CallExpr) Designator() *DesignatorExpr {
+	return n.designator
 }
 
 func (n *CallExpr) Type() Type {

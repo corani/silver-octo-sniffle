@@ -100,9 +100,10 @@ func (p *astPrinter) VisitStmtSequence(n *StmtSequence) {
 }
 
 func (p *astPrinter) VisitAssignStmt(n *AssignStmt) {
-	p.printf("(assign %v", n.Token().Text)
+	p.printf("(assign")
 	p.indent++
 
+	n.Designator().Visit(p)
 	n.Expr().Visit(p)
 
 	p.indent--
@@ -180,8 +181,10 @@ func (p *astPrinter) VisitInvalidExpr(n *InvalidExpr) {
 }
 
 func (p *astPrinter) VisitCallExpr(n *CallExpr) {
-	p.printf("(call %q [%v]", n.Token().Text, n.typ)
+	p.printf("(call")
 	p.indent++
+
+	n.Designator().Visit(p)
 
 	for _, arg := range n.Args() {
 		arg.Visit(p)

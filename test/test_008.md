@@ -76,13 +76,16 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
     (res [boolean])
   )
   (stmts
-    (assign x
+    (assign
+      (variable [i64] "x")
       (number [i64] 1)
     )
-    (assign y
+    (assign
+      (variable [i64] "y")
       (number [i64] 2)
     )
-    (assign res
+    (assign
+      (variable [boolean] "res")
       (eq [boolean]
         (variable [i64] "x")
         (variable [i64] "y")
@@ -92,14 +95,16 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       (variable [boolean] "res")
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (string "Equal")
           )
         )
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (string "Not Equal")
           )
         )
