@@ -82,10 +82,12 @@ test/test_014.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
     (y [i64])
   )
   (stmts
-    (assign x
+    (assign
+      (variable [i64] "x")
       (number [i64] 0)
     )
-    (assign y
+    (assign
+      (variable [i64] "y")
       (number [i64] 1)
     )
     (while
@@ -96,12 +98,14 @@ test/test_014.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
         )
         (stmts
           (expr2stmt
-            (call "INC" [void]
+            (call
+              (procedure [void] "INC")
               (variable [i64] "x")
             )
           )
           (expr2stmt
-            (call "print" [void]
+            (call
+              (procedure [void] "print")
               (asterisk [i64]
                 (variable [i64] "x")
                 (variable [i64] "y")
@@ -117,11 +121,13 @@ test/test_014.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
         )
         (stmts
           (expr2stmt
-            (call "INC" [void]
+            (call
+              (procedure [void] "INC")
               (variable [i64] "y")
             )
           )
-          (assign x
+          (assign
+            (variable [i64] "x")
             (number [i64] 0)
           )
         )

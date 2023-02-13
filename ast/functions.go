@@ -62,9 +62,20 @@ func (f function) Validate(args []Expr) (Type, error) {
 	return TypeVoid, fmt.Errorf("no matching overload found")
 }
 
+func (f function) Type() Type {
+	// TODO(daniel): since the builtin functions may have a different return type based on the
+	// overload, this is incorrect!
+	if len(f.overloads) == 0 {
+		return TypeVoid
+	}
+
+	return f.overloads[0].returnType
+}
+
 type Function interface {
 	Validate([]Expr) (Type, error)
 	Visit(BuiltinVisitor, []Expr)
+	Type() Type
 }
 
 type BuiltinVisitor interface {

@@ -80,7 +80,8 @@ test/test_013.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
     (y [i64])
   )
   (stmts
-    (assign x
+    (assign
+      (variable [i64] "x")
       (number [i64] 0)
     )
     (while
@@ -91,11 +92,13 @@ test/test_013.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
         )
         (stmts
           (expr2stmt
-            (call "INC" [void]
+            (call
+              (procedure [void] "INC")
               (variable [i64] "x")
             )
           )
-          (assign y
+          (assign
+            (variable [i64] "y")
             (number [i64] 0)
           )
           (while
@@ -106,12 +109,14 @@ test/test_013.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
               )
               (stmts
                 (expr2stmt
-                  (call "INC" [void]
+                  (call
+                    (procedure [void] "INC")
                     (variable [i64] "y")
                   )
                 )
                 (expr2stmt
-                  (call "print" [void]
+                  (call
+                    (procedure [void] "print")
                     (asterisk [i64]
                       (variable [i64] "x")
                       (variable [i64] "y")

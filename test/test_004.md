@@ -69,21 +69,24 @@ test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
 (module "BooleanOperators"
   (stmts
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (not [boolean]
           #true
         )
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (not [boolean]
           #false
         )
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (ampersand [boolean]
           #true
           #false
@@ -91,7 +94,8 @@ test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (or [boolean]
           #true
           #false
@@ -99,15 +103,19 @@ test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
-        (call "ORD" [i64]
+      (call
+        (procedure [void] "print")
+        (call
+          (procedure [i64] "ORD")
           #true
         )
       )
     )
     (expr2stmt
-      (call "print" [void]
-        (call "ORD" [i64]
+      (call
+        (procedure [void] "print")
+        (call
+          (procedure [i64] "ORD")
           #false
         )
       )

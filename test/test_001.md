@@ -69,42 +69,50 @@ test/test_001.md:13:0:	eof	""	false	0	0.000000	(13, 0) -> (13, 0)
 (module "SimpleLiterals"
   (stmts
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (number [i64] 42)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (number [f64] 33.420000)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         #true
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         #false
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (string "Hello, world!")
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (number [i64] 51)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (number [i64] 174)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (string "Hello, world!")
       )
     )

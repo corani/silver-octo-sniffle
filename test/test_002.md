@@ -219,12 +219,14 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
 (module "BinaryOperations"
   (stmts
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (number [i64] 33)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (minus [i64]
           (number [i64] 0)
           (number [i64] 42)
@@ -232,7 +234,8 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (plus [i64]
           (plus [i64]
             (number [i64] 34)
@@ -243,7 +246,8 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (minus [i64]
           (number [i64] 66)
           (number [i64] 33)
@@ -251,7 +255,8 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (plus [i64]
           (minus [i64]
             (number [i64] 0)
@@ -262,7 +267,8 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (plus [i64]
           (plus [i64]
             (number [i64] 34)
@@ -273,7 +279,8 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (asterisk [i64]
           (plus [i64]
             (number [i64] 34)
@@ -284,22 +291,26 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (slash [f64]
-          (call "FLT" [f64]
+          (call
+            (procedure [f64] "FLT")
             (plus [i64]
               (number [i64] 34)
               (number [i64] 35)
             )
           )
-          (call "FLT" [f64]
+          (call
+            (procedure [f64] "FLT")
             (number [i64] 33)
           )
         )
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (div [i64]
           (number [i64] 11)
           (number [i64] 3)
@@ -307,7 +318,8 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (mod [i64]
           (number [i64] 11)
           (number [i64] 3)
@@ -315,38 +327,47 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (slash [f64]
           (slash [f64]
-            (call "FLT" [f64]
+            (call
+              (procedure [f64] "FLT")
               (number [i64] 11)
             )
-            (call "FLT" [f64]
+            (call
+              (procedure [f64] "FLT")
               (number [i64] 3)
             )
           )
-          (call "FLT" [f64]
+          (call
+            (procedure [f64] "FLT")
             (number [i64] 2)
           )
         )
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (plus [f64]
           (slash [f64]
-            (call "FLT" [f64]
+            (call
+              (procedure [f64] "FLT")
               (number [i64] 11)
             )
-            (call "FLT" [f64]
+            (call
+              (procedure [f64] "FLT")
               (number [i64] 3)
             )
           )
           (slash [f64]
-            (call "FLT" [f64]
+            (call
+              (procedure [f64] "FLT")
               (number [i64] 7)
             )
-            (call "FLT" [f64]
+            (call
+              (procedure [f64] "FLT")
               (number [i64] 2)
             )
           )
@@ -354,7 +375,8 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (minus [f64]
           (slash [f64]
             (number [f64] 11.000000)
@@ -368,26 +390,32 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (asterisk [f64]
           (slash [f64]
-            (call "FLT" [f64]
+            (call
+              (procedure [f64] "FLT")
               (number [i64] 11)
             )
-            (call "FLT" [f64]
+            (call
+              (procedure [f64] "FLT")
               (number [i64] 3)
             )
           )
-          (call "FLT" [f64]
+          (call
+            (procedure [f64] "FLT")
             (number [i64] 3)
           )
         )
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (plus [f64]
-          (call "FLT" [f64]
+          (call
+            (procedure [f64] "FLT")
             (number [i64] 69)
           )
           (number [f64] 0.420000)
@@ -395,7 +423,8 @@ test/test_002.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (plus [f64]
           (number [f64] 69.000000)
           (number [f64] 0.420000)

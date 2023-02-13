@@ -128,62 +128,77 @@ test/test_016.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
   )
   (stmts
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (char "A")
       )
     )
-    (assign x
+    (assign
+      (variable [char] "x")
       (char "B")
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (variable [char] "x")
       )
     )
-    (assign y
-      (call "ORD" [i64]
+    (assign
+      (variable [i64] "y")
+      (call
+        (procedure [i64] "ORD")
         (variable [char] "x")
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (variable [i64] "y")
       )
     )
     (expr2stmt
-      (call "INC" [void]
+      (call
+        (procedure [void] "INC")
         (variable [i64] "y")
       )
     )
     (expr2stmt
-      (call "print" [void]
-        (call "CHR" [char]
+      (call
+        (procedure [void] "print")
+        (call
+          (procedure [char] "CHR")
           (variable [i64] "y")
         )
       )
     )
     (expr2stmt
-      (call "print" [void]
+      (call
+        (procedure [void] "print")
         (le [boolean]
           (variable [char] "x")
           (char "B")
         )
       )
     )
-    (assign x
+    (assign
+      (variable [char] "x")
       (char "A")
     )
     (repeat
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (variable [char] "x")
           )
         )
-        (assign x
-          (call "CHR" [char]
+        (assign
+          (variable [char] "x")
+          (call
+            (procedure [char] "CHR")
             (plus [i64]
-              (call "ORD" [i64]
+              (call
+                (procedure [i64] "ORD")
                 (variable [char] "x")
               )
               (number [i64] 1)

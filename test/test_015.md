@@ -89,7 +89,8 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       (number [i64] 2)
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (variable [i64] "x")
           )
         )
@@ -104,7 +105,8 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       )
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (variable [i64] "x")
           )
         )
@@ -116,7 +118,8 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       (number [i64] 1)
       (stmts
         (expr2stmt
-          (call "print" [void]
+          (call
+            (procedure [void] "print")
             (variable [i64] "x")
           )
         )

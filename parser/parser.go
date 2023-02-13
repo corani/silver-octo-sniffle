@@ -260,13 +260,11 @@ func (p *Parser) parseProcedures() {
 func (p *Parser) parseStmt() ast.Stmt {
 	switch p.currentType() {
 	case token.TokenIdent:
-		ident, _ := p.require(token.TokenIdent)
-
-		switch p.currentType() {
+		switch p.nextType() {
 		case token.TokenAssign:
-			return p.parseAssignStmt(ident)
+			return p.parseAssignStmt()
 		default:
-			expr := p.parseCallExpr(ast.NewDesignatorExpr(ident))
+			expr := p.parseCallExpr()
 
 			return ast.NewExprStmt(expr)
 		}
@@ -289,10 +287,14 @@ func (p *Parser) parseStmt() ast.Stmt {
 	}
 }
 
-func (p *Parser) parseAssignStmt(ident token.Token) ast.Stmt {
+func (p *Parser) parseAssignStmt() ast.Stmt {
+	des := p.parseDesignator()
+
 	p.consume(token.TokenAssign)
 
-	return ast.NewAssignStmt(ident, p.parseExpr())
+	expr := p.parseExpr()
+
+	return ast.NewAssignStmt(des, expr)
 }
 
 func (p *Parser) parseIfStmt() ast.Stmt {
@@ -429,7 +431,9 @@ func (p *Parser) parseForStmt() ast.Stmt {
 	return ast.NewForStmt(t, iter, from, to, by, stmt)
 }
 
-func (p *Parser) parseCallExpr(designator *ast.DesignatorExpr) ast.Expr {
+func (p *Parser) parseCallExpr() ast.Expr {
+	designator := p.parseDesignator()
+
 	p.consume(token.TokenLParen)
 
 	var args []ast.Expr
@@ -505,13 +509,11 @@ func (p *Parser) parseFactor() ast.Expr {
 	// factor := set | designator [actualParameters] | number | string | boolean | '(' expr ')' | '~' factor
 	switch p.currentType() {
 	case token.TokenIdent:
-		d := p.parseDesignator()
-
-		if p.currentType() != token.TokenLParen {
-			return d
+		if p.nextType() == token.TokenLParen {
+			return p.parseCallExpr()
 		}
 
-		return p.parseCallExpr(d)
+		return p.parseDesignator()
 	case token.TokenInteger, token.TokenReal, token.TokenMinus, token.TokenPlus:
 		return p.parseNumberExpr()
 	case token.TokenString:
@@ -713,6 +715,14 @@ func (p *Parser) currentToken() token.Token {
 
 func (p *Parser) currentType() token.TokenType {
 	return p.tokens[p.index].Type
+}
+
+func (p *Parser) nextType() token.TokenType {
+	if p.index+1 < len(p.tokens) {
+		return p.tokens[p.index+1].Type
+	}
+
+	return token.TokenEOF
 }
 
 func (p *Parser) tokenIs(opts ...token.TokenType) bool {
