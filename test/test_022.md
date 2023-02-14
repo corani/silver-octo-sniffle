@@ -72,7 +72,9 @@ test/test_022.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       )
     )
     (y 
-      (ip [pointer])
+      (pointer
+        (INTEGER [i64])
+      )
     )
   )
   (stmts

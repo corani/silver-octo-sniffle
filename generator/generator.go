@@ -421,6 +421,9 @@ func (g *Generator) VisitVarDecl(decl *ast.VarDecl) {
 func (g *Generator) VisitProcDecl(decl *ast.ProcDecl) {
 }
 
+func (g *Generator) VisitTypeRef(ref *ast.TypeRef) {
+}
+
 func (g *Generator) visitAndReturnValue(n ast.Node) value.Value {
 	n.Visit(g)
 

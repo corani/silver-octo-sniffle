@@ -106,14 +106,23 @@ func (d *ConstDecl) Visit(v AstVisitor) {
 // ----- VarDecl --------------------------------------------------------------
 
 func NewVarDecl(token token.Token, typeDecl TypeDecl) *VarDecl {
-	return &VarDecl{
-		token:    token,
-		typeDecl: typeDecl,
+	switch d := typeDecl.(type) {
+	case *TypeRef:
+		return &VarDecl{
+			token:   token,
+			typeRef: d,
+		}
+	default:
+		return &VarDecl{
+			token:    token,
+			typeDecl: d,
+		}
 	}
 }
 
 type VarDecl struct {
 	token    token.Token
+	typeRef  *TypeRef
 	typeDecl TypeDecl
 	typ      Type
 }
@@ -128,6 +137,10 @@ func (d *VarDecl) Token() token.Token {
 	return d.token
 }
 
+func (d *VarDecl) TypeRef() *TypeRef {
+	return d.typeRef
+}
+
 func (d *VarDecl) TypeDecl() TypeDecl {
 	return d.typeDecl
 }
@@ -136,7 +149,9 @@ func (d *VarDecl) Type() Type {
 	return d.typ
 }
 
-func (d *VarDecl) Update(t Type) {
+func (d *VarDecl) Update(td TypeDecl, t Type) {
+	d.typeRef = nil
+	d.typeDecl = td
 	d.typ = t
 }
 
@@ -144,7 +159,7 @@ func (d *VarDecl) Visit(v AstVisitor) {
 	v.VisitVarDecl(d)
 }
 
-// ----- VarDecl --------------------------------------------------------------
+// ----- ProcDecl -------------------------------------------------------------
 
 func NewProcDecl(token token.Token) *ProcDecl {
 	return &ProcDecl{

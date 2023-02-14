@@ -55,18 +55,50 @@ type TypeDecl interface {
 	Decl
 }
 
+// ----- TypeRef --------------------------------------------------------------
+
+func NewTypeRef(token token.Token) *TypeRef {
+	return &TypeRef{
+		token: token,
+	}
+}
+
+type TypeRef struct {
+	token    token.Token
+	typeDecl TypeDecl
+}
+
+var _ TypeDecl = (*TypeRef)(nil)
+
+func (t *TypeRef) Token() token.Token {
+	return t.token
+}
+
+func (t *TypeRef) Visit(v AstVisitor) {
+	v.VisitTypeRef(t)
+}
+
+func (t *TypeRef) Kind() Kind {
+	return KindUndefined
+}
+
+func (t *TypeRef) Type() Type {
+	return TypeVoid
+}
+
+func (t *TypeRef) TypeDecl() TypeDecl {
+	return t.typeDecl
+}
+
+func (t *TypeRef) Update(decl TypeDecl) {
+	t.typeDecl = decl
+}
+
 // ----- TypeBaseDecl -----------------------------------------------------------------------------
 
 func NewInvalidTypeDecl(token token.Token) *TypeBaseDecl {
 	return &TypeBaseDecl{
 		token: token,
-	}
-}
-
-func NewTypeBaseDecl(token, typeToken token.Token) *TypeBaseDecl {
-	return &TypeBaseDecl{
-		token:     token,
-		typeToken: typeToken,
 	}
 }
 
@@ -78,16 +110,16 @@ func newBuiltinTypeBaseDecl(name string, typ Type) *TypeBaseDecl {
 	}
 
 	return &TypeBaseDecl{
-		token:     t,
-		typeToken: t,
-		typ:       typ,
+		token:   t,
+		typeRef: nil,
+		typ:     typ,
 	}
 }
 
 type TypeBaseDecl struct {
-	token     token.Token
-	typeToken token.Token
-	typ       Type
+	token   token.Token
+	typeRef *TypeRef
+	typ     Type
 }
 
 var _ TypeDecl = (*TypeBaseDecl)(nil)
@@ -100,15 +132,16 @@ func (d *TypeBaseDecl) Token() token.Token {
 	return d.token
 }
 
-func (d *TypeBaseDecl) TypeToken() token.Token {
-	return d.typeToken
-}
-
 func (d *TypeBaseDecl) Type() Type {
 	return d.typ
 }
 
+func (d *TypeBaseDecl) TypeRef() *TypeRef {
+	return d.typeRef
+}
+
 func (d *TypeBaseDecl) Update(token token.Token, typ Type) {
+	d.typeRef = nil
 	d.token = token
 	d.typ = typ
 }
@@ -120,6 +153,13 @@ func (d *TypeBaseDecl) Visit(v AstVisitor) {
 // ----- PointerTypeDecl --------------------------------------------------------------------------
 
 func NewTypePointerDecl(token token.Token, to TypeDecl) *TypePointerDecl {
+	if ref, ok := to.(*TypeRef); ok {
+		return &TypePointerDecl{
+			token:   token,
+			typeRef: ref,
+		}
+	}
+
 	return &TypePointerDecl{
 		token: token,
 		to:    to,
@@ -127,8 +167,9 @@ func NewTypePointerDecl(token token.Token, to TypeDecl) *TypePointerDecl {
 }
 
 type TypePointerDecl struct {
-	token token.Token
-	to    TypeDecl
+	token   token.Token
+	typeRef *TypeRef
+	to      TypeDecl
 }
 
 var _ TypeDecl = (*TypePointerDecl)(nil)
@@ -145,8 +186,17 @@ func (d *TypePointerDecl) Token() token.Token {
 	return d.token
 }
 
+func (d *TypePointerDecl) TypeRef() *TypeRef {
+	return d.typeRef
+}
+
 func (d *TypePointerDecl) To() TypeDecl {
 	return d.to
+}
+
+func (d *TypePointerDecl) Update(to TypeDecl) {
+	d.typeRef = nil
+	d.to = to
 }
 
 func (d *TypePointerDecl) Visit(v AstVisitor) {

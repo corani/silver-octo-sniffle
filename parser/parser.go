@@ -207,9 +207,7 @@ func (p *Parser) parseType(name token.Token) ast.TypeDecl {
 	case token.TokenIdent:
 		t, _ := p.require(token.TokenIdent)
 
-		return ast.NewTypeBaseDecl(name, t)
-	case token.TokenARRAY:
-	case token.TokenRECORD:
+		return ast.NewTypeRef(t)
 	case token.TokenPOINTER:
 		p.consume(token.TokenPOINTER)
 
@@ -222,6 +220,8 @@ func (p *Parser) parseType(name token.Token) ast.TypeDecl {
 		to := p.parseType(token.Token{})
 
 		return ast.NewTypePointerDecl(name, to)
+	case token.TokenARRAY:
+	case token.TokenRECORD:
 	case token.TokenPROCEDURE:
 	}
 
