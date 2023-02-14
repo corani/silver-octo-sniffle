@@ -62,7 +62,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] combine constants and vars into symbol-table.
 - [x] add types to symbol-table.
 - [x] use a type node instead of a token.
-- [ ] resolve variable types during type checking.
+- [x] solidify types during type checking.
 - [ ] support `POINTER` types.
 - [ ] support built-in `NEW` procedure.
 - [ ] support pointer dereferences. 

@@ -342,24 +342,28 @@ func (c *typeChecker) VisitConstDecl(decl *ast.ConstDecl) {
 }
 
 func (c *typeChecker) VisitTypeBaseDecl(decl *ast.TypeBaseDecl) {
-	c.out.Debugf(decl.Token(), ">VisitTypeBaseDecl(%+v)", decl)
-	typeToken := decl.TypeToken()
+	if decl.TypeRef() != nil {
+		typeRef := decl.TypeRef()
+		typeRef.Visit(c)
 
-	if typeDecl, ok := c.symbols[typeToken.Text]; ok && typeDecl.Kind() == ast.KindType {
-		decl.Update(typeToken, typeDecl.Type())
-	} else if ok {
-		decl.Update(typeToken, ast.TypeVoid)
-		c.out.Errorf(typeToken, "unknown type %q", typeToken.Text)
-		c.out.Infof(typeToken, "%q is a %s, not a type", typeToken.Text, typeDecl.Kind())
-	} else {
-		decl.Update(typeToken, ast.TypeVoid)
-		c.out.Errorf(typeToken, "unknown type %q", typeToken.Text)
+		if sym, ok := c.symbols[typeRef.Token().Text]; ok {
+			decl.Update(typeRef.Token(), sym.Type())
+		} else {
+			decl.Update(typeRef.Token(), ast.TypeVoid)
+			c.out.Errorf(typeRef.Token(), "unknown type %q", typeRef.Token().Text)
+		}
 	}
-	c.out.Debugf(decl.Token(), "<VisitTypeBaseDecl(%+v)", decl)
 }
 
 func (c *typeChecker) VisitTypePointerDecl(decl *ast.TypePointerDecl) {
-	decl.To().Visit(c)
+	if decl.TypeRef() != nil {
+		// NOTE(daniel): resolve named type
+		decl.TypeRef().Visit(c)
+		decl.Update(decl.TypeRef().TypeDecl())
+	} else {
+		// NOTE(daniel): anonymous type.
+		decl.To().Visit(c)
+	}
 
 	if decl.Token().Type == token.TokenIdent {
 		c.symbols[decl.Token().Text] = decl
@@ -367,8 +371,24 @@ func (c *typeChecker) VisitTypePointerDecl(decl *ast.TypePointerDecl) {
 }
 
 func (c *typeChecker) VisitVarDecl(decl *ast.VarDecl) {
-	decl.TypeDecl().Visit(c)
-	decl.Update(decl.TypeDecl().Type())
+	if decl.TypeRef() != nil {
+		// NOTE(daniel): resolve named type.
+		typeRef := decl.TypeRef()
+		typeRef.Visit(c)
+
+		if sym, ok := c.symbols[typeRef.Token().Text]; ok {
+			decl.Update(sym.(ast.TypeDecl), sym.Type())
+		} else {
+			c.out.Errorf(decl.TypeRef().Token(), "unknown type %q",
+				decl.TypeRef().Token().Text)
+
+			return
+		}
+	} else {
+		// NOTE(daniel): anonymous type.
+		decl.TypeDecl().Visit(c)
+		decl.Update(decl.TypeDecl(), decl.TypeDecl().Type())
+	}
 
 	if decl.TypeDecl().Type() != ast.TypeVoid {
 		c.symbols[decl.Token().Text] = decl
@@ -379,6 +399,15 @@ func (c *typeChecker) VisitVarDecl(decl *ast.VarDecl) {
 }
 
 func (c *typeChecker) VisitProcDecl(decl *ast.ProcDecl) {
+}
+
+func (c *typeChecker) VisitTypeRef(ref *ast.TypeRef) {
+	// NOTE(daniel): solidify type reference.
+	if ref.TypeDecl() == nil {
+		if sym, ok := c.symbols[ref.Token().Text]; ok {
+			ref.Update(sym.(ast.TypeDecl))
+		}
+	}
 }
 
 // ----- builtin functions ------------------------------------------------------------------------

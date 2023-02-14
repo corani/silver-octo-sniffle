@@ -322,7 +322,11 @@ func (p *astPrinter) VisitVarDecl(decl *VarDecl) {
 	p.printf("(%v ", decl.Token().Text)
 	p.indent++
 
-	decl.TypeDecl().Visit(p)
+	if decl.TypeDecl() != nil {
+		decl.TypeDecl().Visit(p)
+	} else if decl.TypeRef() != nil {
+		decl.TypeRef().Visit(p)
+	}
 
 	p.indent--
 	p.printf(")")
@@ -330,4 +334,8 @@ func (p *astPrinter) VisitVarDecl(decl *VarDecl) {
 
 func (p *astPrinter) VisitProcDecl(decl *ProcDecl) {
 	p.printf("(%v [%v])", decl.Token().Text, decl.Type())
+}
+
+func (p *astPrinter) VisitTypeRef(ref *TypeRef) {
+	p.printf("(typeref %v)", ref.Token().Text)
 }

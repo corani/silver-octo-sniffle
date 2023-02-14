@@ -27,6 +27,7 @@ type AstVisitor interface {
 	VisitTypePointerDecl(*TypePointerDecl)
 	VisitVarDecl(*VarDecl)
 	VisitProcDecl(*ProcDecl)
+	VisitTypeRef(*TypeRef)
 }
 
 type Node interface {

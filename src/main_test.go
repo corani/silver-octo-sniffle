@@ -145,7 +145,7 @@ var update = flag.Bool("update", false, "update test cases")
 func TestMain(t *testing.T) {
 	t.Parallel()
 
-	debug := false
+	debug := os.Getenv("COMPILER_DEBUG") == "true"
 
 	// NOTE(daniel): as we're writing the source filename to the expected output,
 	// we need to change directory rather than doing a walk starting at `../test`.
