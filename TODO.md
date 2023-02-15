@@ -63,9 +63,11 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] add types to symbol-table.
 - [x] use a type node instead of a token.
 - [x] solidify types during type checking.
-- [ ] support `POINTER` types.
-- [ ] support built-in `NEW` procedure.
-- [ ] support pointer dereferences. 
+- [x] support `POINTER` types.
+- [x] support built-in `NEW` procedure.
+- [ ] do we need to distinguish lhs / rhs designators?
+- [ ] support pointer dereferences.
+- [ ] support reference counting.
 - [ ] support qualified-identifiers.
 - [ ] better sync points during parser error recovery.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).

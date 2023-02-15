@@ -64,18 +64,14 @@ func (c *typeChecker) VisitAssignStmt(s *ast.AssignStmt) {
 	lhs.Visit(c)
 	rhs.Visit(c)
 
-	if sym, ok := c.symbols[lhs.Token().Text]; ok && sym.Kind() == ast.KindVar {
-		v := sym.(*ast.VarDecl)
-
-		if rhs.Type() != v.Type() {
+	if lhs.Kind() == ast.KindVar {
+		if rhs.Type() != lhs.Type() {
 			c.out.Errorf(s.Token(), "can't assign type %q to variable %q (which is of type %q)",
-				rhs.Type(), lhs.Token().Text, v.Type())
+				rhs.Type(), lhs.Token().Text, lhs.Type())
 		}
-	} else if ok {
-		c.out.Errorf(s.Token(), "undefined identifier %q", s.Token().Text)
-		c.out.Infof(s.Token(), "expected a variable, got a %s", sym.Kind())
 	} else {
 		c.out.Errorf(s.Token(), "undefined identifier %q", s.Token().Text)
+		c.out.Infof(s.Token(), "expected a variable, got a %s", lhs.Kind())
 	}
 }
 
@@ -272,9 +268,20 @@ func (c *typeChecker) VisitDesignatorExpr(e *ast.DesignatorExpr) {
 	if sym, ok := c.symbols[e.Token().Text]; ok {
 		switch t := sym.(type) {
 		case *ast.VarDecl:
-			e.Update(t.Type(), ast.KindVar, nil)
+			decl := t.TypeDecl()
+
+			// TODO(daniel): process selectors.
+			for _, selector := range e.Selectors() {
+				switch selector.(type) {
+				case *ast.DerefSelector:
+					decl = decl.(*ast.TypePointerDecl).To()
+				}
+			}
+
+			e.Update(decl.Type(), ast.KindVar, nil)
 		case *ast.ConstDecl:
 			e.Update(t.Type(), ast.KindConst, t.Expr().ConstValue())
+			// TODO(daniel): process selectors.
 		default:
 			c.out.Errorf(e.Token(), "unsupported kind %q for identifier %q",
 				sym.Kind(), e.Token().Text)

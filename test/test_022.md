@@ -11,10 +11,8 @@ VAR x : POINTER TO INTEGER;
 BEGIN
   NEW(x);
   y := x;
-(*
   x^ := 33;
   print(y^);
-*)
 END Pointers.
 ```
 ## Tokens
@@ -50,10 +48,21 @@ test/test_022.md:10:2:	ident	"y"	false	0	0.000000	(10, 2) -> (10, 3)
 test/test_022.md:10:4:	assign	":="	false	0	0.000000	(10, 4) -> (10, 6)
 test/test_022.md:10:7:	ident	"x"	false	0	0.000000	(10, 7) -> (10, 8)
 test/test_022.md:10:8:	semicolon	";"	false	0	0.000000	(10, 8) -> (10, 9)
-test/test_022.md:15:0:	end	"END"	false	0	0.000000	(15, 0) -> (15, 3)
-test/test_022.md:15:4:	ident	"Pointers"	false	0	0.000000	(15, 4) -> (15, 12)
-test/test_022.md:15:12:	dot	"."	false	0	0.000000	(15, 12) -> (15, 13)
-test/test_022.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
+test/test_022.md:11:2:	ident	"x"	false	0	0.000000	(11, 2) -> (11, 3)
+test/test_022.md:11:3:	caret	"^"	false	0	0.000000	(11, 3) -> (11, 4)
+test/test_022.md:11:5:	assign	":="	false	0	0.000000	(11, 5) -> (11, 7)
+test/test_022.md:11:8:	integer	"33"	false	33	0.000000	(11, 8) -> (11, 10)
+test/test_022.md:11:10:	semicolon	";"	false	0	0.000000	(11, 10) -> (11, 11)
+test/test_022.md:12:2:	ident	"print"	false	0	0.000000	(12, 2) -> (12, 7)
+test/test_022.md:12:7:	lparen	"("	false	0	0.000000	(12, 7) -> (12, 8)
+test/test_022.md:12:8:	ident	"y"	false	0	0.000000	(12, 8) -> (12, 9)
+test/test_022.md:12:9:	caret	"^"	false	0	0.000000	(12, 9) -> (12, 10)
+test/test_022.md:12:10:	rparen	")"	false	0	0.000000	(12, 10) -> (12, 11)
+test/test_022.md:12:11:	semicolon	";"	false	0	0.000000	(12, 11) -> (12, 12)
+test/test_022.md:13:0:	end	"END"	false	0	0.000000	(13, 0) -> (13, 3)
+test/test_022.md:13:4:	ident	"Pointers"	false	0	0.000000	(13, 4) -> (13, 12)
+test/test_022.md:13:12:	dot	"."	false	0	0.000000	(13, 12) -> (13, 13)
+test/test_022.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
 ```
 ## AST
 ```scheme
@@ -88,35 +97,21 @@ test/test_022.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       (variable [pointer] "y")
       (variable [pointer] "x")
     )
+    (assign
+      (variable [i64] "x^")
+      (number [i64] 33)
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "print")
+        (variable [i64] "y^")
+      )
+    )
   )
 )
 ```
-## IR
-```llvm
-@0 = global i64* inttoptr (i64 0 to i64*)
-@1 = global i64* inttoptr (i64 0 to i64*)
-
-declare i64 @puts(i8* %str)
-
-declare i64 @rand()
-
-declare i64 @sprintf(i8* %buf, i8* %format, ...)
-
-declare i64 @printf(i8* %format, ...)
-
-declare i8* @malloc(i64 %size)
-
-define i64 @main() {
-entry:
-	%0 = call i8* @malloc(i64 8)
-	%1 = bitcast i8* %0 to i64*
-	store i64* %1, i64** @0
-	%2 = load i64*, i64** @0
-	store i64* %2, i64** @1
-	ret i64 0
-}
-
+## Generator errors
 ```
-## Run
-```bash
+test/test_022.md:1:1: ERROR: panic during code generation:
+test/test_022.md:1:1: ERROR: store operands are not compatible: src=i64; dst=i64**
 ```

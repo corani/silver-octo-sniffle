@@ -265,11 +265,13 @@ func (p *Parser) parseProcedures() {
 func (p *Parser) parseStmt() ast.Stmt {
 	switch p.currentType() {
 	case token.TokenIdent:
-		switch p.nextType() {
+		des := p.parseDesignator()
+
+		switch p.currentType() {
 		case token.TokenAssign:
-			return p.parseAssignStmt()
+			return p.parseAssignStmt(des)
 		default:
-			expr := p.parseCallExpr()
+			expr := p.parseCallExpr(des)
 
 			return ast.NewExprStmt(expr)
 		}
@@ -292,9 +294,7 @@ func (p *Parser) parseStmt() ast.Stmt {
 	}
 }
 
-func (p *Parser) parseAssignStmt() ast.Stmt {
-	des := p.parseDesignator()
-
+func (p *Parser) parseAssignStmt(des *ast.DesignatorExpr) ast.Stmt {
 	p.consume(token.TokenAssign)
 
 	expr := p.parseExpr()
@@ -436,9 +436,7 @@ func (p *Parser) parseForStmt() ast.Stmt {
 	return ast.NewForStmt(t, iter, from, to, by, stmt)
 }
 
-func (p *Parser) parseCallExpr() ast.Expr {
-	designator := p.parseDesignator()
-
+func (p *Parser) parseCallExpr(des *ast.DesignatorExpr) ast.Expr {
 	p.consume(token.TokenLParen)
 
 	var args []ast.Expr
@@ -457,7 +455,7 @@ func (p *Parser) parseCallExpr() ast.Expr {
 		p.findNextSyncPoint(token.TokenSemicolon, token.TokenEND)
 	}
 
-	return ast.NewCallExpr(designator, args)
+	return ast.NewCallExpr(des, args)
 }
 
 func (p *Parser) parseExpr() ast.Expr {
@@ -514,11 +512,13 @@ func (p *Parser) parseFactor() ast.Expr {
 	// factor := set | designator [actualParameters] | number | string | boolean | '(' expr ')' | '~' factor
 	switch p.currentType() {
 	case token.TokenIdent:
-		if p.nextType() == token.TokenLParen {
-			return p.parseCallExpr()
+		des := p.parseDesignator()
+
+		if p.currentType() == token.TokenLParen {
+			return p.parseCallExpr(des)
 		}
 
-		return p.parseDesignator()
+		return des
 	case token.TokenInteger, token.TokenReal, token.TokenMinus, token.TokenPlus:
 		return p.parseNumberExpr()
 	case token.TokenString:
@@ -553,7 +553,43 @@ func (p *Parser) parseFactor() ast.Expr {
 func (p *Parser) parseDesignator() *ast.DesignatorExpr {
 	ident, _ := p.require(token.TokenIdent)
 
-	return ast.NewDesignatorExpr(ident)
+	des := ast.NewDesignatorExpr(ident)
+
+	for done := false; !done; {
+		switch p.currentType() {
+		case token.TokenDot:
+			t, _ := p.require(token.TokenDot)
+			i, _ := p.require(token.TokenIdent)
+
+			des.AddSelector(ast.NewDotSelector(t, i))
+		case token.TokenLBracket:
+			t, _ := p.require(token.TokenLBracket)
+
+			var exprs []ast.Expr
+			for {
+				exprs = append(exprs, p.parseExpr())
+
+				if !p.expect(token.TokenComma) {
+					break
+				}
+			}
+
+			_, _ = p.require(token.TokenRBracket)
+
+			des.AddSelector(ast.NewBracketSelector(t, exprs))
+		case token.TokenCaret:
+			t, _ := p.require(token.TokenCaret)
+
+			des.AddSelector(ast.NewDerefSelector(t))
+		case token.TokenLParen:
+			// TODO(daniel): ambiguous, as type-guards look like calls.
+			done = true
+		default:
+			done = true
+		}
+	}
+
+	return des
 }
 
 func (p *Parser) parseNumberExpr() ast.Expr {
@@ -720,14 +756,6 @@ func (p *Parser) currentToken() token.Token {
 
 func (p *Parser) currentType() token.TokenType {
 	return p.tokens[p.index].Type
-}
-
-func (p *Parser) nextType() token.TokenType {
-	if p.index+1 < len(p.tokens) {
-		return p.tokens[p.index+1].Type
-	}
-
-	return token.TokenEOF
 }
 
 func (p *Parser) tokenIs(opts ...token.TokenType) bool {

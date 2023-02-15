@@ -226,7 +226,23 @@ func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
 }
 
 func (p *astPrinter) VisitDesignatorExpr(n *DesignatorExpr) {
-	p.printf("(%v [%v] %q)", n.kind, n.typ, n.Token().Text)
+	name := n.Token().Text
+
+	// TODO(daniel): do this recursively?
+	for _, s := range n.Selectors() {
+		switch sel := s.(type) {
+		case *DerefSelector:
+			name = fmt.Sprintf("%s^", name)
+		case *DotSelector:
+			name = fmt.Sprintf("%s.%s", name, sel.Ident().Text)
+		case *BracketSelector:
+			// TODO(daniel): print expressions.
+			name = fmt.Sprintf("%s[...]", name)
+		default:
+		}
+	}
+
+	p.printf("(%v [%v] %q)", n.kind, n.typ, name)
 }
 
 func (p *astPrinter) VisitNotExpr(n *NotExpr) {
