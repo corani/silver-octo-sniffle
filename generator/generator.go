@@ -31,6 +31,13 @@ func GenerateIR(out *reporter.Reporter, writer io.Writer, root ast.Node) {
 		vars:          make(map[string]*ir.Global),
 	}
 
+	defer func() {
+		if r := recover(); r != nil {
+			out.Errorf(root.Token(), "panic during code generation:")
+			out.Errorf(root.Token(), "%v", r)
+		}
+	}()
+
 	module := g.Generate(root)
 
 	fmt.Fprintln(writer, module)
@@ -95,9 +102,10 @@ func (g *Generator) VisitStmtSequence(n *ast.StmtSequence) {
 }
 
 func (g *Generator) VisitAssignStmt(n *ast.AssignStmt) {
+	des := g.visitAndReturnValue(n.Designator())
 	expr := g.visitAndReturnValue(n.Expr())
 
-	g.currentBlock.NewStore(expr, g.vars[n.Token().Text])
+	g.currentBlock.NewStore(expr, des)
 }
 
 func (g *Generator) VisitIfStmt(n *ast.IfStmt) {
@@ -344,7 +352,12 @@ func (g *Generator) VisitDesignatorExpr(n *ast.DesignatorExpr) {
 			g.currentValue = constant.NewBool(v.Bool())
 		}
 	} else if v, ok := g.vars[n.Token().Text]; ok {
-		g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
+		// TODO(daniel): process selectors
+		if n.IsAssignment() {
+			g.currentValue = v
+		} else {
+			g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
+		}
 	}
 }
 

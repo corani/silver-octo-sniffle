@@ -314,6 +314,8 @@ type AssignStmt struct {
 var _ Stmt = (*AssignStmt)(nil)
 
 func NewAssignStmt(d *DesignatorExpr, e Expr) *AssignStmt {
+	d.assignment = true
+
 	return &AssignStmt{
 		designator: d,
 		expr:       e,
@@ -495,49 +497,6 @@ func (n *BinaryExpr) Visit(v AstVisitor) {
 
 func (n *BinaryExpr) Update(t Type, c *Value) {
 	n.typ = t
-	n.constValue = c
-}
-
-// ----- DesignatorExpr -------------------------------------------------------
-
-type DesignatorExpr struct {
-	token      token.Token
-	typ        Type
-	constValue *Value
-	kind       Kind
-}
-
-var _ Expr = (*DesignatorExpr)(nil)
-
-func NewDesignatorExpr(t token.Token) *DesignatorExpr {
-	return &DesignatorExpr{
-		token: t,
-	}
-}
-
-func (n *DesignatorExpr) Token() token.Token {
-	return n.token
-}
-
-func (n *DesignatorExpr) Type() Type {
-	return n.typ
-}
-
-func (n *DesignatorExpr) Kind() Kind {
-	return n.kind
-}
-
-func (n *DesignatorExpr) ConstValue() *Value {
-	return n.constValue
-}
-
-func (n *DesignatorExpr) Visit(v AstVisitor) {
-	v.VisitDesignatorExpr(n)
-}
-
-func (n *DesignatorExpr) Update(t Type, k Kind, c *Value) {
-	n.typ = t
-	n.kind = k
 	n.constValue = c
 }
 

@@ -77,7 +77,9 @@ func readGoldenTest(t *testing.T, path string) ([]byte, []byte) {
 	return exp, source
 }
 
-func doTest(t *testing.T, srcName string, w io.Writer, bs []byte, debug bool) {
+func doTest(t *testing.T, srcName string, w io.Writer, bs []byte, debug bool) (success bool) {
+	success = true
+
 	result, _ := do(srcName, bs, debug)
 
 	fmt.Fprintf(w, "# %s\n", srcName)
@@ -112,17 +114,17 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte, debug bool) {
 		return
 	}
 
-	fmt.Fprintln(w, "## IR")
-	fmt.Fprintln(w, "```llvm")
-	fmt.Fprint(w, result.ir)
-	fmt.Fprintln(w, "```")
-
 	if result.generatorOut != "" {
 		fmt.Fprintln(w, "## Generator errors")
 		fmt.Fprintf(w, "```\n%s```\n", result.generatorOut)
 
 		return
 	}
+
+	fmt.Fprintln(w, "## IR")
+	fmt.Fprintln(w, "```llvm")
+	fmt.Fprint(w, result.ir)
+	fmt.Fprintln(w, "```")
 
 	fmt.Fprintln(w, "## Run")
 	fmt.Fprintln(w, "```bash")
@@ -138,6 +140,8 @@ func doTest(t *testing.T, srcName string, w io.Writer, bs []byte, debug bool) {
 	}
 
 	fmt.Fprintln(w, "```")
+
+	return
 }
 
 var update = flag.Bool("update", false, "update test cases")
@@ -173,15 +177,15 @@ func TestMain(t *testing.T) {
 
 			var out bytes.Buffer
 
-			doTest(t, path, &out, source, debug)
-
-			if *update {
-				if err := os.WriteFile(path, out.Bytes(), 0664); err != nil {
-					t.Error(err)
-				}
-			} else {
-				if diff := cmp.Diff(string(exp), out.String()); diff != "" {
-					t.Error(diff)
+			if doTest(t, path, &out, source, debug) {
+				if *update {
+					if err := os.WriteFile(path, out.Bytes(), 0664); err != nil {
+						t.Error(err)
+					}
+				} else {
+					if diff := cmp.Diff(string(exp), out.String()); diff != "" {
+						t.Error(diff)
+					}
 				}
 			}
 		})

@@ -87,7 +87,10 @@ function run_golangci {
         go_install_tools
     fi
 
-    do_echo golangci-lint run --out-format colored-line-number --issues-exit-code 1
+    do_echo golangci-lint run               \
+        --out-format colored-line-number    \
+        --issues-exit-code 1                \
+        ./...
 }
 
 if [ "$#" -eq "0" ]; then
