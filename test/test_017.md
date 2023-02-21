@@ -38,7 +38,9 @@ BEGIN
 
     IF ~(31 IN z) THEN
         print(31)
-    END
+    END;
+
+    print({1, 2})
 END Sets.
 ```
 ## Tokens
@@ -195,10 +197,19 @@ test/test_017.md:37:13:	lparen	"("	false	0	0.000000	(37, 13) -> (37, 14)
 test/test_017.md:37:14:	integer	"31"	false	31	0.000000	(37, 14) -> (37, 16)
 test/test_017.md:37:16:	rparen	")"	false	0	0.000000	(37, 16) -> (37, 17)
 test/test_017.md:38:4:	end	"END"	false	0	0.000000	(38, 4) -> (38, 7)
-test/test_017.md:39:0:	end	"END"	false	0	0.000000	(39, 0) -> (39, 3)
-test/test_017.md:39:4:	ident	"Sets"	false	0	0.000000	(39, 4) -> (39, 8)
-test/test_017.md:39:8:	dot	"."	false	0	0.000000	(39, 8) -> (39, 9)
-test/test_017.md:40:0:	eof	""	false	0	0.000000	(40, 0) -> (40, 0)
+test/test_017.md:38:7:	semicolon	";"	false	0	0.000000	(38, 7) -> (38, 8)
+test/test_017.md:40:4:	ident	"print"	false	0	0.000000	(40, 4) -> (40, 9)
+test/test_017.md:40:9:	lparen	"("	false	0	0.000000	(40, 9) -> (40, 10)
+test/test_017.md:40:10:	lbrace	"{"	false	0	0.000000	(40, 10) -> (40, 11)
+test/test_017.md:40:11:	integer	"1"	false	1	0.000000	(40, 11) -> (40, 12)
+test/test_017.md:40:12:	comma	","	false	0	0.000000	(40, 12) -> (40, 13)
+test/test_017.md:40:14:	integer	"2"	false	2	0.000000	(40, 14) -> (40, 15)
+test/test_017.md:40:15:	rbrace	"}"	false	0	0.000000	(40, 15) -> (40, 16)
+test/test_017.md:40:16:	rparen	")"	false	0	0.000000	(40, 16) -> (40, 17)
+test/test_017.md:41:0:	end	"END"	false	0	0.000000	(41, 0) -> (41, 3)
+test/test_017.md:41:4:	ident	"Sets"	false	0	0.000000	(41, 4) -> (41, 8)
+test/test_017.md:41:8:	dot	"."	false	0	0.000000	(41, 8) -> (41, 9)
+test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
 ```
 ## AST
 ```scheme
@@ -360,6 +371,12 @@ test/test_017.md:40:0:	eof	""	false	0	0.000000	(40, 0) -> (40, 0)
       (stmts
       )
     )
+    (expr2stmt
+      (call
+        (procedure [void] "print")
+        (set (1..2))
+      )
+    )
   )
 )
 ```
@@ -462,6 +479,8 @@ entry:
 	br label %58
 
 58:
+	%59 = getelementptr [4 x i8], [4 x i8]* @3, i64 0, i64 0
+	%60 = call i64 (i8*, ...) @printf(i8* %59, i64 6)
 	ret i64 0
 }
 
@@ -478,4 +497,5 @@ entry:
 1074789390
 30
 31
+6
 ```
