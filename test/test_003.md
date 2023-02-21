@@ -56,6 +56,8 @@ declare i64 @printf(i8* %format, ...)
 
 declare i8* @malloc(i64 %size)
 
+declare i8* @free(i8* %ptr)
+
 define i64 @main() {
 entry:
 	%0 = getelementptr [49 x i8], [49 x i8]* @0, i64 0, i64 0

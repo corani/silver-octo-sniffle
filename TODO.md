@@ -65,9 +65,10 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] solidify types during type checking.
 - [x] support `POINTER` types.
 - [x] support built-in `NEW` procedure.
-- [ ] do we need to distinguish lhs / rhs designators?
-- [ ] support pointer dereferences.
-- [ ] support reference counting.
+- [x] do we need to distinguish lhs / rhs designators?
+- [x] support pointer dereferences.
+- [x] support temporary built-in `DELETE` procedure.
+- [ ] support reference counting or garbage collection.
 - [ ] support qualified-identifiers.
 - [ ] better sync points during parser error recovery.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).

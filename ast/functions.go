@@ -97,6 +97,7 @@ type BuiltinVisitor interface {
 	VisitBuiltinPACK(*BuiltinPACK, []Expr)
 	VisitBuiltinUNPK(*BuiltinUNPK, []Expr)
 	VisitBuiltinNEW(*BuiltinNEW, []Expr)
+	VisitBuiltinDELETE(*BuiltinDELETE, []Expr)
 	VisitBuiltinASSERT(*BuiltinASSERT, []Expr)
 }
 
@@ -120,6 +121,7 @@ func GetBuiltinFunctions() map[string]Function {
 		"PACK":   newBuiltinPACK(),
 		"UNPK":   newBuiltinUNPK(),
 		"NEW":    newBuiltinNEW(),
+		"DELETE": newBuiltinDELETE(),
 		"ASSERT": newBuiltinASSERT(),
 	}
 }
@@ -642,6 +644,31 @@ func newBuiltinNEW() *BuiltinNEW {
 
 func (f *BuiltinNEW) Visit(v BuiltinVisitor, args []Expr) {
 	v.VisitBuiltinNEW(f, args)
+}
+
+// ----- DELETE ------------------------------------------------------------------
+
+type BuiltinDELETE struct {
+	function
+}
+
+var _ Function = (*BuiltinDELETE)(nil)
+
+func newBuiltinDELETE() *BuiltinDELETE {
+	return &BuiltinDELETE{
+		function: newFunction([]functionOverload{
+			{
+				returnType: TypeVoid,
+				args: []functionArg{
+					{Type: TypePointer, Kind: KindVar},
+				},
+			},
+		}),
+	}
+}
+
+func (f *BuiltinDELETE) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitBuiltinDELETE(f, args)
 }
 
 // ----- ASSERT ---------------------------------------------------------------
