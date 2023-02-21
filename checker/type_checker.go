@@ -537,6 +537,10 @@ func (c *typeChecker) VisitBuiltinNEW(*ast.BuiltinNEW, []ast.Expr) {
 	c.currentValue = nil
 }
 
+func (c *typeChecker) VisitBuiltinDELETE(*ast.BuiltinDELETE, []ast.Expr) {
+	c.currentValue = nil
+}
+
 func (c *typeChecker) VisitBuiltinASSERT(*ast.BuiltinASSERT, []ast.Expr) {
 	c.currentValue = nil
 }

@@ -25,6 +25,7 @@ func GenerateIR(out *reporter.Reporter, writer io.Writer, root ast.Node) {
 		currentModule: ir.NewModule(),
 		currentBlock:  nil,
 		currentValue:  nil,
+		currentNode:   nil,
 		stdlib:        make(map[string]*ir.Func),
 		strings:       make(map[string]*ir.Global),
 		consts:        make(map[string]*ast.Value),
@@ -33,8 +34,10 @@ func GenerateIR(out *reporter.Reporter, writer io.Writer, root ast.Node) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			out.Errorf(root.Token(), "panic during code generation:")
-			out.Errorf(root.Token(), "%v", r)
+			token := g.currentNode.Token()
+
+			out.Errorf(token, "panic during code generation:")
+			out.Errorf(token, "%v", r)
 		}
 	}()
 
@@ -49,6 +52,7 @@ type Generator struct {
 	currentFunc   *ir.Func
 	currentBlock  *ir.Block
 	currentValue  value.Value
+	currentNode   ast.Node
 	stdlib        map[string]*ir.Func
 	strings       map[string]*ir.Global
 	consts        map[string]*ast.Value
@@ -60,15 +64,20 @@ var (
 	_ ast.BuiltinVisitor = (*Generator)(nil)
 )
 
-func (g *Generator) Generate(root ast.Node) *ir.Module {
+func (g *Generator) Generate(n ast.Node) *ir.Module {
+	g.currentNode = n
+
 	g.generateStdlib()
 
-	root.Visit(g)
+	n.Visit(g)
 
 	return g.currentModule
 }
 
 func (g *Generator) VisitModule(n *ast.Module) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	for _, decl := range n.Decls() {
 		decl.Visit(g)
 	}
@@ -80,11 +89,14 @@ func (g *Generator) VisitModule(n *ast.Module) {
 	}
 }
 
-func (g *Generator) generateMain(body ast.Stmt) {
+func (g *Generator) generateMain(n ast.Stmt) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	g.currentFunc = g.currentModule.NewFunc("main", types.I64)
 	g.currentBlock = g.currentFunc.NewBlock("entry")
 
-	body.Visit(g)
+	n.Visit(g)
 
 	g.currentBlock.NewRet(zero)
 }
@@ -92,16 +104,23 @@ func (g *Generator) generateMain(body ast.Stmt) {
 // ----- statements --------------------------------------------------------------------------------
 
 func (g *Generator) VisitInvalidStmt(n *ast.InvalidStmt) {
-	// nothing
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
 }
 
 func (g *Generator) VisitStmtSequence(n *ast.StmtSequence) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	for _, stmt := range n.Stmts() {
 		stmt.Visit(g)
 	}
 }
 
 func (g *Generator) VisitAssignStmt(n *ast.AssignStmt) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	des := g.visitAndReturnValue(n.Designator())
 	expr := g.visitAndReturnValue(n.Expr())
 
@@ -109,6 +128,9 @@ func (g *Generator) VisitAssignStmt(n *ast.AssignStmt) {
 }
 
 func (g *Generator) VisitIfStmt(n *ast.IfStmt) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	condition := g.visitAndReturnValue(n.Expr())
 
 	trueBlk := g.currentFunc.NewBlock("")
@@ -129,6 +151,9 @@ func (g *Generator) VisitIfStmt(n *ast.IfStmt) {
 }
 
 func (g *Generator) VisitRepeatStmt(n *ast.RepeatStmt) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	startBlk := g.currentFunc.NewBlock("")
 	doneBlk := g.currentFunc.NewBlock("")
 
@@ -146,6 +171,9 @@ func (g *Generator) VisitRepeatStmt(n *ast.RepeatStmt) {
 }
 
 func (g *Generator) VisitWhileStmt(n *ast.WhileStmt) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	var startBlk, condBlk, bodyBlk, doneBlk *ir.Block
 
 	condBlk = g.currentFunc.NewBlock("")
@@ -172,6 +200,9 @@ func (g *Generator) VisitWhileStmt(n *ast.WhileStmt) {
 }
 
 func (g *Generator) VisitForStmt(n *ast.ForStmt) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	bodyBlk := g.currentFunc.NewBlock("")
 	doneBlk := g.currentFunc.NewBlock("")
 
@@ -203,17 +234,24 @@ func (g *Generator) VisitForStmt(n *ast.ForStmt) {
 }
 
 func (g *Generator) VisitExprStmt(n *ast.ExprStmt) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	// NOTE(daniel): ignore the result.
 	n.Expr().Visit(g)
 }
 
 // ----- expressions -------------------------------------------------------------------------------
 
-func (g *Generator) VisitInvalidExpr(s *ast.InvalidExpr) {
-	// nothing
+func (g *Generator) VisitInvalidExpr(n *ast.InvalidExpr) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
 }
 
 func (g *Generator) VisitCallExpr(n *ast.CallExpr) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	name := n.Token().Text
 
 	if fn := n.Builtin(); fn != nil {
@@ -224,6 +262,9 @@ func (g *Generator) VisitCallExpr(n *ast.CallExpr) {
 }
 
 func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	left := g.visitAndReturnValue(n.Lhs())
 	right := g.visitAndReturnValue(n.Rhs())
 
@@ -342,6 +383,9 @@ func (g *Generator) VisitBinaryExpr(n *ast.BinaryExpr) {
 }
 
 func (g *Generator) VisitDesignatorExpr(n *ast.DesignatorExpr) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	if v, ok := g.consts[n.Token().Text]; ok {
 		switch v.Type() {
 		case ast.TypeInt64, ast.TypeSet:
@@ -352,16 +396,55 @@ func (g *Generator) VisitDesignatorExpr(n *ast.DesignatorExpr) {
 			g.currentValue = constant.NewBool(v.Bool())
 		}
 	} else if v, ok := g.vars[n.Token().Text]; ok {
-		// TODO(daniel): process selectors
 		if n.IsAssignment() {
-			g.currentValue = v
+			// NOTE(daniel):
+			// for `x^ := 33` we want to end up with the following:
+			// ```llvm
+			// %0 = load i64*, i64** @x  	; <==
+			// store i64 33, i64* %0
+			// ```
+			//
+			// for `x := 33` we want to end up with the following:
+			// ```llvm
+			// store i64 33, i64* @x
+			// ```
+
+			// TODO(daniel): process selectors
+			if len(n.Selectors()) > 0 {
+				g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
+			} else {
+				g.currentValue = v
+			}
 		} else {
+			// NOTE(daniel):
+			// for `print(x^)` we want to end up with the following:
+			// ```llvm
+			// %0 = load i64*, i64** @x
+			// %1 = load i64, i64* %0
+			// %2 = call i64 (i8*, ...) @printf(..., i64 %1)
+			// ```
+			//
+			// for `print(x)` we want to end up with the following:
+			// ```llvm
+			// %0 = load i64, i64* @x		; <==
+			// %1 = call i64 (i8*, ...) @printf(..., i64 %0)
+			// ```
 			g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
+
+			// TODO(daniel): process selectors
+			if len(n.Selectors()) > 0 {
+				if pt, ok := g.currentValue.Type().(*types.PointerType); ok {
+					g.currentValue = g.currentBlock.NewLoad(pt.ElemType, g.currentValue)
+				}
+			}
 		}
 	}
 }
 
 func (g *Generator) VisitNotExpr(n *ast.NotExpr) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	val := g.visitAndReturnValue(n.Expr())
 
 	// TODO(daniel): is this how you do it?
@@ -371,6 +454,9 @@ func (g *Generator) VisitNotExpr(n *ast.NotExpr) {
 // ----- literals ----------------------------------------------------------------------------------
 
 func (g *Generator) VisitNumberLit(n *ast.NumberLit) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	switch n.Type() {
 	case ast.TypeInt64:
 		g.currentValue = constant.NewInt(types.I64, int64(n.Token().Int))
@@ -380,16 +466,25 @@ func (g *Generator) VisitNumberLit(n *ast.NumberLit) {
 }
 
 func (g *Generator) VisitStringLit(n *ast.StringLit) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	str := g.internString(n.Token().Text + "\000")
 
 	g.currentValue = g.currentBlock.NewGetElementPtr(str.ContentType, str, zero, zero)
 }
 
 func (g *Generator) VisitCharLit(n *ast.CharLit) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	g.currentValue = constant.NewInt(types.I8, int64(n.ConstValue().Int()))
 }
 
 func (g *Generator) VisitBooleanLit(n *ast.BooleanLit) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	if n.Token().Bool {
 		g.currentValue = constant.True
 	} else {
@@ -398,22 +493,35 @@ func (g *Generator) VisitBooleanLit(n *ast.BooleanLit) {
 }
 
 func (g *Generator) VisitSetLit(n *ast.SetLit) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	g.currentValue = constant.NewInt(types.I64, int64(n.ConstValue().Int()))
 }
 
 // ----- declarations ------------------------------------------------------------------------------
 
 func (g *Generator) VisitConstDecl(decl *ast.ConstDecl) {
+	leaveNode := g.enterNode(decl)
+	defer leaveNode()
+
 	g.consts[decl.Token().Text] = decl.Value()
 }
 
 func (g *Generator) VisitTypeBaseDecl(decl *ast.TypeBaseDecl) {
+	leaveNode := g.enterNode(decl)
+	defer leaveNode()
 }
 
 func (g *Generator) VisitTypePointerDecl(decl *ast.TypePointerDecl) {
+	leaveNode := g.enterNode(decl)
+	defer leaveNode()
 }
 
 func (g *Generator) VisitVarDecl(decl *ast.VarDecl) {
+	leaveNode := g.enterNode(decl)
+	defer leaveNode()
+
 	switch decl.Type() {
 	case ast.TypeInt64, ast.TypeSet:
 		g.vars[decl.Token().Text] = g.currentModule.NewGlobalDef("", constant.NewInt(types.I64, 0))
@@ -432,12 +540,19 @@ func (g *Generator) VisitVarDecl(decl *ast.VarDecl) {
 }
 
 func (g *Generator) VisitProcDecl(decl *ast.ProcDecl) {
+	leaveNode := g.enterNode(decl)
+	defer leaveNode()
 }
 
 func (g *Generator) VisitTypeRef(ref *ast.TypeRef) {
+	leaveNode := g.enterNode(ref)
+	defer leaveNode()
 }
 
 func (g *Generator) visitAndReturnValue(n ast.Node) value.Value {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
 	n.Visit(g)
 
 	return g.currentValue
@@ -549,6 +664,14 @@ func (g *Generator) VisitBuiltinNEW(f *ast.BuiltinNEW, args []ast.Expr) {
 	g.currentBlock.NewStore(g.currentValue, g.vars[args[0].Token().Text])
 }
 
+func (g *Generator) VisitBuiltinDELETE(f *ast.BuiltinDELETE, args []ast.Expr) {
+	if v, ok := g.vars[args[0].Token().Text]; ok {
+		g.currentValue = g.currentBlock.NewLoad(v.ContentType, v)
+		g.currentValue = g.currentBlock.NewBitCast(g.currentValue, types.I8Ptr)
+		g.currentValue = g.currentBlock.NewCall(g.stdlib["free"], g.currentValue)
+	}
+}
+
 func (g *Generator) VisitBuiltinASSERT(f *ast.BuiltinASSERT, args []ast.Expr) {
 }
 
@@ -576,6 +699,9 @@ func (g *Generator) VisitBuiltinPrint(f *ast.BuiltinPrint, args []ast.Expr) {
 }
 
 func (g *Generator) printInteger(arg ast.Expr) {
+	leaveNode := g.enterNode(arg)
+	defer leaveNode()
+
 	number := g.visitAndReturnValue(arg)
 
 	format := g.internString("%d\n\000")
@@ -585,6 +711,9 @@ func (g *Generator) printInteger(arg ast.Expr) {
 }
 
 func (g *Generator) printReal(arg ast.Expr) {
+	leaveNode := g.enterNode(arg)
+	defer leaveNode()
+
 	number := g.visitAndReturnValue(arg)
 
 	format := g.internString("%f\n\000")
@@ -594,12 +723,18 @@ func (g *Generator) printReal(arg ast.Expr) {
 }
 
 func (g *Generator) printString(arg ast.Expr) {
+	leaveNode := g.enterNode(arg)
+	defer leaveNode()
+
 	str := g.visitAndReturnValue(arg)
 
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
 }
 
 func (g *Generator) printBoolean(arg ast.Expr) {
+	leaveNode := g.enterNode(arg)
+	defer leaveNode()
+
 	TRUE := g.internString("TRUE\000")
 	FALSE := g.internString("FALSE\000")
 
@@ -625,6 +760,9 @@ func (g *Generator) printBoolean(arg ast.Expr) {
 }
 
 func (g *Generator) printChar(arg ast.Expr) {
+	leaveNode := g.enterNode(arg)
+	defer leaveNode()
+
 	v := g.visitAndReturnValue(arg)
 
 	format := g.internString("%c\n\000")
@@ -634,6 +772,9 @@ func (g *Generator) printChar(arg ast.Expr) {
 }
 
 func (g *Generator) printSet(arg ast.Expr) {
+	leaveNode := g.enterNode(arg)
+	defer leaveNode()
+
 	// TODO(daniel): can we get a better print for sets?
 	g.printInteger(arg)
 }
@@ -659,6 +800,10 @@ func (g *Generator) generateStdlib() {
 	malloc := g.currentModule.NewFunc("malloc", types.I8Ptr,
 		ir.NewParam("size", types.I64))
 	g.stdlib["malloc"] = malloc
+
+	free := g.currentModule.NewFunc("free", types.I8Ptr,
+		ir.NewParam("ptr", types.I8Ptr))
+	g.stdlib["free"] = free
 }
 
 func (g *Generator) internString(s string) *ir.Global {
@@ -670,4 +815,20 @@ func (g *Generator) internString(s string) *ir.Global {
 	g.strings[s] = def
 
 	return def
+}
+
+func (g *Generator) enterNode(n ast.Node) func() {
+	old := g.currentNode
+
+	g.currentNode = n
+
+	return func() {
+		// NOTE(daniel): deferred functions are called while unwinding a panic. We don't want
+		// to reset the current node as we'd end up reporting the panic on the root node.
+		if r := recover(); r != nil {
+			panic(r)
+		}
+
+		g.currentNode = old
+	}
 }

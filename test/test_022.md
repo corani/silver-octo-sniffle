@@ -13,6 +13,7 @@ BEGIN
   y := x;
   x^ := 33;
   print(y^);
+  DELETE(x);
 END Pointers.
 ```
 ## Tokens
@@ -59,10 +60,15 @@ test/test_022.md:12:8:	ident	"y"	false	0	0.000000	(12, 8) -> (12, 9)
 test/test_022.md:12:9:	caret	"^"	false	0	0.000000	(12, 9) -> (12, 10)
 test/test_022.md:12:10:	rparen	")"	false	0	0.000000	(12, 10) -> (12, 11)
 test/test_022.md:12:11:	semicolon	";"	false	0	0.000000	(12, 11) -> (12, 12)
-test/test_022.md:13:0:	end	"END"	false	0	0.000000	(13, 0) -> (13, 3)
-test/test_022.md:13:4:	ident	"Pointers"	false	0	0.000000	(13, 4) -> (13, 12)
-test/test_022.md:13:12:	dot	"."	false	0	0.000000	(13, 12) -> (13, 13)
-test/test_022.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
+test/test_022.md:13:2:	ident	"DELETE"	false	0	0.000000	(13, 2) -> (13, 8)
+test/test_022.md:13:8:	lparen	"("	false	0	0.000000	(13, 8) -> (13, 9)
+test/test_022.md:13:9:	ident	"x"	false	0	0.000000	(13, 9) -> (13, 10)
+test/test_022.md:13:10:	rparen	")"	false	0	0.000000	(13, 10) -> (13, 11)
+test/test_022.md:13:11:	semicolon	";"	false	0	0.000000	(13, 11) -> (13, 12)
+test/test_022.md:14:0:	end	"END"	false	0	0.000000	(14, 0) -> (14, 3)
+test/test_022.md:14:4:	ident	"Pointers"	false	0	0.000000	(14, 4) -> (14, 12)
+test/test_022.md:14:12:	dot	"."	false	0	0.000000	(14, 12) -> (14, 13)
+test/test_022.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
 ```
 ## AST
 ```scheme
@@ -107,11 +113,54 @@ test/test_022.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
         (variable [i64] "y^")
       )
     )
+    (expr2stmt
+      (call
+        (procedure [void] "DELETE")
+        (variable [pointer] "x")
+      )
+    )
   )
 )
 ```
-## Generator errors
+## IR
+```llvm
+@0 = global i64* inttoptr (i64 0 to i64*)
+@1 = global i64* inttoptr (i64 0 to i64*)
+@2 = global [4 x i8] c"%d\0A\00"
+
+declare i64 @puts(i8* %str)
+
+declare i64 @rand()
+
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
+
+declare i64 @printf(i8* %format, ...)
+
+declare i8* @malloc(i64 %size)
+
+declare i8* @free(i8* %ptr)
+
+define i64 @main() {
+entry:
+	%0 = call i8* @malloc(i64 8)
+	%1 = bitcast i8* %0 to i64*
+	store i64* %1, i64** @0
+	%2 = load i64*, i64** @0
+	store i64* %2, i64** @1
+	%3 = load i64*, i64** @0
+	store i64 33, i64* %3
+	%4 = load i64*, i64** @1
+	%5 = load i64, i64* %4
+	%6 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
+	%7 = call i64 (i8*, ...) @printf(i8* %6, i64 %5)
+	%8 = load i64*, i64** @0
+	%9 = bitcast i64* %8 to i8*
+	%10 = call i8* @free(i8* %9)
+	ret i64 0
+}
+
 ```
-test/test_022.md:1:1: ERROR: panic during code generation:
-test/test_022.md:1:1: ERROR: store operands are not compatible: src=i64; dst=i64**
+## Run
+```bash
+33
 ```
