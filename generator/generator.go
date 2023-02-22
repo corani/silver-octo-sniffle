@@ -233,6 +233,13 @@ func (g *Generator) VisitForStmt(n *ast.ForStmt) {
 	g.currentBlock = doneBlk
 }
 
+func (g *Generator) VisitReturnStmt(n *ast.ReturnStmt) {
+	leaveNode := g.enterNode(n)
+	defer leaveNode()
+
+	n.Expr().Visit(g)
+}
+
 func (g *Generator) VisitExprStmt(n *ast.ExprStmt) {
 	leaveNode := g.enterNode(n)
 	defer leaveNode()

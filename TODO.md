@@ -74,6 +74,9 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
 - [ ] improve AST and type information for variables.
 - [ ] support procedure definitions.
+- [ ] add paramDecl to support by-value vs by-reference parameters.
+- [ ] add frames in checker (and generator?).
+- [ ] do we need a new AST for checked nodes?
 - [ ] support local procedure calls (i.e. in the same module).
 - [ ] support `ARRAY` types.
 - [ ] support built-in `LEN` procedure.

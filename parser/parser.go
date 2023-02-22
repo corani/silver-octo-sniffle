@@ -7,6 +7,7 @@ import (
 	"github.com/corani/silver-octo-sniffle/ast"
 	"github.com/corani/silver-octo-sniffle/reporter"
 	"github.com/corani/silver-octo-sniffle/token"
+	"github.com/corani/silver-octo-sniffle/util"
 )
 
 var ErrParsing = errors.New("error parsing")
@@ -42,32 +43,9 @@ func (p *Parser) parseModule() (ast.Node, error) {
 		p.findNextSyncPoint(token.TokenCONST, token.TokenTYPE, token.TokenVAR, token.TokenPROCEDURE, token.TokenBEGIN, token.TokenEND)
 	}
 
-	var (
-		decls []ast.Decl
-		stmts ast.Node
-	)
+	decls := p.parseDeclationSequence()
 
-	if p.expect(token.TokenCONST) {
-		for _, v := range p.parseConsts() {
-			decls = append(decls, v)
-		}
-	}
-
-	if p.expect(token.TokenTYPE) {
-		for _, v := range p.parseTypes() {
-			decls = append(decls, v)
-		}
-	}
-
-	if p.expect(token.TokenVAR) {
-		for _, v := range p.parseVars() {
-			decls = append(decls, v)
-		}
-	}
-
-	if p.expect(token.TokenPROCEDURE) {
-		p.parseProcedures()
-	}
+	var stmts ast.Node
 
 	if p.expect(token.TokenBEGIN) {
 		stmts = p.parseStmtSequence(token.TokenEND)
@@ -93,6 +71,36 @@ func (p *Parser) parseModule() (ast.Node, error) {
 	_, _ = p.require(token.TokenEOF)
 
 	return ast.NewModule(t, name.Text, stmts, decls), nil
+}
+
+func (p *Parser) parseDeclationSequence() []ast.Decl {
+	var decls []ast.Decl
+
+	if p.expect(token.TokenCONST) {
+		for _, v := range p.parseConsts() {
+			decls = append(decls, v)
+		}
+	}
+
+	if p.expect(token.TokenTYPE) {
+		for _, v := range p.parseTypes() {
+			decls = append(decls, v)
+		}
+	}
+
+	if p.expect(token.TokenVAR) {
+		for _, v := range p.parseVars() {
+			decls = append(decls, v)
+		}
+	}
+
+	if p.tokenIs(token.TokenPROCEDURE) {
+		for _, v := range p.parseProcedures() {
+			decls = append(decls, v)
+		}
+	}
+
+	return decls
 }
 
 func (p *Parser) parseConsts() []*ast.ConstDecl {
@@ -205,7 +213,7 @@ func (p *Parser) parseType(name token.Token) ast.TypeDecl {
 	// TODO(daniel): break these out into separate methods?
 	switch p.currentType() {
 	case token.TokenIdent:
-		t, _ := p.require(token.TokenIdent)
+		t, _ := p.parseQualIdent()
 
 		return ast.NewTypeRef(t)
 	case token.TokenPOINTER:
@@ -251,15 +259,134 @@ func (p *Parser) parseStmtSequence(terminator ...token.TokenType) ast.Stmt {
 	return ast.NewStmtSequence(stmts)
 }
 
-func (p *Parser) parseProcedures() {
-	for {
-		p.out.Errorf(p.currentToken(), "PROCEDURE is unimplemented")
-		p.findNextSyncPoint(token.TokenPROCEDURE, token.TokenBEGIN)
+func (p *Parser) parseProcedures() []*ast.ProcDecl {
+	var decls []*ast.ProcDecl
 
-		if !p.expect(token.TokenPROCEDURE) {
-			break
+	for p.tokenIs(token.TokenPROCEDURE) {
+		v, err := p.parseProcedure()
+		if err != nil {
+			p.findNextSyncPoint(token.TokenPROCEDURE, token.TokenBEGIN)
+
+			continue
+		}
+
+		decls = append(decls, v)
+	}
+
+	return decls
+}
+
+func (p *Parser) parseProcedure() (*ast.ProcDecl, error) {
+	_, err := p.require(token.TokenPROCEDURE)
+	if err != nil {
+		return nil, err
+	}
+
+	ident, err := p.require(token.TokenIdent)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		params []*ast.VarDecl
+		ret    ast.TypeDecl
+	)
+
+	if !p.expect(token.TokenSemicolon) {
+		params, ret, err = p.parseFormalParameters()
+		if err != nil {
+			return nil, err
+		}
+
+		if _, err := p.require(token.TokenSemicolon); err != nil {
+			return nil, err
 		}
 	}
+
+	decls := p.parseDeclationSequence()
+
+	if _, err := p.require(token.TokenBEGIN); err != nil {
+		return nil, err
+	}
+
+	stmts := p.parseStmtSequence(token.TokenEND)
+
+	if _, err := p.require(token.TokenEND); err != nil {
+		return nil, err
+	}
+
+	if v, err := p.require(token.TokenIdent); err != nil {
+		return nil, err
+	} else if v.Text != ident.Text {
+		return nil, fmt.Errorf("expected %s at end of PROCEDURE", ident.Text)
+	}
+
+	// TODO(daniel): is this optional?
+	_ = p.expect(token.TokenSemicolon)
+
+	return ast.NewProcDecl(ident, params, ret, decls, stmts), nil
+}
+
+func (p *Parser) parseFormalParameters() ([]*ast.VarDecl, ast.TypeDecl, error) {
+	if _, err := p.require(token.TokenLParen); err != nil {
+		return nil, nil, err
+	}
+
+	var (
+		params []*ast.VarDecl
+		ret    ast.TypeDecl
+	)
+
+	for !p.expect(token.TokenRParen) {
+		isVar := p.expect(token.TokenVAR)
+		util.UNUSED(isVar)
+
+		varIdents := p.parseIdentList()
+
+		if _, err := p.require(token.TokenColon); err != nil {
+			return nil, nil, err
+		}
+
+		typeDecl := p.parseFormalType()
+
+		_ = p.expect(token.TokenSemicolon)
+
+		for _, varIdent := range varIdents {
+			params = append(params, ast.NewVarDecl(varIdent, typeDecl))
+		}
+	}
+
+	if p.expect(token.TokenColon) {
+		if v, err := p.parseQualIdent(); err != nil {
+			return nil, nil, err
+		} else {
+			ret = ast.NewTypeRef(v)
+		}
+	}
+
+	return params, ret, nil
+}
+
+func (p *Parser) parseFormalType() ast.TypeDecl {
+	switch p.currentType() {
+	case token.TokenIdent:
+		t, _ := p.parseQualIdent()
+
+		return ast.NewTypeRef(t)
+	case token.TokenARRAY:
+		if p.expect(token.TokenARRAY) {
+			_ = p.expect(token.TokenOF)
+		}
+
+		_, _ = p.parseQualIdent()
+	}
+
+	return nil
+}
+
+func (p *Parser) parseQualIdent() (token.Token, error) {
+	// TODO(daniel): parseQualIdent
+	return p.require(token.TokenIdent)
 }
 
 func (p *Parser) parseStmt() ast.Stmt {
@@ -283,6 +410,8 @@ func (p *Parser) parseStmt() ast.Stmt {
 		return p.parseWhileStmt()
 	case token.TokenFOR:
 		return p.parseForStmt()
+	case token.TokenRETURN:
+		return p.parseReturnStmt()
 	default:
 		t := p.currentToken()
 
@@ -436,6 +565,13 @@ func (p *Parser) parseForStmt() ast.Stmt {
 	return ast.NewForStmt(t, iter, from, to, by, stmt)
 }
 
+func (p *Parser) parseReturnStmt() ast.Stmt {
+	token, _ := p.require(token.TokenRETURN)
+	expr := p.parseExpr()
+
+	return ast.NewReturnStmt(token, expr)
+}
+
 func (p *Parser) parseCallExpr(des *ast.DesignatorExpr) ast.Expr {
 	p.consume(token.TokenLParen)
 
@@ -551,7 +687,7 @@ func (p *Parser) parseFactor() ast.Expr {
 }
 
 func (p *Parser) parseDesignator() *ast.DesignatorExpr {
-	ident, _ := p.require(token.TokenIdent)
+	ident, _ := p.parseQualIdent()
 
 	des := ast.NewDesignatorExpr(ident)
 
