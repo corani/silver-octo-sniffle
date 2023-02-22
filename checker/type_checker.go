@@ -173,6 +173,10 @@ func (c *typeChecker) VisitForStmt(s *ast.ForStmt) {
 	s.Stmt().Visit(c)
 }
 
+func (c *typeChecker) VisitReturnStmt(s *ast.ReturnStmt) {
+	s.Expr().Visit(c)
+}
+
 func (c *typeChecker) VisitExprStmt(s *ast.ExprStmt) {
 	s.Expr().Visit(c)
 }
@@ -406,6 +410,7 @@ func (c *typeChecker) VisitVarDecl(decl *ast.VarDecl) {
 }
 
 func (c *typeChecker) VisitProcDecl(decl *ast.ProcDecl) {
+	decl.Stmts().Visit(c)
 }
 
 func (c *typeChecker) VisitTypeRef(ref *ast.TypeRef) {

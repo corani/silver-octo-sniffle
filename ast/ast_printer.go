@@ -35,22 +35,22 @@ func (p *astPrinter) printf(format string, args ...any) {
 	fmt.Fprintf(p.out, format, args...)
 }
 
-func (p *astPrinter) VisitModule(n *Module) {
-	p.printf("(module %q", n.name)
-	p.indent++
-
+func (p *astPrinter) visitDecls(decls []Decl) {
 	var (
 		consts []*ConstDecl
 		types  []TypeDecl
 		vars   []*VarDecl
+		procs  []*ProcDecl
 	)
 
-	for _, decl := range n.Decls() {
+	for _, decl := range decls {
 		switch d := decl.(type) {
 		case *ConstDecl:
 			consts = append(consts, d)
 		case *VarDecl:
 			vars = append(vars, d)
+		case *ProcDecl:
+			procs = append(procs, d)
 		case TypeDecl:
 			types = append(types, d)
 		}
@@ -95,6 +95,25 @@ func (p *astPrinter) VisitModule(n *Module) {
 		p.indent--
 		p.printf(")")
 	}
+
+	if len(procs) != 0 {
+		p.printf("(procs")
+		p.indent++
+
+		for _, decl := range procs {
+			decl.Visit(p)
+		}
+
+		p.indent--
+		p.printf(")")
+	}
+}
+
+func (p *astPrinter) VisitModule(n *Module) {
+	p.printf("(module %q", n.name)
+	p.indent++
+
+	p.visitDecls(n.Decls())
 
 	n.Block().Visit(p)
 
@@ -180,6 +199,16 @@ func (p *astPrinter) VisitForStmt(n *ForStmt) {
 	n.To().Visit(p)
 	n.By().Visit(p)
 	n.Stmt().Visit(p)
+
+	p.indent--
+	p.printf(")")
+}
+
+func (p *astPrinter) VisitReturnStmt(n *ReturnStmt) {
+	p.printf("(return")
+	p.indent++
+
+	n.Expr().Visit(p)
 
 	p.indent--
 	p.printf(")")
@@ -349,7 +378,23 @@ func (p *astPrinter) VisitVarDecl(decl *VarDecl) {
 }
 
 func (p *astPrinter) VisitProcDecl(decl *ProcDecl) {
-	p.printf("(%v [%v])", decl.Token().Text, decl.Type())
+	p.printf("(%v [", decl.Token().Text)
+	p.indent += 2
+
+	if decl.ReturnType() != nil {
+		decl.ReturnType().Visit(p)
+	} else {
+		p.printf("VOID")
+	}
+
+	p.indent--
+	p.printf("]")
+
+	p.visitDecls(decl.Decls())
+	decl.Stmts().Visit(p)
+
+	p.indent--
+	p.printf(")")
 }
 
 func (p *astPrinter) VisitTypeRef(ref *TypeRef) {

@@ -11,6 +11,7 @@ type AstVisitor interface {
 	VisitWhileStmt(*WhileStmt)
 	VisitForStmt(*ForStmt)
 	VisitAssignStmt(*AssignStmt)
+	VisitReturnStmt(*ReturnStmt)
 	VisitExprStmt(*ExprStmt)
 	VisitInvalidExpr(*InvalidExpr)
 	VisitCallExpr(*CallExpr)
@@ -336,6 +337,34 @@ func (n *AssignStmt) Expr() Expr {
 
 func (n *AssignStmt) Visit(v AstVisitor) {
 	v.VisitAssignStmt(n)
+}
+
+// ----- ReturnStmt -----------------------------------------------------------
+
+type ReturnStmt struct {
+	token token.Token
+	expr  Expr
+}
+
+var _ Stmt = (*ReturnStmt)(nil)
+
+func NewReturnStmt(t token.Token, e Expr) *ReturnStmt {
+	return &ReturnStmt{
+		token: t,
+		expr:  e,
+	}
+}
+
+func (n *ReturnStmt) Token() token.Token {
+	return n.token
+}
+
+func (n *ReturnStmt) Expr() Expr {
+	return n.expr
+}
+
+func (n *ReturnStmt) Visit(v AstVisitor) {
+	v.VisitReturnStmt(n)
 }
 
 // ----- InvalidExpr -----------------------------------------------------------
