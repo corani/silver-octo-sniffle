@@ -11,12 +11,12 @@ VAR x: SET;
     z: SET;
 
 BEGIN
-    print(xc);
-    print(yc);
-    print(xc+yc);
-    print(xc-yc);
-    print(xc*yc);
-    print(xc/yc);
+    C.print(xc);
+    C.print(yc);
+    C.print(xc+yc);
+    C.print(xc-yc);
+    C.print(xc*yc);
+    C.print(xc/yc);
 
     x := xc; y := yc;
 
@@ -25,22 +25,22 @@ BEGIN
 
     z := x + y;
 
-    print(z);
+    C.print(z);
 
     INCL(z, 30);
     EXCL(z, 4);
 
-    print(z);
+    C.print(z);
 
     IF 30 IN z THEN
-        print(30)
+        C.print(30)
     END;
 
     IF ~(31 IN z) THEN
-        print(31)
+        C.print(31)
     END;
 
-    print({1, 2})
+    C.print({1, 2})
 END Sets.
 ```
 ## Tokens
@@ -83,44 +83,56 @@ test/test_017.md:8:5:	colon	":"	false	0	0.000000	(8, 5) -> (8, 6)
 test/test_017.md:8:7:	ident	"SET"	false	0	0.000000	(8, 7) -> (8, 10)
 test/test_017.md:8:10:	semicolon	";"	false	0	0.000000	(8, 10) -> (8, 11)
 test/test_017.md:10:0:	begin	"BEGIN"	false	0	0.000000	(10, 0) -> (10, 5)
-test/test_017.md:11:4:	ident	"print"	false	0	0.000000	(11, 4) -> (11, 9)
-test/test_017.md:11:9:	lparen	"("	false	0	0.000000	(11, 9) -> (11, 10)
-test/test_017.md:11:10:	ident	"xc"	false	0	0.000000	(11, 10) -> (11, 12)
-test/test_017.md:11:12:	rparen	")"	false	0	0.000000	(11, 12) -> (11, 13)
-test/test_017.md:11:13:	semicolon	";"	false	0	0.000000	(11, 13) -> (11, 14)
-test/test_017.md:12:4:	ident	"print"	false	0	0.000000	(12, 4) -> (12, 9)
-test/test_017.md:12:9:	lparen	"("	false	0	0.000000	(12, 9) -> (12, 10)
-test/test_017.md:12:10:	ident	"yc"	false	0	0.000000	(12, 10) -> (12, 12)
-test/test_017.md:12:12:	rparen	")"	false	0	0.000000	(12, 12) -> (12, 13)
-test/test_017.md:12:13:	semicolon	";"	false	0	0.000000	(12, 13) -> (12, 14)
-test/test_017.md:13:4:	ident	"print"	false	0	0.000000	(13, 4) -> (13, 9)
-test/test_017.md:13:9:	lparen	"("	false	0	0.000000	(13, 9) -> (13, 10)
-test/test_017.md:13:10:	ident	"xc"	false	0	0.000000	(13, 10) -> (13, 12)
-test/test_017.md:13:12:	plus	"+"	false	0	0.000000	(13, 12) -> (13, 13)
-test/test_017.md:13:13:	ident	"yc"	false	0	0.000000	(13, 13) -> (13, 15)
-test/test_017.md:13:15:	rparen	")"	false	0	0.000000	(13, 15) -> (13, 16)
-test/test_017.md:13:16:	semicolon	";"	false	0	0.000000	(13, 16) -> (13, 17)
-test/test_017.md:14:4:	ident	"print"	false	0	0.000000	(14, 4) -> (14, 9)
-test/test_017.md:14:9:	lparen	"("	false	0	0.000000	(14, 9) -> (14, 10)
-test/test_017.md:14:10:	ident	"xc"	false	0	0.000000	(14, 10) -> (14, 12)
-test/test_017.md:14:12:	minus	"-"	false	0	0.000000	(14, 12) -> (14, 13)
-test/test_017.md:14:13:	ident	"yc"	false	0	0.000000	(14, 13) -> (14, 15)
-test/test_017.md:14:15:	rparen	")"	false	0	0.000000	(14, 15) -> (14, 16)
-test/test_017.md:14:16:	semicolon	";"	false	0	0.000000	(14, 16) -> (14, 17)
-test/test_017.md:15:4:	ident	"print"	false	0	0.000000	(15, 4) -> (15, 9)
-test/test_017.md:15:9:	lparen	"("	false	0	0.000000	(15, 9) -> (15, 10)
-test/test_017.md:15:10:	ident	"xc"	false	0	0.000000	(15, 10) -> (15, 12)
-test/test_017.md:15:12:	asterisk	"*"	false	0	0.000000	(15, 12) -> (15, 13)
-test/test_017.md:15:13:	ident	"yc"	false	0	0.000000	(15, 13) -> (15, 15)
-test/test_017.md:15:15:	rparen	")"	false	0	0.000000	(15, 15) -> (15, 16)
-test/test_017.md:15:16:	semicolon	";"	false	0	0.000000	(15, 16) -> (15, 17)
-test/test_017.md:16:4:	ident	"print"	false	0	0.000000	(16, 4) -> (16, 9)
-test/test_017.md:16:9:	lparen	"("	false	0	0.000000	(16, 9) -> (16, 10)
-test/test_017.md:16:10:	ident	"xc"	false	0	0.000000	(16, 10) -> (16, 12)
-test/test_017.md:16:12:	slash	"/"	false	0	0.000000	(16, 12) -> (16, 13)
-test/test_017.md:16:13:	ident	"yc"	false	0	0.000000	(16, 13) -> (16, 15)
-test/test_017.md:16:15:	rparen	")"	false	0	0.000000	(16, 15) -> (16, 16)
-test/test_017.md:16:16:	semicolon	";"	false	0	0.000000	(16, 16) -> (16, 17)
+test/test_017.md:11:4:	ident	"C"	false	0	0.000000	(11, 4) -> (11, 5)
+test/test_017.md:11:5:	dot	"."	false	0	0.000000	(11, 5) -> (11, 6)
+test/test_017.md:11:6:	ident	"print"	false	0	0.000000	(11, 6) -> (11, 11)
+test/test_017.md:11:11:	lparen	"("	false	0	0.000000	(11, 11) -> (11, 12)
+test/test_017.md:11:12:	ident	"xc"	false	0	0.000000	(11, 12) -> (11, 14)
+test/test_017.md:11:14:	rparen	")"	false	0	0.000000	(11, 14) -> (11, 15)
+test/test_017.md:11:15:	semicolon	";"	false	0	0.000000	(11, 15) -> (11, 16)
+test/test_017.md:12:4:	ident	"C"	false	0	0.000000	(12, 4) -> (12, 5)
+test/test_017.md:12:5:	dot	"."	false	0	0.000000	(12, 5) -> (12, 6)
+test/test_017.md:12:6:	ident	"print"	false	0	0.000000	(12, 6) -> (12, 11)
+test/test_017.md:12:11:	lparen	"("	false	0	0.000000	(12, 11) -> (12, 12)
+test/test_017.md:12:12:	ident	"yc"	false	0	0.000000	(12, 12) -> (12, 14)
+test/test_017.md:12:14:	rparen	")"	false	0	0.000000	(12, 14) -> (12, 15)
+test/test_017.md:12:15:	semicolon	";"	false	0	0.000000	(12, 15) -> (12, 16)
+test/test_017.md:13:4:	ident	"C"	false	0	0.000000	(13, 4) -> (13, 5)
+test/test_017.md:13:5:	dot	"."	false	0	0.000000	(13, 5) -> (13, 6)
+test/test_017.md:13:6:	ident	"print"	false	0	0.000000	(13, 6) -> (13, 11)
+test/test_017.md:13:11:	lparen	"("	false	0	0.000000	(13, 11) -> (13, 12)
+test/test_017.md:13:12:	ident	"xc"	false	0	0.000000	(13, 12) -> (13, 14)
+test/test_017.md:13:14:	plus	"+"	false	0	0.000000	(13, 14) -> (13, 15)
+test/test_017.md:13:15:	ident	"yc"	false	0	0.000000	(13, 15) -> (13, 17)
+test/test_017.md:13:17:	rparen	")"	false	0	0.000000	(13, 17) -> (13, 18)
+test/test_017.md:13:18:	semicolon	";"	false	0	0.000000	(13, 18) -> (13, 19)
+test/test_017.md:14:4:	ident	"C"	false	0	0.000000	(14, 4) -> (14, 5)
+test/test_017.md:14:5:	dot	"."	false	0	0.000000	(14, 5) -> (14, 6)
+test/test_017.md:14:6:	ident	"print"	false	0	0.000000	(14, 6) -> (14, 11)
+test/test_017.md:14:11:	lparen	"("	false	0	0.000000	(14, 11) -> (14, 12)
+test/test_017.md:14:12:	ident	"xc"	false	0	0.000000	(14, 12) -> (14, 14)
+test/test_017.md:14:14:	minus	"-"	false	0	0.000000	(14, 14) -> (14, 15)
+test/test_017.md:14:15:	ident	"yc"	false	0	0.000000	(14, 15) -> (14, 17)
+test/test_017.md:14:17:	rparen	")"	false	0	0.000000	(14, 17) -> (14, 18)
+test/test_017.md:14:18:	semicolon	";"	false	0	0.000000	(14, 18) -> (14, 19)
+test/test_017.md:15:4:	ident	"C"	false	0	0.000000	(15, 4) -> (15, 5)
+test/test_017.md:15:5:	dot	"."	false	0	0.000000	(15, 5) -> (15, 6)
+test/test_017.md:15:6:	ident	"print"	false	0	0.000000	(15, 6) -> (15, 11)
+test/test_017.md:15:11:	lparen	"("	false	0	0.000000	(15, 11) -> (15, 12)
+test/test_017.md:15:12:	ident	"xc"	false	0	0.000000	(15, 12) -> (15, 14)
+test/test_017.md:15:14:	asterisk	"*"	false	0	0.000000	(15, 14) -> (15, 15)
+test/test_017.md:15:15:	ident	"yc"	false	0	0.000000	(15, 15) -> (15, 17)
+test/test_017.md:15:17:	rparen	")"	false	0	0.000000	(15, 17) -> (15, 18)
+test/test_017.md:15:18:	semicolon	";"	false	0	0.000000	(15, 18) -> (15, 19)
+test/test_017.md:16:4:	ident	"C"	false	0	0.000000	(16, 4) -> (16, 5)
+test/test_017.md:16:5:	dot	"."	false	0	0.000000	(16, 5) -> (16, 6)
+test/test_017.md:16:6:	ident	"print"	false	0	0.000000	(16, 6) -> (16, 11)
+test/test_017.md:16:11:	lparen	"("	false	0	0.000000	(16, 11) -> (16, 12)
+test/test_017.md:16:12:	ident	"xc"	false	0	0.000000	(16, 12) -> (16, 14)
+test/test_017.md:16:14:	slash	"/"	false	0	0.000000	(16, 14) -> (16, 15)
+test/test_017.md:16:15:	ident	"yc"	false	0	0.000000	(16, 15) -> (16, 17)
+test/test_017.md:16:17:	rparen	")"	false	0	0.000000	(16, 17) -> (16, 18)
+test/test_017.md:16:18:	semicolon	";"	false	0	0.000000	(16, 18) -> (16, 19)
 test/test_017.md:18:4:	ident	"x"	false	0	0.000000	(18, 4) -> (18, 5)
 test/test_017.md:18:6:	assign	":="	false	0	0.000000	(18, 6) -> (18, 8)
 test/test_017.md:18:9:	ident	"xc"	false	0	0.000000	(18, 9) -> (18, 11)
@@ -149,11 +161,13 @@ test/test_017.md:23:9:	ident	"x"	false	0	0.000000	(23, 9) -> (23, 10)
 test/test_017.md:23:11:	plus	"+"	false	0	0.000000	(23, 11) -> (23, 12)
 test/test_017.md:23:13:	ident	"y"	false	0	0.000000	(23, 13) -> (23, 14)
 test/test_017.md:23:14:	semicolon	";"	false	0	0.000000	(23, 14) -> (23, 15)
-test/test_017.md:25:4:	ident	"print"	false	0	0.000000	(25, 4) -> (25, 9)
-test/test_017.md:25:9:	lparen	"("	false	0	0.000000	(25, 9) -> (25, 10)
-test/test_017.md:25:10:	ident	"z"	false	0	0.000000	(25, 10) -> (25, 11)
-test/test_017.md:25:11:	rparen	")"	false	0	0.000000	(25, 11) -> (25, 12)
-test/test_017.md:25:12:	semicolon	";"	false	0	0.000000	(25, 12) -> (25, 13)
+test/test_017.md:25:4:	ident	"C"	false	0	0.000000	(25, 4) -> (25, 5)
+test/test_017.md:25:5:	dot	"."	false	0	0.000000	(25, 5) -> (25, 6)
+test/test_017.md:25:6:	ident	"print"	false	0	0.000000	(25, 6) -> (25, 11)
+test/test_017.md:25:11:	lparen	"("	false	0	0.000000	(25, 11) -> (25, 12)
+test/test_017.md:25:12:	ident	"z"	false	0	0.000000	(25, 12) -> (25, 13)
+test/test_017.md:25:13:	rparen	")"	false	0	0.000000	(25, 13) -> (25, 14)
+test/test_017.md:25:14:	semicolon	";"	false	0	0.000000	(25, 14) -> (25, 15)
 test/test_017.md:27:4:	ident	"INCL"	false	0	0.000000	(27, 4) -> (27, 8)
 test/test_017.md:27:8:	lparen	"("	false	0	0.000000	(27, 8) -> (27, 9)
 test/test_017.md:27:9:	ident	"z"	false	0	0.000000	(27, 9) -> (27, 10)
@@ -168,20 +182,24 @@ test/test_017.md:28:10:	comma	","	false	0	0.000000	(28, 10) -> (28, 11)
 test/test_017.md:28:12:	integer	"4"	false	4	0.000000	(28, 12) -> (28, 13)
 test/test_017.md:28:13:	rparen	")"	false	0	0.000000	(28, 13) -> (28, 14)
 test/test_017.md:28:14:	semicolon	";"	false	0	0.000000	(28, 14) -> (28, 15)
-test/test_017.md:30:4:	ident	"print"	false	0	0.000000	(30, 4) -> (30, 9)
-test/test_017.md:30:9:	lparen	"("	false	0	0.000000	(30, 9) -> (30, 10)
-test/test_017.md:30:10:	ident	"z"	false	0	0.000000	(30, 10) -> (30, 11)
-test/test_017.md:30:11:	rparen	")"	false	0	0.000000	(30, 11) -> (30, 12)
-test/test_017.md:30:12:	semicolon	";"	false	0	0.000000	(30, 12) -> (30, 13)
+test/test_017.md:30:4:	ident	"C"	false	0	0.000000	(30, 4) -> (30, 5)
+test/test_017.md:30:5:	dot	"."	false	0	0.000000	(30, 5) -> (30, 6)
+test/test_017.md:30:6:	ident	"print"	false	0	0.000000	(30, 6) -> (30, 11)
+test/test_017.md:30:11:	lparen	"("	false	0	0.000000	(30, 11) -> (30, 12)
+test/test_017.md:30:12:	ident	"z"	false	0	0.000000	(30, 12) -> (30, 13)
+test/test_017.md:30:13:	rparen	")"	false	0	0.000000	(30, 13) -> (30, 14)
+test/test_017.md:30:14:	semicolon	";"	false	0	0.000000	(30, 14) -> (30, 15)
 test/test_017.md:32:4:	if	"IF"	false	0	0.000000	(32, 4) -> (32, 6)
 test/test_017.md:32:7:	integer	"30"	false	30	0.000000	(32, 7) -> (32, 9)
 test/test_017.md:32:10:	in	"IN"	false	0	0.000000	(32, 10) -> (32, 12)
 test/test_017.md:32:13:	ident	"z"	false	0	0.000000	(32, 13) -> (32, 14)
 test/test_017.md:32:15:	then	"THEN"	false	0	0.000000	(32, 15) -> (32, 19)
-test/test_017.md:33:8:	ident	"print"	false	0	0.000000	(33, 8) -> (33, 13)
-test/test_017.md:33:13:	lparen	"("	false	0	0.000000	(33, 13) -> (33, 14)
-test/test_017.md:33:14:	integer	"30"	false	30	0.000000	(33, 14) -> (33, 16)
-test/test_017.md:33:16:	rparen	")"	false	0	0.000000	(33, 16) -> (33, 17)
+test/test_017.md:33:8:	ident	"C"	false	0	0.000000	(33, 8) -> (33, 9)
+test/test_017.md:33:9:	dot	"."	false	0	0.000000	(33, 9) -> (33, 10)
+test/test_017.md:33:10:	ident	"print"	false	0	0.000000	(33, 10) -> (33, 15)
+test/test_017.md:33:15:	lparen	"("	false	0	0.000000	(33, 15) -> (33, 16)
+test/test_017.md:33:16:	integer	"30"	false	30	0.000000	(33, 16) -> (33, 18)
+test/test_017.md:33:18:	rparen	")"	false	0	0.000000	(33, 18) -> (33, 19)
 test/test_017.md:34:4:	end	"END"	false	0	0.000000	(34, 4) -> (34, 7)
 test/test_017.md:34:7:	semicolon	";"	false	0	0.000000	(34, 7) -> (34, 8)
 test/test_017.md:36:4:	if	"IF"	false	0	0.000000	(36, 4) -> (36, 6)
@@ -192,20 +210,24 @@ test/test_017.md:36:12:	in	"IN"	false	0	0.000000	(36, 12) -> (36, 14)
 test/test_017.md:36:15:	ident	"z"	false	0	0.000000	(36, 15) -> (36, 16)
 test/test_017.md:36:16:	rparen	")"	false	0	0.000000	(36, 16) -> (36, 17)
 test/test_017.md:36:18:	then	"THEN"	false	0	0.000000	(36, 18) -> (36, 22)
-test/test_017.md:37:8:	ident	"print"	false	0	0.000000	(37, 8) -> (37, 13)
-test/test_017.md:37:13:	lparen	"("	false	0	0.000000	(37, 13) -> (37, 14)
-test/test_017.md:37:14:	integer	"31"	false	31	0.000000	(37, 14) -> (37, 16)
-test/test_017.md:37:16:	rparen	")"	false	0	0.000000	(37, 16) -> (37, 17)
+test/test_017.md:37:8:	ident	"C"	false	0	0.000000	(37, 8) -> (37, 9)
+test/test_017.md:37:9:	dot	"."	false	0	0.000000	(37, 9) -> (37, 10)
+test/test_017.md:37:10:	ident	"print"	false	0	0.000000	(37, 10) -> (37, 15)
+test/test_017.md:37:15:	lparen	"("	false	0	0.000000	(37, 15) -> (37, 16)
+test/test_017.md:37:16:	integer	"31"	false	31	0.000000	(37, 16) -> (37, 18)
+test/test_017.md:37:18:	rparen	")"	false	0	0.000000	(37, 18) -> (37, 19)
 test/test_017.md:38:4:	end	"END"	false	0	0.000000	(38, 4) -> (38, 7)
 test/test_017.md:38:7:	semicolon	";"	false	0	0.000000	(38, 7) -> (38, 8)
-test/test_017.md:40:4:	ident	"print"	false	0	0.000000	(40, 4) -> (40, 9)
-test/test_017.md:40:9:	lparen	"("	false	0	0.000000	(40, 9) -> (40, 10)
-test/test_017.md:40:10:	lbrace	"{"	false	0	0.000000	(40, 10) -> (40, 11)
-test/test_017.md:40:11:	integer	"1"	false	1	0.000000	(40, 11) -> (40, 12)
-test/test_017.md:40:12:	comma	","	false	0	0.000000	(40, 12) -> (40, 13)
-test/test_017.md:40:14:	integer	"2"	false	2	0.000000	(40, 14) -> (40, 15)
-test/test_017.md:40:15:	rbrace	"}"	false	0	0.000000	(40, 15) -> (40, 16)
-test/test_017.md:40:16:	rparen	")"	false	0	0.000000	(40, 16) -> (40, 17)
+test/test_017.md:40:4:	ident	"C"	false	0	0.000000	(40, 4) -> (40, 5)
+test/test_017.md:40:5:	dot	"."	false	0	0.000000	(40, 5) -> (40, 6)
+test/test_017.md:40:6:	ident	"print"	false	0	0.000000	(40, 6) -> (40, 11)
+test/test_017.md:40:11:	lparen	"("	false	0	0.000000	(40, 11) -> (40, 12)
+test/test_017.md:40:12:	lbrace	"{"	false	0	0.000000	(40, 12) -> (40, 13)
+test/test_017.md:40:13:	integer	"1"	false	1	0.000000	(40, 13) -> (40, 14)
+test/test_017.md:40:14:	comma	","	false	0	0.000000	(40, 14) -> (40, 15)
+test/test_017.md:40:16:	integer	"2"	false	2	0.000000	(40, 16) -> (40, 17)
+test/test_017.md:40:17:	rbrace	"}"	false	0	0.000000	(40, 17) -> (40, 18)
+test/test_017.md:40:18:	rparen	")"	false	0	0.000000	(40, 18) -> (40, 19)
 test/test_017.md:41:0:	end	"END"	false	0	0.000000	(41, 0) -> (41, 3)
 test/test_017.md:41:4:	ident	"Sets"	false	0	0.000000	(41, 4) -> (41, 8)
 test/test_017.md:41:8:	dot	"."	false	0	0.000000	(41, 8) -> (41, 9)
@@ -236,19 +258,19 @@ test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
   (stmts
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (constant [set] "xc")
       )
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (constant [set] "yc")
       )
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (plus [set]
           (constant [set] "xc")
           (constant [set] "yc")
@@ -257,7 +279,7 @@ test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (minus [set]
           (constant [set] "xc")
           (constant [set] "yc")
@@ -266,7 +288,7 @@ test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (asterisk [set]
           (constant [set] "xc")
           (constant [set] "yc")
@@ -275,7 +297,7 @@ test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (slash [set]
           (constant [set] "xc")
           (constant [set] "yc")
@@ -313,7 +335,7 @@ test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (variable [set] "z")
       )
     )
@@ -333,7 +355,7 @@ test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (variable [set] "z")
       )
     )
@@ -345,7 +367,7 @@ test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (number [i64] 30)
           )
         )
@@ -363,7 +385,7 @@ test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (number [i64] 31)
           )
         )
@@ -373,7 +395,7 @@ test/test_017.md:42:0:	eof	""	false	0	0.000000	(42, 0) -> (42, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (set (1..2))
       )
     )

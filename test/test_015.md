@@ -7,13 +7,13 @@ VAR x: INTEGER;
 
 BEGIN
   FOR x := 1 TO 10 BY 2 DO
-    print(x)
+    C.print(x)
   END;
   FOR x := 9 TO 1 BY -3 DO
-    print(x)
+    C.print(x)
   END;
   FOR x := 1 TO 3 DO 
-    print(x)
+    C.print(x)
   END
 END ForBy.
 ```
@@ -37,10 +37,12 @@ test/test_015.md:6:16:	integer	"10"	false	10	0.000000	(6, 16) -> (6, 18)
 test/test_015.md:6:19:	by	"BY"	false	0	0.000000	(6, 19) -> (6, 21)
 test/test_015.md:6:22:	integer	"2"	false	2	0.000000	(6, 22) -> (6, 23)
 test/test_015.md:6:24:	do	"DO"	false	0	0.000000	(6, 24) -> (6, 26)
-test/test_015.md:7:4:	ident	"print"	false	0	0.000000	(7, 4) -> (7, 9)
-test/test_015.md:7:9:	lparen	"("	false	0	0.000000	(7, 9) -> (7, 10)
-test/test_015.md:7:10:	ident	"x"	false	0	0.000000	(7, 10) -> (7, 11)
-test/test_015.md:7:11:	rparen	")"	false	0	0.000000	(7, 11) -> (7, 12)
+test/test_015.md:7:4:	ident	"C"	false	0	0.000000	(7, 4) -> (7, 5)
+test/test_015.md:7:5:	dot	"."	false	0	0.000000	(7, 5) -> (7, 6)
+test/test_015.md:7:6:	ident	"print"	false	0	0.000000	(7, 6) -> (7, 11)
+test/test_015.md:7:11:	lparen	"("	false	0	0.000000	(7, 11) -> (7, 12)
+test/test_015.md:7:12:	ident	"x"	false	0	0.000000	(7, 12) -> (7, 13)
+test/test_015.md:7:13:	rparen	")"	false	0	0.000000	(7, 13) -> (7, 14)
 test/test_015.md:8:2:	end	"END"	false	0	0.000000	(8, 2) -> (8, 5)
 test/test_015.md:8:5:	semicolon	";"	false	0	0.000000	(8, 5) -> (8, 6)
 test/test_015.md:9:2:	for	"FOR"	false	0	0.000000	(9, 2) -> (9, 5)
@@ -53,10 +55,12 @@ test/test_015.md:9:18:	by	"BY"	false	0	0.000000	(9, 18) -> (9, 20)
 test/test_015.md:9:21:	minus	"-"	false	0	0.000000	(9, 21) -> (9, 22)
 test/test_015.md:9:22:	integer	"3"	false	3	0.000000	(9, 22) -> (9, 23)
 test/test_015.md:9:24:	do	"DO"	false	0	0.000000	(9, 24) -> (9, 26)
-test/test_015.md:10:4:	ident	"print"	false	0	0.000000	(10, 4) -> (10, 9)
-test/test_015.md:10:9:	lparen	"("	false	0	0.000000	(10, 9) -> (10, 10)
-test/test_015.md:10:10:	ident	"x"	false	0	0.000000	(10, 10) -> (10, 11)
-test/test_015.md:10:11:	rparen	")"	false	0	0.000000	(10, 11) -> (10, 12)
+test/test_015.md:10:4:	ident	"C"	false	0	0.000000	(10, 4) -> (10, 5)
+test/test_015.md:10:5:	dot	"."	false	0	0.000000	(10, 5) -> (10, 6)
+test/test_015.md:10:6:	ident	"print"	false	0	0.000000	(10, 6) -> (10, 11)
+test/test_015.md:10:11:	lparen	"("	false	0	0.000000	(10, 11) -> (10, 12)
+test/test_015.md:10:12:	ident	"x"	false	0	0.000000	(10, 12) -> (10, 13)
+test/test_015.md:10:13:	rparen	")"	false	0	0.000000	(10, 13) -> (10, 14)
 test/test_015.md:11:2:	end	"END"	false	0	0.000000	(11, 2) -> (11, 5)
 test/test_015.md:11:5:	semicolon	";"	false	0	0.000000	(11, 5) -> (11, 6)
 test/test_015.md:12:2:	for	"FOR"	false	0	0.000000	(12, 2) -> (12, 5)
@@ -66,10 +70,12 @@ test/test_015.md:12:11:	integer	"1"	false	1	0.000000	(12, 11) -> (12, 12)
 test/test_015.md:12:13:	to	"TO"	false	0	0.000000	(12, 13) -> (12, 15)
 test/test_015.md:12:16:	integer	"3"	false	3	0.000000	(12, 16) -> (12, 17)
 test/test_015.md:12:18:	do	"DO"	false	0	0.000000	(12, 18) -> (12, 20)
-test/test_015.md:13:4:	ident	"print"	false	0	0.000000	(13, 4) -> (13, 9)
-test/test_015.md:13:9:	lparen	"("	false	0	0.000000	(13, 9) -> (13, 10)
-test/test_015.md:13:10:	ident	"x"	false	0	0.000000	(13, 10) -> (13, 11)
-test/test_015.md:13:11:	rparen	")"	false	0	0.000000	(13, 11) -> (13, 12)
+test/test_015.md:13:4:	ident	"C"	false	0	0.000000	(13, 4) -> (13, 5)
+test/test_015.md:13:5:	dot	"."	false	0	0.000000	(13, 5) -> (13, 6)
+test/test_015.md:13:6:	ident	"print"	false	0	0.000000	(13, 6) -> (13, 11)
+test/test_015.md:13:11:	lparen	"("	false	0	0.000000	(13, 11) -> (13, 12)
+test/test_015.md:13:12:	ident	"x"	false	0	0.000000	(13, 12) -> (13, 13)
+test/test_015.md:13:13:	rparen	")"	false	0	0.000000	(13, 13) -> (13, 14)
 test/test_015.md:14:2:	end	"END"	false	0	0.000000	(14, 2) -> (14, 5)
 test/test_015.md:15:0:	end	"END"	false	0	0.000000	(15, 0) -> (15, 3)
 test/test_015.md:15:4:	ident	"ForBy"	false	0	0.000000	(15, 4) -> (15, 9)
@@ -92,7 +98,7 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (variable [i64] "x")
           )
         )
@@ -108,7 +114,7 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (variable [i64] "x")
           )
         )
@@ -121,7 +127,7 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (variable [i64] "x")
           )
         )

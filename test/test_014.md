@@ -9,7 +9,7 @@ VAR x: INTEGER;
 BEGIN
   x := 0; y := 1;
   WHILE x < 10 DO
-    INC(x); print(x*y)
+    INC(x); C.print(x*y)
   ELSIF y < 10 DO 
     INC(y); x := 0;
   END
@@ -48,12 +48,14 @@ test/test_014.md:9:7:	lparen	"("	false	0	0.000000	(9, 7) -> (9, 8)
 test/test_014.md:9:8:	ident	"x"	false	0	0.000000	(9, 8) -> (9, 9)
 test/test_014.md:9:9:	rparen	")"	false	0	0.000000	(9, 9) -> (9, 10)
 test/test_014.md:9:10:	semicolon	";"	false	0	0.000000	(9, 10) -> (9, 11)
-test/test_014.md:9:12:	ident	"print"	false	0	0.000000	(9, 12) -> (9, 17)
-test/test_014.md:9:17:	lparen	"("	false	0	0.000000	(9, 17) -> (9, 18)
-test/test_014.md:9:18:	ident	"x"	false	0	0.000000	(9, 18) -> (9, 19)
-test/test_014.md:9:19:	asterisk	"*"	false	0	0.000000	(9, 19) -> (9, 20)
-test/test_014.md:9:20:	ident	"y"	false	0	0.000000	(9, 20) -> (9, 21)
-test/test_014.md:9:21:	rparen	")"	false	0	0.000000	(9, 21) -> (9, 22)
+test/test_014.md:9:12:	ident	"C"	false	0	0.000000	(9, 12) -> (9, 13)
+test/test_014.md:9:13:	dot	"."	false	0	0.000000	(9, 13) -> (9, 14)
+test/test_014.md:9:14:	ident	"print"	false	0	0.000000	(9, 14) -> (9, 19)
+test/test_014.md:9:19:	lparen	"("	false	0	0.000000	(9, 19) -> (9, 20)
+test/test_014.md:9:20:	ident	"x"	false	0	0.000000	(9, 20) -> (9, 21)
+test/test_014.md:9:21:	asterisk	"*"	false	0	0.000000	(9, 21) -> (9, 22)
+test/test_014.md:9:22:	ident	"y"	false	0	0.000000	(9, 22) -> (9, 23)
+test/test_014.md:9:23:	rparen	")"	false	0	0.000000	(9, 23) -> (9, 24)
 test/test_014.md:10:2:	elsif	"ELSIF"	false	0	0.000000	(10, 2) -> (10, 7)
 test/test_014.md:10:8:	ident	"y"	false	0	0.000000	(10, 8) -> (10, 9)
 test/test_014.md:10:10:	lt	"<"	false	0	0.000000	(10, 10) -> (10, 11)
@@ -109,7 +111,7 @@ test/test_014.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
           )
           (expr2stmt
             (call
-              (procedure [void] "print")
+              (procedure [void] "C.print")
               (asterisk [i64]
                 (variable [i64] "x")
                 (variable [i64] "y")

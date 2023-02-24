@@ -5,14 +5,14 @@ MODULE ConstantIf;
 
 BEGIN
   IF 1=3 THEN
-    print(3)
+    C.print(3)
   ELSIF 1=2 THEN
-    print(2)
+    C.print(2)
   ELSE
-    print(1)
+    C.print(1)
   END;
   IF TRUE THEN
-    print(TRUE)
+    C.print(TRUE)
   END
 END ConstantIf.
 ```
@@ -27,33 +27,41 @@ test/test_007.md:4:5:	integer	"1"	false	1	0.000000	(4, 5) -> (4, 6)
 test/test_007.md:4:6:	eq	"="	false	0	0.000000	(4, 6) -> (4, 7)
 test/test_007.md:4:7:	integer	"3"	false	3	0.000000	(4, 7) -> (4, 8)
 test/test_007.md:4:9:	then	"THEN"	false	0	0.000000	(4, 9) -> (4, 13)
-test/test_007.md:5:4:	ident	"print"	false	0	0.000000	(5, 4) -> (5, 9)
-test/test_007.md:5:9:	lparen	"("	false	0	0.000000	(5, 9) -> (5, 10)
-test/test_007.md:5:10:	integer	"3"	false	3	0.000000	(5, 10) -> (5, 11)
-test/test_007.md:5:11:	rparen	")"	false	0	0.000000	(5, 11) -> (5, 12)
+test/test_007.md:5:4:	ident	"C"	false	0	0.000000	(5, 4) -> (5, 5)
+test/test_007.md:5:5:	dot	"."	false	0	0.000000	(5, 5) -> (5, 6)
+test/test_007.md:5:6:	ident	"print"	false	0	0.000000	(5, 6) -> (5, 11)
+test/test_007.md:5:11:	lparen	"("	false	0	0.000000	(5, 11) -> (5, 12)
+test/test_007.md:5:12:	integer	"3"	false	3	0.000000	(5, 12) -> (5, 13)
+test/test_007.md:5:13:	rparen	")"	false	0	0.000000	(5, 13) -> (5, 14)
 test/test_007.md:6:2:	elsif	"ELSIF"	false	0	0.000000	(6, 2) -> (6, 7)
 test/test_007.md:6:8:	integer	"1"	false	1	0.000000	(6, 8) -> (6, 9)
 test/test_007.md:6:9:	eq	"="	false	0	0.000000	(6, 9) -> (6, 10)
 test/test_007.md:6:10:	integer	"2"	false	2	0.000000	(6, 10) -> (6, 11)
 test/test_007.md:6:12:	then	"THEN"	false	0	0.000000	(6, 12) -> (6, 16)
-test/test_007.md:7:4:	ident	"print"	false	0	0.000000	(7, 4) -> (7, 9)
-test/test_007.md:7:9:	lparen	"("	false	0	0.000000	(7, 9) -> (7, 10)
-test/test_007.md:7:10:	integer	"2"	false	2	0.000000	(7, 10) -> (7, 11)
-test/test_007.md:7:11:	rparen	")"	false	0	0.000000	(7, 11) -> (7, 12)
+test/test_007.md:7:4:	ident	"C"	false	0	0.000000	(7, 4) -> (7, 5)
+test/test_007.md:7:5:	dot	"."	false	0	0.000000	(7, 5) -> (7, 6)
+test/test_007.md:7:6:	ident	"print"	false	0	0.000000	(7, 6) -> (7, 11)
+test/test_007.md:7:11:	lparen	"("	false	0	0.000000	(7, 11) -> (7, 12)
+test/test_007.md:7:12:	integer	"2"	false	2	0.000000	(7, 12) -> (7, 13)
+test/test_007.md:7:13:	rparen	")"	false	0	0.000000	(7, 13) -> (7, 14)
 test/test_007.md:8:2:	else	"ELSE"	false	0	0.000000	(8, 2) -> (8, 6)
-test/test_007.md:9:4:	ident	"print"	false	0	0.000000	(9, 4) -> (9, 9)
-test/test_007.md:9:9:	lparen	"("	false	0	0.000000	(9, 9) -> (9, 10)
-test/test_007.md:9:10:	integer	"1"	false	1	0.000000	(9, 10) -> (9, 11)
-test/test_007.md:9:11:	rparen	")"	false	0	0.000000	(9, 11) -> (9, 12)
+test/test_007.md:9:4:	ident	"C"	false	0	0.000000	(9, 4) -> (9, 5)
+test/test_007.md:9:5:	dot	"."	false	0	0.000000	(9, 5) -> (9, 6)
+test/test_007.md:9:6:	ident	"print"	false	0	0.000000	(9, 6) -> (9, 11)
+test/test_007.md:9:11:	lparen	"("	false	0	0.000000	(9, 11) -> (9, 12)
+test/test_007.md:9:12:	integer	"1"	false	1	0.000000	(9, 12) -> (9, 13)
+test/test_007.md:9:13:	rparen	")"	false	0	0.000000	(9, 13) -> (9, 14)
 test/test_007.md:10:2:	end	"END"	false	0	0.000000	(10, 2) -> (10, 5)
 test/test_007.md:10:5:	semicolon	";"	false	0	0.000000	(10, 5) -> (10, 6)
 test/test_007.md:11:2:	if	"IF"	false	0	0.000000	(11, 2) -> (11, 4)
 test/test_007.md:11:5:	boolean	"TRUE"	true	0	0.000000	(11, 5) -> (11, 9)
 test/test_007.md:11:10:	then	"THEN"	false	0	0.000000	(11, 10) -> (11, 14)
-test/test_007.md:12:4:	ident	"print"	false	0	0.000000	(12, 4) -> (12, 9)
-test/test_007.md:12:9:	lparen	"("	false	0	0.000000	(12, 9) -> (12, 10)
-test/test_007.md:12:10:	boolean	"TRUE"	true	0	0.000000	(12, 10) -> (12, 14)
-test/test_007.md:12:14:	rparen	")"	false	0	0.000000	(12, 14) -> (12, 15)
+test/test_007.md:12:4:	ident	"C"	false	0	0.000000	(12, 4) -> (12, 5)
+test/test_007.md:12:5:	dot	"."	false	0	0.000000	(12, 5) -> (12, 6)
+test/test_007.md:12:6:	ident	"print"	false	0	0.000000	(12, 6) -> (12, 11)
+test/test_007.md:12:11:	lparen	"("	false	0	0.000000	(12, 11) -> (12, 12)
+test/test_007.md:12:12:	boolean	"TRUE"	true	0	0.000000	(12, 12) -> (12, 16)
+test/test_007.md:12:16:	rparen	")"	false	0	0.000000	(12, 16) -> (12, 17)
 test/test_007.md:13:2:	end	"END"	false	0	0.000000	(13, 2) -> (13, 5)
 test/test_007.md:14:0:	end	"END"	false	0	0.000000	(14, 0) -> (14, 3)
 test/test_007.md:14:4:	ident	"ConstantIf"	false	0	0.000000	(14, 4) -> (14, 14)
@@ -72,7 +80,7 @@ test/test_007.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (number [i64] 3)
           )
         )
@@ -85,7 +93,7 @@ test/test_007.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
         (stmts
           (expr2stmt
             (call
-              (procedure [void] "print")
+              (procedure [void] "C.print")
               (number [i64] 2)
             )
           )
@@ -93,7 +101,7 @@ test/test_007.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
         (stmts
           (expr2stmt
             (call
-              (procedure [void] "print")
+              (procedure [void] "C.print")
               (number [i64] 1)
             )
           )
@@ -105,7 +113,7 @@ test/test_007.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             #true
           )
         )

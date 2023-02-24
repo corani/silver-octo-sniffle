@@ -12,19 +12,41 @@ var ErrChecking = errors.New("type check error")
 
 func TypeCheck(out *reporter.Reporter, root ast.Node) {
 	checker := &typeChecker{
-		out:          out,
-		symbols:      ast.GetBuiltinSymbols(),
-		builtins:     ast.GetBuiltinFunctions(),
+		out: out,
+		scope: &scope{
+			parent:  nil,
+			symbols: ast.GetBuiltinSymbols(),
+		},
+		modules: map[string]*module{
+			"": {
+				builtins: ast.GetBuiltinFunctions(),
+			},
+			"C": {
+				builtins: ast.GetCFunctions(),
+			},
+			"Texts": {
+				builtins: ast.GetTextsFunctions(),
+			},
+		},
 		currentValue: nil,
 	}
 
 	checker.Check(root)
 }
 
+type module struct {
+	builtins map[string]ast.Function
+}
+
+type scope struct {
+	parent  *scope
+	symbols map[string]ast.Symbol
+}
+
 type typeChecker struct {
 	out          *reporter.Reporter
-	symbols      map[string]ast.Symbol
-	builtins     map[string]ast.Function
+	scope        *scope
+	modules      map[string]*module
 	currentValue *ast.Value
 }
 
@@ -35,6 +57,60 @@ var (
 
 func (c *typeChecker) Check(root ast.Node) {
 	root.Visit(c)
+}
+
+func (c *typeChecker) enterScope() {
+	c.scope = &scope{
+		parent:  c.scope,
+		symbols: make(map[string]ast.Symbol),
+	}
+}
+
+func (c *typeChecker) leaveScope() {
+	c.scope = c.scope.parent
+}
+
+func (c *typeChecker) findSymbol(name string) (ast.Symbol, bool) {
+	scope := c.scope
+
+	for scope != nil {
+		if v, ok := scope.symbols[name]; ok {
+			return v, true
+		}
+
+		scope = scope.parent
+	}
+
+	return nil, false
+}
+
+func (c *typeChecker) defineSymbol(name string, sym ast.Symbol) {
+	c.scope.symbols[name] = sym
+}
+
+func (c *typeChecker) findFunction(q *ast.QualIdent) (ast.Function, bool) {
+	mod := c.modules[""]
+
+	if q.Qualifier() != nil {
+		name := q.Qualifier().Text
+		if v, ok := c.modules[name]; ok {
+			mod = v
+		} else {
+			c.out.Errorf(q.Token(), "module %v not found", name)
+
+			return nil, false
+		}
+	}
+
+	name := q.Ident().Text
+
+	if v, ok := mod.builtins[name]; ok {
+		return v, true
+	}
+
+	c.out.Errorf(q.Token(), "identifier %v not found", name)
+
+	return nil, false
 }
 
 // ----- statements -------------------------------------------------------------------------------
@@ -111,7 +187,7 @@ func (c *typeChecker) VisitWhileStmt(s *ast.WhileStmt) {
 }
 
 func (c *typeChecker) VisitForStmt(s *ast.ForStmt) {
-	sym, ok := c.symbols[s.Iter().Text]
+	sym, ok := c.findSymbol(s.Iter().Text)
 	if !ok {
 		c.out.Errorf(s.Iter(), "undefined identifier %q", s.Iter().Text)
 	}
@@ -196,7 +272,7 @@ func (c *typeChecker) VisitCallExpr(e *ast.CallExpr) {
 		v.Visit(c)
 	}
 
-	if v, ok := c.builtins[lhs.Token().Text]; ok {
+	if v, ok := c.findFunction(lhs.QualIdent()); ok {
 		t, err := v.Validate(e.Args())
 		if err != nil {
 			c.out.Errorf(e.Token(), "%v", err)
@@ -269,7 +345,8 @@ func (c *typeChecker) VisitBinaryExpr(e *ast.BinaryExpr) {
 }
 
 func (c *typeChecker) VisitDesignatorExpr(e *ast.DesignatorExpr) {
-	if sym, ok := c.symbols[e.Token().Text]; ok {
+	// TODO(daniel): support qualidents.
+	if sym, ok := c.findSymbol(e.Token().Text); ok {
 		switch t := sym.(type) {
 		case *ast.VarDecl:
 			decl := t.TypeDecl()
@@ -290,7 +367,7 @@ func (c *typeChecker) VisitDesignatorExpr(e *ast.DesignatorExpr) {
 			c.out.Errorf(e.Token(), "unsupported kind %q for identifier %q",
 				sym.Kind(), e.Token().Text)
 		}
-	} else if fn, ok := c.builtins[e.Token().Text]; ok {
+	} else if fn, ok := c.findFunction(e.QualIdent()); ok {
 		e.Update(fn.Type(), ast.KindProc, nil)
 	} else {
 		c.out.Errorf(e.Token(), "undefined identifier %q",
@@ -349,7 +426,7 @@ func (c *typeChecker) VisitConstDecl(decl *ast.ConstDecl) {
 		c.out.Errorf(decl.Token(), "initializer for %q is not constant", decl.Token().Text)
 	}
 
-	c.symbols[decl.Token().Text] = decl
+	c.defineSymbol(decl.Token().Text, decl)
 }
 
 func (c *typeChecker) VisitTypeBaseDecl(decl *ast.TypeBaseDecl) {
@@ -357,7 +434,7 @@ func (c *typeChecker) VisitTypeBaseDecl(decl *ast.TypeBaseDecl) {
 		typeRef := decl.TypeRef()
 		typeRef.Visit(c)
 
-		if sym, ok := c.symbols[typeRef.Token().Text]; ok {
+		if sym, ok := c.findSymbol(typeRef.Token().Text); ok {
 			decl.Update(typeRef.Token(), sym.Type())
 		} else {
 			decl.Update(typeRef.Token(), ast.TypeVoid)
@@ -377,7 +454,7 @@ func (c *typeChecker) VisitTypePointerDecl(decl *ast.TypePointerDecl) {
 	}
 
 	if decl.Token().Type == token.TokenIdent {
-		c.symbols[decl.Token().Text] = decl
+		c.defineSymbol(decl.Token().Text, decl)
 	}
 }
 
@@ -387,7 +464,7 @@ func (c *typeChecker) VisitVarDecl(decl *ast.VarDecl) {
 		typeRef := decl.TypeRef()
 		typeRef.Visit(c)
 
-		if sym, ok := c.symbols[typeRef.Token().Text]; ok {
+		if sym, ok := c.findSymbol(typeRef.Token().Text); ok {
 			decl.Update(sym.(ast.TypeDecl), sym.Type())
 		} else {
 			c.out.Errorf(decl.TypeRef().Token(), "unknown type %q",
@@ -402,7 +479,7 @@ func (c *typeChecker) VisitVarDecl(decl *ast.VarDecl) {
 	}
 
 	if decl.TypeDecl().Type() != ast.TypeVoid {
-		c.symbols[decl.Token().Text] = decl
+		c.defineSymbol(decl.Token().Text, decl)
 	} else {
 		c.out.Errorf(decl.Token(), "unknown type %q for variable %q",
 			decl.TypeDecl().Token().Text, decl.Token().Text)
@@ -410,23 +487,21 @@ func (c *typeChecker) VisitVarDecl(decl *ast.VarDecl) {
 }
 
 func (c *typeChecker) VisitProcDecl(decl *ast.ProcDecl) {
+	c.enterScope()
 	decl.Stmts().Visit(c)
+	c.leaveScope()
 }
 
 func (c *typeChecker) VisitTypeRef(ref *ast.TypeRef) {
 	// NOTE(daniel): solidify type reference.
 	if ref.TypeDecl() == nil {
-		if sym, ok := c.symbols[ref.Token().Text]; ok {
+		if sym, ok := c.findSymbol(ref.Token().Text); ok {
 			ref.Update(sym.(ast.TypeDecl))
 		}
 	}
 }
 
 // ----- builtin functions ------------------------------------------------------------------------
-
-func (c *typeChecker) VisitBuiltinPrint(*ast.BuiltinPrint, []ast.Expr) {
-	c.currentValue = nil
-}
 
 func (c *typeChecker) VisitBuiltinABS(f *ast.BuiltinABS, args []ast.Expr) {
 	c.currentValue = nil
@@ -547,5 +622,13 @@ func (c *typeChecker) VisitBuiltinDELETE(*ast.BuiltinDELETE, []ast.Expr) {
 }
 
 func (c *typeChecker) VisitBuiltinASSERT(*ast.BuiltinASSERT, []ast.Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitCPrint(*ast.CPrint, []ast.Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitTextsWriteInt(*ast.TextsWriteInt, []ast.Expr) {
 	c.currentValue = nil
 }

@@ -12,7 +12,7 @@ BEGIN
   NEW(x);
   y := x;
   x^ := 33;
-  print(y^);
+  C.print(y^);
   DELETE(x);
 END Pointers.
 ```
@@ -54,12 +54,14 @@ test/test_022.md:11:3:	caret	"^"	false	0	0.000000	(11, 3) -> (11, 4)
 test/test_022.md:11:5:	assign	":="	false	0	0.000000	(11, 5) -> (11, 7)
 test/test_022.md:11:8:	integer	"33"	false	33	0.000000	(11, 8) -> (11, 10)
 test/test_022.md:11:10:	semicolon	";"	false	0	0.000000	(11, 10) -> (11, 11)
-test/test_022.md:12:2:	ident	"print"	false	0	0.000000	(12, 2) -> (12, 7)
-test/test_022.md:12:7:	lparen	"("	false	0	0.000000	(12, 7) -> (12, 8)
-test/test_022.md:12:8:	ident	"y"	false	0	0.000000	(12, 8) -> (12, 9)
-test/test_022.md:12:9:	caret	"^"	false	0	0.000000	(12, 9) -> (12, 10)
-test/test_022.md:12:10:	rparen	")"	false	0	0.000000	(12, 10) -> (12, 11)
-test/test_022.md:12:11:	semicolon	";"	false	0	0.000000	(12, 11) -> (12, 12)
+test/test_022.md:12:2:	ident	"C"	false	0	0.000000	(12, 2) -> (12, 3)
+test/test_022.md:12:3:	dot	"."	false	0	0.000000	(12, 3) -> (12, 4)
+test/test_022.md:12:4:	ident	"print"	false	0	0.000000	(12, 4) -> (12, 9)
+test/test_022.md:12:9:	lparen	"("	false	0	0.000000	(12, 9) -> (12, 10)
+test/test_022.md:12:10:	ident	"y"	false	0	0.000000	(12, 10) -> (12, 11)
+test/test_022.md:12:11:	caret	"^"	false	0	0.000000	(12, 11) -> (12, 12)
+test/test_022.md:12:12:	rparen	")"	false	0	0.000000	(12, 12) -> (12, 13)
+test/test_022.md:12:13:	semicolon	";"	false	0	0.000000	(12, 13) -> (12, 14)
 test/test_022.md:13:2:	ident	"DELETE"	false	0	0.000000	(13, 2) -> (13, 8)
 test/test_022.md:13:8:	lparen	"("	false	0	0.000000	(13, 8) -> (13, 9)
 test/test_022.md:13:9:	ident	"x"	false	0	0.000000	(13, 9) -> (13, 10)
@@ -109,7 +111,7 @@ test/test_022.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (variable [i64] "y^")
       )
     )

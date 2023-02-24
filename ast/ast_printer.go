@@ -255,7 +255,12 @@ func (p *astPrinter) VisitBinaryExpr(n *BinaryExpr) {
 }
 
 func (p *astPrinter) VisitDesignatorExpr(n *DesignatorExpr) {
-	name := n.Token().Text
+	q := n.QualIdent()
+
+	name := q.Ident().Text
+	if q.Qualifier() != nil {
+		name = q.Qualifier().Text + "." + name
+	}
 
 	// TODO(daniel): do this recursively?
 	for _, s := range n.Selectors() {

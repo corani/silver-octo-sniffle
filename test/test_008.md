@@ -12,9 +12,9 @@ BEGIN
     res := x = y;
 
     IF res THEN
-        print("Equal")
+        C.print("Equal")
     ELSE
-        print("Not Equal")
+        C.print("Not Equal")
     END
 END GlobalVars.
 ```
@@ -52,15 +52,19 @@ test/test_008.md:9:16:	semicolon	";"	false	0	0.000000	(9, 16) -> (9, 17)
 test/test_008.md:11:4:	if	"IF"	false	0	0.000000	(11, 4) -> (11, 6)
 test/test_008.md:11:7:	ident	"res"	false	0	0.000000	(11, 7) -> (11, 10)
 test/test_008.md:11:11:	then	"THEN"	false	0	0.000000	(11, 11) -> (11, 15)
-test/test_008.md:12:8:	ident	"print"	false	0	0.000000	(12, 8) -> (12, 13)
-test/test_008.md:12:13:	lparen	"("	false	0	0.000000	(12, 13) -> (12, 14)
-test/test_008.md:12:14:	string	"Equal"	false	0	0.000000	(12, 14) -> (12, 21)
-test/test_008.md:12:21:	rparen	")"	false	0	0.000000	(12, 21) -> (12, 22)
+test/test_008.md:12:8:	ident	"C"	false	0	0.000000	(12, 8) -> (12, 9)
+test/test_008.md:12:9:	dot	"."	false	0	0.000000	(12, 9) -> (12, 10)
+test/test_008.md:12:10:	ident	"print"	false	0	0.000000	(12, 10) -> (12, 15)
+test/test_008.md:12:15:	lparen	"("	false	0	0.000000	(12, 15) -> (12, 16)
+test/test_008.md:12:16:	string	"Equal"	false	0	0.000000	(12, 16) -> (12, 23)
+test/test_008.md:12:23:	rparen	")"	false	0	0.000000	(12, 23) -> (12, 24)
 test/test_008.md:13:4:	else	"ELSE"	false	0	0.000000	(13, 4) -> (13, 8)
-test/test_008.md:14:8:	ident	"print"	false	0	0.000000	(14, 8) -> (14, 13)
-test/test_008.md:14:13:	lparen	"("	false	0	0.000000	(14, 13) -> (14, 14)
-test/test_008.md:14:14:	string	"Not Equal"	false	0	0.000000	(14, 14) -> (14, 25)
-test/test_008.md:14:25:	rparen	")"	false	0	0.000000	(14, 25) -> (14, 26)
+test/test_008.md:14:8:	ident	"C"	false	0	0.000000	(14, 8) -> (14, 9)
+test/test_008.md:14:9:	dot	"."	false	0	0.000000	(14, 9) -> (14, 10)
+test/test_008.md:14:10:	ident	"print"	false	0	0.000000	(14, 10) -> (14, 15)
+test/test_008.md:14:15:	lparen	"("	false	0	0.000000	(14, 15) -> (14, 16)
+test/test_008.md:14:16:	string	"Not Equal"	false	0	0.000000	(14, 16) -> (14, 27)
+test/test_008.md:14:27:	rparen	")"	false	0	0.000000	(14, 27) -> (14, 28)
 test/test_008.md:15:4:	end	"END"	false	0	0.000000	(15, 4) -> (15, 7)
 test/test_008.md:16:0:	end	"END"	false	0	0.000000	(16, 0) -> (16, 3)
 test/test_008.md:16:4:	ident	"GlobalVars"	false	0	0.000000	(16, 4) -> (16, 14)
@@ -102,7 +106,7 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (string "Equal")
           )
         )
@@ -110,7 +114,7 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (string "Not Equal")
           )
         )
