@@ -102,6 +102,10 @@ type BuiltinVisitor interface {
 	VisitCPrint(*CPrint, []Expr)
 
 	VisitTextsWriteInt(*TextsWriteInt, []Expr)
+	VisitTextsWriteReal(*TextsWriteReal, []Expr)
+	VisitTextsWriteString(*TextsWriteString, []Expr)
+	VisitTextsWriteChar(*TextsWriteChar, []Expr)
+	VisitTextsWriteLn(*TextsWriteLn, []Expr)
 }
 
 func GetBuiltinFunctions() map[string]Function {
@@ -130,7 +134,11 @@ func GetBuiltinFunctions() map[string]Function {
 
 func GetTextsFunctions() map[string]Function {
 	return map[string]Function{
-		"WriteInt": newTextsWriteInt(),
+		"WriteInt":    newTextsWriteInt(),
+		"WriteReal":   newTextsWriteReal(),
+		"WriteString": newTextsWriteString(),
+		"Write":       newTextsWriteChar(),
+		"WriteLn":     newTextsWriteLn(),
 	}
 }
 
@@ -154,12 +162,6 @@ func newCPrint() *CPrint {
 			{
 				returnType: TypeVoid,
 				args: []functionArg{
-					{Type: TypeBoolean, Kind: KindUndefined},
-				},
-			},
-			{
-				returnType: TypeVoid,
-				args: []functionArg{
 					{Type: TypeInt64, Kind: KindUndefined},
 				},
 			},
@@ -179,12 +181,6 @@ func newCPrint() *CPrint {
 				returnType: TypeVoid,
 				args: []functionArg{
 					{Type: TypeString, Kind: KindUndefined},
-				},
-			},
-			{
-				returnType: TypeVoid,
-				args: []functionArg{
-					{Type: TypeSet, Kind: KindUndefined},
 				},
 			},
 		}),
@@ -382,6 +378,12 @@ func newBuiltinORD() *BuiltinORD {
 				returnType: TypeInt64,
 				args: []functionArg{
 					{Type: TypeBoolean, Kind: KindUndefined},
+				},
+			},
+			{
+				returnType: TypeInt64,
+				args: []functionArg{
+					{Type: TypeSet, Kind: KindUndefined},
 				},
 			},
 		}),
@@ -733,4 +735,102 @@ func newTextsWriteInt() *TextsWriteInt {
 
 func (f *TextsWriteInt) Visit(v BuiltinVisitor, args []Expr) {
 	v.VisitTextsWriteInt(f, args)
+}
+
+// ----- TextsWriteReal ---------------------------------------------------------------
+
+type TextsWriteReal struct {
+	function
+}
+
+var _ Function = (*TextsWriteReal)(nil)
+
+func newTextsWriteReal() *TextsWriteReal {
+	return &TextsWriteReal{
+		function: newFunction([]functionOverload{
+			{
+				returnType: TypeVoid,
+				args: []functionArg{
+					{Type: TypeFloat64, Kind: KindUndefined},
+				},
+			},
+		}),
+	}
+}
+
+func (f *TextsWriteReal) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitTextsWriteReal(f, args)
+}
+
+// ----- TextsWriteString ---------------------------------------------------------------
+
+type TextsWriteString struct {
+	function
+}
+
+var _ Function = (*TextsWriteString)(nil)
+
+func newTextsWriteString() *TextsWriteString {
+	return &TextsWriteString{
+		function: newFunction([]functionOverload{
+			{
+				returnType: TypeVoid,
+				args: []functionArg{
+					{Type: TypeString, Kind: KindUndefined},
+				},
+			},
+		}),
+	}
+}
+
+func (f *TextsWriteString) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitTextsWriteString(f, args)
+}
+
+// ----- TextsWriteChar ---------------------------------------------------------------
+
+type TextsWriteChar struct {
+	function
+}
+
+var _ Function = (*TextsWriteChar)(nil)
+
+func newTextsWriteChar() *TextsWriteChar {
+	return &TextsWriteChar{
+		function: newFunction([]functionOverload{
+			{
+				returnType: TypeVoid,
+				args: []functionArg{
+					{Type: TypeChar, Kind: KindUndefined},
+				},
+			},
+		}),
+	}
+}
+
+func (f *TextsWriteChar) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitTextsWriteChar(f, args)
+}
+
+// ----- TextsWriteLn ---------------------------------------------------------------
+
+type TextsWriteLn struct {
+	function
+}
+
+var _ Function = (*TextsWriteLn)(nil)
+
+func newTextsWriteLn() *TextsWriteLn {
+	return &TextsWriteLn{
+		function: newFunction([]functionOverload{
+			{
+				returnType: TypeVoid,
+				args:       []functionArg{},
+			},
+		}),
+	}
+}
+
+func (f *TextsWriteLn) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitTextsWriteLn(f, args)
 }

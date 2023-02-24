@@ -4,18 +4,18 @@
 MODULE Comparisons;
 
 BEGIN
-    C.print(1=2);
-    C.print(3.0/2.0=6.0/4.0);
-    C.print(1#2);
-    C.print(3 DIV 2#6 DIV 4);
-    C.print(1<2);
-    C.print(2.0/1.0<1.0/1.0);
-    C.print(1<=1);
-    C.print(1.0/1.0<=1.0/1.0);
-    C.print(1>2);
-    C.print(2.0/2.0>2.0/1.0);
-    C.print(2>=2);
-    C.print(2.0/1.0>=2.0/1.0)
+    Texts.WriteInt(ORD(1=2));               Texts.WriteLn;
+    Texts.WriteInt(ORD(3.0/2.0=6.0/4.0));   Texts.WriteLn;
+    Texts.WriteInt(ORD(1#2));               Texts.WriteLn;
+    Texts.WriteInt(ORD(3 DIV 2#6 DIV 4));   Texts.WriteLn;
+    Texts.WriteInt(ORD(1<2));               Texts.WriteLn;
+    Texts.WriteInt(ORD(2.0/1.0<1.0/1.0));   Texts.WriteLn;
+    Texts.WriteInt(ORD(1<=1));              Texts.WriteLn;
+    Texts.WriteInt(ORD(1.0/1.0<=1.0/1.0));  Texts.WriteLn;
+    Texts.WriteInt(ORD(1>2));               Texts.WriteLn;
+    Texts.WriteInt(ORD(2.0/2.0>2.0/1.0));   Texts.WriteLn;
+    Texts.WriteInt(ORD(2>=2));              Texts.WriteLn;
+    Texts.WriteInt(ORD(2.0/1.0>=2.0/1.0));  Texts.WriteLn;
 END Comparisons.
 ```
 ## Tokens
@@ -24,137 +24,222 @@ test/test_005.md:1:1:	module	"MODULE"	false	0	0.000000	(1, 1) -> (1, 7)
 test/test_005.md:1:8:	ident	"Comparisons"	false	0	0.000000	(1, 8) -> (1, 19)
 test/test_005.md:1:19:	semicolon	";"	false	0	0.000000	(1, 19) -> (1, 20)
 test/test_005.md:3:0:	begin	"BEGIN"	false	0	0.000000	(3, 0) -> (3, 5)
-test/test_005.md:4:4:	ident	"C"	false	0	0.000000	(4, 4) -> (4, 5)
-test/test_005.md:4:5:	dot	"."	false	0	0.000000	(4, 5) -> (4, 6)
-test/test_005.md:4:6:	ident	"print"	false	0	0.000000	(4, 6) -> (4, 11)
-test/test_005.md:4:11:	lparen	"("	false	0	0.000000	(4, 11) -> (4, 12)
-test/test_005.md:4:12:	integer	"1"	false	1	0.000000	(4, 12) -> (4, 13)
-test/test_005.md:4:13:	eq	"="	false	0	0.000000	(4, 13) -> (4, 14)
-test/test_005.md:4:14:	integer	"2"	false	2	0.000000	(4, 14) -> (4, 15)
-test/test_005.md:4:15:	rparen	")"	false	0	0.000000	(4, 15) -> (4, 16)
-test/test_005.md:4:16:	semicolon	";"	false	0	0.000000	(4, 16) -> (4, 17)
-test/test_005.md:5:4:	ident	"C"	false	0	0.000000	(5, 4) -> (5, 5)
-test/test_005.md:5:5:	dot	"."	false	0	0.000000	(5, 5) -> (5, 6)
-test/test_005.md:5:6:	ident	"print"	false	0	0.000000	(5, 6) -> (5, 11)
-test/test_005.md:5:11:	lparen	"("	false	0	0.000000	(5, 11) -> (5, 12)
-test/test_005.md:5:12:	real	"3.0"	false	0	3.000000	(5, 12) -> (5, 15)
-test/test_005.md:5:15:	slash	"/"	false	0	0.000000	(5, 15) -> (5, 16)
-test/test_005.md:5:16:	real	"2.0"	false	0	2.000000	(5, 16) -> (5, 19)
-test/test_005.md:5:19:	eq	"="	false	0	0.000000	(5, 19) -> (5, 20)
-test/test_005.md:5:20:	real	"6.0"	false	0	6.000000	(5, 20) -> (5, 23)
-test/test_005.md:5:23:	slash	"/"	false	0	0.000000	(5, 23) -> (5, 24)
-test/test_005.md:5:24:	real	"4.0"	false	0	4.000000	(5, 24) -> (5, 27)
-test/test_005.md:5:27:	rparen	")"	false	0	0.000000	(5, 27) -> (5, 28)
-test/test_005.md:5:28:	semicolon	";"	false	0	0.000000	(5, 28) -> (5, 29)
-test/test_005.md:6:4:	ident	"C"	false	0	0.000000	(6, 4) -> (6, 5)
-test/test_005.md:6:5:	dot	"."	false	0	0.000000	(6, 5) -> (6, 6)
-test/test_005.md:6:6:	ident	"print"	false	0	0.000000	(6, 6) -> (6, 11)
-test/test_005.md:6:11:	lparen	"("	false	0	0.000000	(6, 11) -> (6, 12)
-test/test_005.md:6:12:	integer	"1"	false	1	0.000000	(6, 12) -> (6, 13)
-test/test_005.md:6:13:	ne	"#"	false	0	0.000000	(6, 13) -> (6, 14)
-test/test_005.md:6:14:	integer	"2"	false	2	0.000000	(6, 14) -> (6, 15)
-test/test_005.md:6:15:	rparen	")"	false	0	0.000000	(6, 15) -> (6, 16)
-test/test_005.md:6:16:	semicolon	";"	false	0	0.000000	(6, 16) -> (6, 17)
-test/test_005.md:7:4:	ident	"C"	false	0	0.000000	(7, 4) -> (7, 5)
-test/test_005.md:7:5:	dot	"."	false	0	0.000000	(7, 5) -> (7, 6)
-test/test_005.md:7:6:	ident	"print"	false	0	0.000000	(7, 6) -> (7, 11)
-test/test_005.md:7:11:	lparen	"("	false	0	0.000000	(7, 11) -> (7, 12)
-test/test_005.md:7:12:	integer	"3"	false	3	0.000000	(7, 12) -> (7, 13)
-test/test_005.md:7:14:	div	"DIV"	false	0	0.000000	(7, 14) -> (7, 17)
-test/test_005.md:7:18:	integer	"2"	false	2	0.000000	(7, 18) -> (7, 19)
-test/test_005.md:7:19:	ne	"#"	false	0	0.000000	(7, 19) -> (7, 20)
-test/test_005.md:7:20:	integer	"6"	false	6	0.000000	(7, 20) -> (7, 21)
-test/test_005.md:7:22:	div	"DIV"	false	0	0.000000	(7, 22) -> (7, 25)
-test/test_005.md:7:26:	integer	"4"	false	4	0.000000	(7, 26) -> (7, 27)
-test/test_005.md:7:27:	rparen	")"	false	0	0.000000	(7, 27) -> (7, 28)
-test/test_005.md:7:28:	semicolon	";"	false	0	0.000000	(7, 28) -> (7, 29)
-test/test_005.md:8:4:	ident	"C"	false	0	0.000000	(8, 4) -> (8, 5)
-test/test_005.md:8:5:	dot	"."	false	0	0.000000	(8, 5) -> (8, 6)
-test/test_005.md:8:6:	ident	"print"	false	0	0.000000	(8, 6) -> (8, 11)
-test/test_005.md:8:11:	lparen	"("	false	0	0.000000	(8, 11) -> (8, 12)
-test/test_005.md:8:12:	integer	"1"	false	1	0.000000	(8, 12) -> (8, 13)
-test/test_005.md:8:13:	lt	"<"	false	0	0.000000	(8, 13) -> (8, 14)
-test/test_005.md:8:14:	integer	"2"	false	2	0.000000	(8, 14) -> (8, 15)
-test/test_005.md:8:15:	rparen	")"	false	0	0.000000	(8, 15) -> (8, 16)
-test/test_005.md:8:16:	semicolon	";"	false	0	0.000000	(8, 16) -> (8, 17)
-test/test_005.md:9:4:	ident	"C"	false	0	0.000000	(9, 4) -> (9, 5)
-test/test_005.md:9:5:	dot	"."	false	0	0.000000	(9, 5) -> (9, 6)
-test/test_005.md:9:6:	ident	"print"	false	0	0.000000	(9, 6) -> (9, 11)
-test/test_005.md:9:11:	lparen	"("	false	0	0.000000	(9, 11) -> (9, 12)
-test/test_005.md:9:12:	real	"2.0"	false	0	2.000000	(9, 12) -> (9, 15)
-test/test_005.md:9:15:	slash	"/"	false	0	0.000000	(9, 15) -> (9, 16)
-test/test_005.md:9:16:	real	"1.0"	false	0	1.000000	(9, 16) -> (9, 19)
-test/test_005.md:9:19:	lt	"<"	false	0	0.000000	(9, 19) -> (9, 20)
-test/test_005.md:9:20:	real	"1.0"	false	0	1.000000	(9, 20) -> (9, 23)
-test/test_005.md:9:23:	slash	"/"	false	0	0.000000	(9, 23) -> (9, 24)
-test/test_005.md:9:24:	real	"1.0"	false	0	1.000000	(9, 24) -> (9, 27)
-test/test_005.md:9:27:	rparen	")"	false	0	0.000000	(9, 27) -> (9, 28)
-test/test_005.md:9:28:	semicolon	";"	false	0	0.000000	(9, 28) -> (9, 29)
-test/test_005.md:10:4:	ident	"C"	false	0	0.000000	(10, 4) -> (10, 5)
-test/test_005.md:10:5:	dot	"."	false	0	0.000000	(10, 5) -> (10, 6)
-test/test_005.md:10:6:	ident	"print"	false	0	0.000000	(10, 6) -> (10, 11)
-test/test_005.md:10:11:	lparen	"("	false	0	0.000000	(10, 11) -> (10, 12)
-test/test_005.md:10:12:	integer	"1"	false	1	0.000000	(10, 12) -> (10, 13)
-test/test_005.md:10:13:	le	"<="	false	0	0.000000	(10, 13) -> (10, 15)
-test/test_005.md:10:15:	integer	"1"	false	1	0.000000	(10, 15) -> (10, 16)
-test/test_005.md:10:16:	rparen	")"	false	0	0.000000	(10, 16) -> (10, 17)
-test/test_005.md:10:17:	semicolon	";"	false	0	0.000000	(10, 17) -> (10, 18)
-test/test_005.md:11:4:	ident	"C"	false	0	0.000000	(11, 4) -> (11, 5)
-test/test_005.md:11:5:	dot	"."	false	0	0.000000	(11, 5) -> (11, 6)
-test/test_005.md:11:6:	ident	"print"	false	0	0.000000	(11, 6) -> (11, 11)
-test/test_005.md:11:11:	lparen	"("	false	0	0.000000	(11, 11) -> (11, 12)
-test/test_005.md:11:12:	real	"1.0"	false	0	1.000000	(11, 12) -> (11, 15)
-test/test_005.md:11:15:	slash	"/"	false	0	0.000000	(11, 15) -> (11, 16)
-test/test_005.md:11:16:	real	"1.0"	false	0	1.000000	(11, 16) -> (11, 19)
-test/test_005.md:11:19:	le	"<="	false	0	0.000000	(11, 19) -> (11, 21)
-test/test_005.md:11:21:	real	"1.0"	false	0	1.000000	(11, 21) -> (11, 24)
-test/test_005.md:11:24:	slash	"/"	false	0	0.000000	(11, 24) -> (11, 25)
-test/test_005.md:11:25:	real	"1.0"	false	0	1.000000	(11, 25) -> (11, 28)
-test/test_005.md:11:28:	rparen	")"	false	0	0.000000	(11, 28) -> (11, 29)
-test/test_005.md:11:29:	semicolon	";"	false	0	0.000000	(11, 29) -> (11, 30)
-test/test_005.md:12:4:	ident	"C"	false	0	0.000000	(12, 4) -> (12, 5)
-test/test_005.md:12:5:	dot	"."	false	0	0.000000	(12, 5) -> (12, 6)
-test/test_005.md:12:6:	ident	"print"	false	0	0.000000	(12, 6) -> (12, 11)
-test/test_005.md:12:11:	lparen	"("	false	0	0.000000	(12, 11) -> (12, 12)
-test/test_005.md:12:12:	integer	"1"	false	1	0.000000	(12, 12) -> (12, 13)
-test/test_005.md:12:13:	gt	">"	false	0	0.000000	(12, 13) -> (12, 14)
-test/test_005.md:12:14:	integer	"2"	false	2	0.000000	(12, 14) -> (12, 15)
-test/test_005.md:12:15:	rparen	")"	false	0	0.000000	(12, 15) -> (12, 16)
-test/test_005.md:12:16:	semicolon	";"	false	0	0.000000	(12, 16) -> (12, 17)
-test/test_005.md:13:4:	ident	"C"	false	0	0.000000	(13, 4) -> (13, 5)
-test/test_005.md:13:5:	dot	"."	false	0	0.000000	(13, 5) -> (13, 6)
-test/test_005.md:13:6:	ident	"print"	false	0	0.000000	(13, 6) -> (13, 11)
-test/test_005.md:13:11:	lparen	"("	false	0	0.000000	(13, 11) -> (13, 12)
-test/test_005.md:13:12:	real	"2.0"	false	0	2.000000	(13, 12) -> (13, 15)
-test/test_005.md:13:15:	slash	"/"	false	0	0.000000	(13, 15) -> (13, 16)
-test/test_005.md:13:16:	real	"2.0"	false	0	2.000000	(13, 16) -> (13, 19)
-test/test_005.md:13:19:	gt	">"	false	0	0.000000	(13, 19) -> (13, 20)
-test/test_005.md:13:20:	real	"2.0"	false	0	2.000000	(13, 20) -> (13, 23)
-test/test_005.md:13:23:	slash	"/"	false	0	0.000000	(13, 23) -> (13, 24)
-test/test_005.md:13:24:	real	"1.0"	false	0	1.000000	(13, 24) -> (13, 27)
-test/test_005.md:13:27:	rparen	")"	false	0	0.000000	(13, 27) -> (13, 28)
-test/test_005.md:13:28:	semicolon	";"	false	0	0.000000	(13, 28) -> (13, 29)
-test/test_005.md:14:4:	ident	"C"	false	0	0.000000	(14, 4) -> (14, 5)
-test/test_005.md:14:5:	dot	"."	false	0	0.000000	(14, 5) -> (14, 6)
-test/test_005.md:14:6:	ident	"print"	false	0	0.000000	(14, 6) -> (14, 11)
-test/test_005.md:14:11:	lparen	"("	false	0	0.000000	(14, 11) -> (14, 12)
-test/test_005.md:14:12:	integer	"2"	false	2	0.000000	(14, 12) -> (14, 13)
-test/test_005.md:14:13:	ge	">="	false	0	0.000000	(14, 13) -> (14, 15)
-test/test_005.md:14:15:	integer	"2"	false	2	0.000000	(14, 15) -> (14, 16)
-test/test_005.md:14:16:	rparen	")"	false	0	0.000000	(14, 16) -> (14, 17)
-test/test_005.md:14:17:	semicolon	";"	false	0	0.000000	(14, 17) -> (14, 18)
-test/test_005.md:15:4:	ident	"C"	false	0	0.000000	(15, 4) -> (15, 5)
-test/test_005.md:15:5:	dot	"."	false	0	0.000000	(15, 5) -> (15, 6)
-test/test_005.md:15:6:	ident	"print"	false	0	0.000000	(15, 6) -> (15, 11)
-test/test_005.md:15:11:	lparen	"("	false	0	0.000000	(15, 11) -> (15, 12)
-test/test_005.md:15:12:	real	"2.0"	false	0	2.000000	(15, 12) -> (15, 15)
-test/test_005.md:15:15:	slash	"/"	false	0	0.000000	(15, 15) -> (15, 16)
-test/test_005.md:15:16:	real	"1.0"	false	0	1.000000	(15, 16) -> (15, 19)
-test/test_005.md:15:19:	ge	">="	false	0	0.000000	(15, 19) -> (15, 21)
-test/test_005.md:15:21:	real	"2.0"	false	0	2.000000	(15, 21) -> (15, 24)
-test/test_005.md:15:24:	slash	"/"	false	0	0.000000	(15, 24) -> (15, 25)
-test/test_005.md:15:25:	real	"1.0"	false	0	1.000000	(15, 25) -> (15, 28)
-test/test_005.md:15:28:	rparen	")"	false	0	0.000000	(15, 28) -> (15, 29)
+test/test_005.md:4:4:	ident	"Texts"	false	0	0.000000	(4, 4) -> (4, 9)
+test/test_005.md:4:9:	dot	"."	false	0	0.000000	(4, 9) -> (4, 10)
+test/test_005.md:4:10:	ident	"WriteInt"	false	0	0.000000	(4, 10) -> (4, 18)
+test/test_005.md:4:18:	lparen	"("	false	0	0.000000	(4, 18) -> (4, 19)
+test/test_005.md:4:19:	ident	"ORD"	false	0	0.000000	(4, 19) -> (4, 22)
+test/test_005.md:4:22:	lparen	"("	false	0	0.000000	(4, 22) -> (4, 23)
+test/test_005.md:4:23:	integer	"1"	false	1	0.000000	(4, 23) -> (4, 24)
+test/test_005.md:4:24:	eq	"="	false	0	0.000000	(4, 24) -> (4, 25)
+test/test_005.md:4:25:	integer	"2"	false	2	0.000000	(4, 25) -> (4, 26)
+test/test_005.md:4:26:	rparen	")"	false	0	0.000000	(4, 26) -> (4, 27)
+test/test_005.md:4:27:	rparen	")"	false	0	0.000000	(4, 27) -> (4, 28)
+test/test_005.md:4:28:	semicolon	";"	false	0	0.000000	(4, 28) -> (4, 29)
+test/test_005.md:4:44:	ident	"Texts"	false	0	0.000000	(4, 44) -> (4, 49)
+test/test_005.md:4:49:	dot	"."	false	0	0.000000	(4, 49) -> (4, 50)
+test/test_005.md:4:50:	ident	"WriteLn"	false	0	0.000000	(4, 50) -> (4, 57)
+test/test_005.md:4:57:	semicolon	";"	false	0	0.000000	(4, 57) -> (4, 58)
+test/test_005.md:5:4:	ident	"Texts"	false	0	0.000000	(5, 4) -> (5, 9)
+test/test_005.md:5:9:	dot	"."	false	0	0.000000	(5, 9) -> (5, 10)
+test/test_005.md:5:10:	ident	"WriteInt"	false	0	0.000000	(5, 10) -> (5, 18)
+test/test_005.md:5:18:	lparen	"("	false	0	0.000000	(5, 18) -> (5, 19)
+test/test_005.md:5:19:	ident	"ORD"	false	0	0.000000	(5, 19) -> (5, 22)
+test/test_005.md:5:22:	lparen	"("	false	0	0.000000	(5, 22) -> (5, 23)
+test/test_005.md:5:23:	real	"3.0"	false	0	3.000000	(5, 23) -> (5, 26)
+test/test_005.md:5:26:	slash	"/"	false	0	0.000000	(5, 26) -> (5, 27)
+test/test_005.md:5:27:	real	"2.0"	false	0	2.000000	(5, 27) -> (5, 30)
+test/test_005.md:5:30:	eq	"="	false	0	0.000000	(5, 30) -> (5, 31)
+test/test_005.md:5:31:	real	"6.0"	false	0	6.000000	(5, 31) -> (5, 34)
+test/test_005.md:5:34:	slash	"/"	false	0	0.000000	(5, 34) -> (5, 35)
+test/test_005.md:5:35:	real	"4.0"	false	0	4.000000	(5, 35) -> (5, 38)
+test/test_005.md:5:38:	rparen	")"	false	0	0.000000	(5, 38) -> (5, 39)
+test/test_005.md:5:39:	rparen	")"	false	0	0.000000	(5, 39) -> (5, 40)
+test/test_005.md:5:40:	semicolon	";"	false	0	0.000000	(5, 40) -> (5, 41)
+test/test_005.md:5:44:	ident	"Texts"	false	0	0.000000	(5, 44) -> (5, 49)
+test/test_005.md:5:49:	dot	"."	false	0	0.000000	(5, 49) -> (5, 50)
+test/test_005.md:5:50:	ident	"WriteLn"	false	0	0.000000	(5, 50) -> (5, 57)
+test/test_005.md:5:57:	semicolon	";"	false	0	0.000000	(5, 57) -> (5, 58)
+test/test_005.md:6:4:	ident	"Texts"	false	0	0.000000	(6, 4) -> (6, 9)
+test/test_005.md:6:9:	dot	"."	false	0	0.000000	(6, 9) -> (6, 10)
+test/test_005.md:6:10:	ident	"WriteInt"	false	0	0.000000	(6, 10) -> (6, 18)
+test/test_005.md:6:18:	lparen	"("	false	0	0.000000	(6, 18) -> (6, 19)
+test/test_005.md:6:19:	ident	"ORD"	false	0	0.000000	(6, 19) -> (6, 22)
+test/test_005.md:6:22:	lparen	"("	false	0	0.000000	(6, 22) -> (6, 23)
+test/test_005.md:6:23:	integer	"1"	false	1	0.000000	(6, 23) -> (6, 24)
+test/test_005.md:6:24:	ne	"#"	false	0	0.000000	(6, 24) -> (6, 25)
+test/test_005.md:6:25:	integer	"2"	false	2	0.000000	(6, 25) -> (6, 26)
+test/test_005.md:6:26:	rparen	")"	false	0	0.000000	(6, 26) -> (6, 27)
+test/test_005.md:6:27:	rparen	")"	false	0	0.000000	(6, 27) -> (6, 28)
+test/test_005.md:6:28:	semicolon	";"	false	0	0.000000	(6, 28) -> (6, 29)
+test/test_005.md:6:44:	ident	"Texts"	false	0	0.000000	(6, 44) -> (6, 49)
+test/test_005.md:6:49:	dot	"."	false	0	0.000000	(6, 49) -> (6, 50)
+test/test_005.md:6:50:	ident	"WriteLn"	false	0	0.000000	(6, 50) -> (6, 57)
+test/test_005.md:6:57:	semicolon	";"	false	0	0.000000	(6, 57) -> (6, 58)
+test/test_005.md:7:4:	ident	"Texts"	false	0	0.000000	(7, 4) -> (7, 9)
+test/test_005.md:7:9:	dot	"."	false	0	0.000000	(7, 9) -> (7, 10)
+test/test_005.md:7:10:	ident	"WriteInt"	false	0	0.000000	(7, 10) -> (7, 18)
+test/test_005.md:7:18:	lparen	"("	false	0	0.000000	(7, 18) -> (7, 19)
+test/test_005.md:7:19:	ident	"ORD"	false	0	0.000000	(7, 19) -> (7, 22)
+test/test_005.md:7:22:	lparen	"("	false	0	0.000000	(7, 22) -> (7, 23)
+test/test_005.md:7:23:	integer	"3"	false	3	0.000000	(7, 23) -> (7, 24)
+test/test_005.md:7:25:	div	"DIV"	false	0	0.000000	(7, 25) -> (7, 28)
+test/test_005.md:7:29:	integer	"2"	false	2	0.000000	(7, 29) -> (7, 30)
+test/test_005.md:7:30:	ne	"#"	false	0	0.000000	(7, 30) -> (7, 31)
+test/test_005.md:7:31:	integer	"6"	false	6	0.000000	(7, 31) -> (7, 32)
+test/test_005.md:7:33:	div	"DIV"	false	0	0.000000	(7, 33) -> (7, 36)
+test/test_005.md:7:37:	integer	"4"	false	4	0.000000	(7, 37) -> (7, 38)
+test/test_005.md:7:38:	rparen	")"	false	0	0.000000	(7, 38) -> (7, 39)
+test/test_005.md:7:39:	rparen	")"	false	0	0.000000	(7, 39) -> (7, 40)
+test/test_005.md:7:40:	semicolon	";"	false	0	0.000000	(7, 40) -> (7, 41)
+test/test_005.md:7:44:	ident	"Texts"	false	0	0.000000	(7, 44) -> (7, 49)
+test/test_005.md:7:49:	dot	"."	false	0	0.000000	(7, 49) -> (7, 50)
+test/test_005.md:7:50:	ident	"WriteLn"	false	0	0.000000	(7, 50) -> (7, 57)
+test/test_005.md:7:57:	semicolon	";"	false	0	0.000000	(7, 57) -> (7, 58)
+test/test_005.md:8:4:	ident	"Texts"	false	0	0.000000	(8, 4) -> (8, 9)
+test/test_005.md:8:9:	dot	"."	false	0	0.000000	(8, 9) -> (8, 10)
+test/test_005.md:8:10:	ident	"WriteInt"	false	0	0.000000	(8, 10) -> (8, 18)
+test/test_005.md:8:18:	lparen	"("	false	0	0.000000	(8, 18) -> (8, 19)
+test/test_005.md:8:19:	ident	"ORD"	false	0	0.000000	(8, 19) -> (8, 22)
+test/test_005.md:8:22:	lparen	"("	false	0	0.000000	(8, 22) -> (8, 23)
+test/test_005.md:8:23:	integer	"1"	false	1	0.000000	(8, 23) -> (8, 24)
+test/test_005.md:8:24:	lt	"<"	false	0	0.000000	(8, 24) -> (8, 25)
+test/test_005.md:8:25:	integer	"2"	false	2	0.000000	(8, 25) -> (8, 26)
+test/test_005.md:8:26:	rparen	")"	false	0	0.000000	(8, 26) -> (8, 27)
+test/test_005.md:8:27:	rparen	")"	false	0	0.000000	(8, 27) -> (8, 28)
+test/test_005.md:8:28:	semicolon	";"	false	0	0.000000	(8, 28) -> (8, 29)
+test/test_005.md:8:44:	ident	"Texts"	false	0	0.000000	(8, 44) -> (8, 49)
+test/test_005.md:8:49:	dot	"."	false	0	0.000000	(8, 49) -> (8, 50)
+test/test_005.md:8:50:	ident	"WriteLn"	false	0	0.000000	(8, 50) -> (8, 57)
+test/test_005.md:8:57:	semicolon	";"	false	0	0.000000	(8, 57) -> (8, 58)
+test/test_005.md:9:4:	ident	"Texts"	false	0	0.000000	(9, 4) -> (9, 9)
+test/test_005.md:9:9:	dot	"."	false	0	0.000000	(9, 9) -> (9, 10)
+test/test_005.md:9:10:	ident	"WriteInt"	false	0	0.000000	(9, 10) -> (9, 18)
+test/test_005.md:9:18:	lparen	"("	false	0	0.000000	(9, 18) -> (9, 19)
+test/test_005.md:9:19:	ident	"ORD"	false	0	0.000000	(9, 19) -> (9, 22)
+test/test_005.md:9:22:	lparen	"("	false	0	0.000000	(9, 22) -> (9, 23)
+test/test_005.md:9:23:	real	"2.0"	false	0	2.000000	(9, 23) -> (9, 26)
+test/test_005.md:9:26:	slash	"/"	false	0	0.000000	(9, 26) -> (9, 27)
+test/test_005.md:9:27:	real	"1.0"	false	0	1.000000	(9, 27) -> (9, 30)
+test/test_005.md:9:30:	lt	"<"	false	0	0.000000	(9, 30) -> (9, 31)
+test/test_005.md:9:31:	real	"1.0"	false	0	1.000000	(9, 31) -> (9, 34)
+test/test_005.md:9:34:	slash	"/"	false	0	0.000000	(9, 34) -> (9, 35)
+test/test_005.md:9:35:	real	"1.0"	false	0	1.000000	(9, 35) -> (9, 38)
+test/test_005.md:9:38:	rparen	")"	false	0	0.000000	(9, 38) -> (9, 39)
+test/test_005.md:9:39:	rparen	")"	false	0	0.000000	(9, 39) -> (9, 40)
+test/test_005.md:9:40:	semicolon	";"	false	0	0.000000	(9, 40) -> (9, 41)
+test/test_005.md:9:44:	ident	"Texts"	false	0	0.000000	(9, 44) -> (9, 49)
+test/test_005.md:9:49:	dot	"."	false	0	0.000000	(9, 49) -> (9, 50)
+test/test_005.md:9:50:	ident	"WriteLn"	false	0	0.000000	(9, 50) -> (9, 57)
+test/test_005.md:9:57:	semicolon	";"	false	0	0.000000	(9, 57) -> (9, 58)
+test/test_005.md:10:4:	ident	"Texts"	false	0	0.000000	(10, 4) -> (10, 9)
+test/test_005.md:10:9:	dot	"."	false	0	0.000000	(10, 9) -> (10, 10)
+test/test_005.md:10:10:	ident	"WriteInt"	false	0	0.000000	(10, 10) -> (10, 18)
+test/test_005.md:10:18:	lparen	"("	false	0	0.000000	(10, 18) -> (10, 19)
+test/test_005.md:10:19:	ident	"ORD"	false	0	0.000000	(10, 19) -> (10, 22)
+test/test_005.md:10:22:	lparen	"("	false	0	0.000000	(10, 22) -> (10, 23)
+test/test_005.md:10:23:	integer	"1"	false	1	0.000000	(10, 23) -> (10, 24)
+test/test_005.md:10:24:	le	"<="	false	0	0.000000	(10, 24) -> (10, 26)
+test/test_005.md:10:26:	integer	"1"	false	1	0.000000	(10, 26) -> (10, 27)
+test/test_005.md:10:27:	rparen	")"	false	0	0.000000	(10, 27) -> (10, 28)
+test/test_005.md:10:28:	rparen	")"	false	0	0.000000	(10, 28) -> (10, 29)
+test/test_005.md:10:29:	semicolon	";"	false	0	0.000000	(10, 29) -> (10, 30)
+test/test_005.md:10:44:	ident	"Texts"	false	0	0.000000	(10, 44) -> (10, 49)
+test/test_005.md:10:49:	dot	"."	false	0	0.000000	(10, 49) -> (10, 50)
+test/test_005.md:10:50:	ident	"WriteLn"	false	0	0.000000	(10, 50) -> (10, 57)
+test/test_005.md:10:57:	semicolon	";"	false	0	0.000000	(10, 57) -> (10, 58)
+test/test_005.md:11:4:	ident	"Texts"	false	0	0.000000	(11, 4) -> (11, 9)
+test/test_005.md:11:9:	dot	"."	false	0	0.000000	(11, 9) -> (11, 10)
+test/test_005.md:11:10:	ident	"WriteInt"	false	0	0.000000	(11, 10) -> (11, 18)
+test/test_005.md:11:18:	lparen	"("	false	0	0.000000	(11, 18) -> (11, 19)
+test/test_005.md:11:19:	ident	"ORD"	false	0	0.000000	(11, 19) -> (11, 22)
+test/test_005.md:11:22:	lparen	"("	false	0	0.000000	(11, 22) -> (11, 23)
+test/test_005.md:11:23:	real	"1.0"	false	0	1.000000	(11, 23) -> (11, 26)
+test/test_005.md:11:26:	slash	"/"	false	0	0.000000	(11, 26) -> (11, 27)
+test/test_005.md:11:27:	real	"1.0"	false	0	1.000000	(11, 27) -> (11, 30)
+test/test_005.md:11:30:	le	"<="	false	0	0.000000	(11, 30) -> (11, 32)
+test/test_005.md:11:32:	real	"1.0"	false	0	1.000000	(11, 32) -> (11, 35)
+test/test_005.md:11:35:	slash	"/"	false	0	0.000000	(11, 35) -> (11, 36)
+test/test_005.md:11:36:	real	"1.0"	false	0	1.000000	(11, 36) -> (11, 39)
+test/test_005.md:11:39:	rparen	")"	false	0	0.000000	(11, 39) -> (11, 40)
+test/test_005.md:11:40:	rparen	")"	false	0	0.000000	(11, 40) -> (11, 41)
+test/test_005.md:11:41:	semicolon	";"	false	0	0.000000	(11, 41) -> (11, 42)
+test/test_005.md:11:44:	ident	"Texts"	false	0	0.000000	(11, 44) -> (11, 49)
+test/test_005.md:11:49:	dot	"."	false	0	0.000000	(11, 49) -> (11, 50)
+test/test_005.md:11:50:	ident	"WriteLn"	false	0	0.000000	(11, 50) -> (11, 57)
+test/test_005.md:11:57:	semicolon	";"	false	0	0.000000	(11, 57) -> (11, 58)
+test/test_005.md:12:4:	ident	"Texts"	false	0	0.000000	(12, 4) -> (12, 9)
+test/test_005.md:12:9:	dot	"."	false	0	0.000000	(12, 9) -> (12, 10)
+test/test_005.md:12:10:	ident	"WriteInt"	false	0	0.000000	(12, 10) -> (12, 18)
+test/test_005.md:12:18:	lparen	"("	false	0	0.000000	(12, 18) -> (12, 19)
+test/test_005.md:12:19:	ident	"ORD"	false	0	0.000000	(12, 19) -> (12, 22)
+test/test_005.md:12:22:	lparen	"("	false	0	0.000000	(12, 22) -> (12, 23)
+test/test_005.md:12:23:	integer	"1"	false	1	0.000000	(12, 23) -> (12, 24)
+test/test_005.md:12:24:	gt	">"	false	0	0.000000	(12, 24) -> (12, 25)
+test/test_005.md:12:25:	integer	"2"	false	2	0.000000	(12, 25) -> (12, 26)
+test/test_005.md:12:26:	rparen	")"	false	0	0.000000	(12, 26) -> (12, 27)
+test/test_005.md:12:27:	rparen	")"	false	0	0.000000	(12, 27) -> (12, 28)
+test/test_005.md:12:28:	semicolon	";"	false	0	0.000000	(12, 28) -> (12, 29)
+test/test_005.md:12:44:	ident	"Texts"	false	0	0.000000	(12, 44) -> (12, 49)
+test/test_005.md:12:49:	dot	"."	false	0	0.000000	(12, 49) -> (12, 50)
+test/test_005.md:12:50:	ident	"WriteLn"	false	0	0.000000	(12, 50) -> (12, 57)
+test/test_005.md:12:57:	semicolon	";"	false	0	0.000000	(12, 57) -> (12, 58)
+test/test_005.md:13:4:	ident	"Texts"	false	0	0.000000	(13, 4) -> (13, 9)
+test/test_005.md:13:9:	dot	"."	false	0	0.000000	(13, 9) -> (13, 10)
+test/test_005.md:13:10:	ident	"WriteInt"	false	0	0.000000	(13, 10) -> (13, 18)
+test/test_005.md:13:18:	lparen	"("	false	0	0.000000	(13, 18) -> (13, 19)
+test/test_005.md:13:19:	ident	"ORD"	false	0	0.000000	(13, 19) -> (13, 22)
+test/test_005.md:13:22:	lparen	"("	false	0	0.000000	(13, 22) -> (13, 23)
+test/test_005.md:13:23:	real	"2.0"	false	0	2.000000	(13, 23) -> (13, 26)
+test/test_005.md:13:26:	slash	"/"	false	0	0.000000	(13, 26) -> (13, 27)
+test/test_005.md:13:27:	real	"2.0"	false	0	2.000000	(13, 27) -> (13, 30)
+test/test_005.md:13:30:	gt	">"	false	0	0.000000	(13, 30) -> (13, 31)
+test/test_005.md:13:31:	real	"2.0"	false	0	2.000000	(13, 31) -> (13, 34)
+test/test_005.md:13:34:	slash	"/"	false	0	0.000000	(13, 34) -> (13, 35)
+test/test_005.md:13:35:	real	"1.0"	false	0	1.000000	(13, 35) -> (13, 38)
+test/test_005.md:13:38:	rparen	")"	false	0	0.000000	(13, 38) -> (13, 39)
+test/test_005.md:13:39:	rparen	")"	false	0	0.000000	(13, 39) -> (13, 40)
+test/test_005.md:13:40:	semicolon	";"	false	0	0.000000	(13, 40) -> (13, 41)
+test/test_005.md:13:44:	ident	"Texts"	false	0	0.000000	(13, 44) -> (13, 49)
+test/test_005.md:13:49:	dot	"."	false	0	0.000000	(13, 49) -> (13, 50)
+test/test_005.md:13:50:	ident	"WriteLn"	false	0	0.000000	(13, 50) -> (13, 57)
+test/test_005.md:13:57:	semicolon	";"	false	0	0.000000	(13, 57) -> (13, 58)
+test/test_005.md:14:4:	ident	"Texts"	false	0	0.000000	(14, 4) -> (14, 9)
+test/test_005.md:14:9:	dot	"."	false	0	0.000000	(14, 9) -> (14, 10)
+test/test_005.md:14:10:	ident	"WriteInt"	false	0	0.000000	(14, 10) -> (14, 18)
+test/test_005.md:14:18:	lparen	"("	false	0	0.000000	(14, 18) -> (14, 19)
+test/test_005.md:14:19:	ident	"ORD"	false	0	0.000000	(14, 19) -> (14, 22)
+test/test_005.md:14:22:	lparen	"("	false	0	0.000000	(14, 22) -> (14, 23)
+test/test_005.md:14:23:	integer	"2"	false	2	0.000000	(14, 23) -> (14, 24)
+test/test_005.md:14:24:	ge	">="	false	0	0.000000	(14, 24) -> (14, 26)
+test/test_005.md:14:26:	integer	"2"	false	2	0.000000	(14, 26) -> (14, 27)
+test/test_005.md:14:27:	rparen	")"	false	0	0.000000	(14, 27) -> (14, 28)
+test/test_005.md:14:28:	rparen	")"	false	0	0.000000	(14, 28) -> (14, 29)
+test/test_005.md:14:29:	semicolon	";"	false	0	0.000000	(14, 29) -> (14, 30)
+test/test_005.md:14:44:	ident	"Texts"	false	0	0.000000	(14, 44) -> (14, 49)
+test/test_005.md:14:49:	dot	"."	false	0	0.000000	(14, 49) -> (14, 50)
+test/test_005.md:14:50:	ident	"WriteLn"	false	0	0.000000	(14, 50) -> (14, 57)
+test/test_005.md:14:57:	semicolon	";"	false	0	0.000000	(14, 57) -> (14, 58)
+test/test_005.md:15:4:	ident	"Texts"	false	0	0.000000	(15, 4) -> (15, 9)
+test/test_005.md:15:9:	dot	"."	false	0	0.000000	(15, 9) -> (15, 10)
+test/test_005.md:15:10:	ident	"WriteInt"	false	0	0.000000	(15, 10) -> (15, 18)
+test/test_005.md:15:18:	lparen	"("	false	0	0.000000	(15, 18) -> (15, 19)
+test/test_005.md:15:19:	ident	"ORD"	false	0	0.000000	(15, 19) -> (15, 22)
+test/test_005.md:15:22:	lparen	"("	false	0	0.000000	(15, 22) -> (15, 23)
+test/test_005.md:15:23:	real	"2.0"	false	0	2.000000	(15, 23) -> (15, 26)
+test/test_005.md:15:26:	slash	"/"	false	0	0.000000	(15, 26) -> (15, 27)
+test/test_005.md:15:27:	real	"1.0"	false	0	1.000000	(15, 27) -> (15, 30)
+test/test_005.md:15:30:	ge	">="	false	0	0.000000	(15, 30) -> (15, 32)
+test/test_005.md:15:32:	real	"2.0"	false	0	2.000000	(15, 32) -> (15, 35)
+test/test_005.md:15:35:	slash	"/"	false	0	0.000000	(15, 35) -> (15, 36)
+test/test_005.md:15:36:	real	"1.0"	false	0	1.000000	(15, 36) -> (15, 39)
+test/test_005.md:15:39:	rparen	")"	false	0	0.000000	(15, 39) -> (15, 40)
+test/test_005.md:15:40:	rparen	")"	false	0	0.000000	(15, 40) -> (15, 41)
+test/test_005.md:15:41:	semicolon	";"	false	0	0.000000	(15, 41) -> (15, 42)
+test/test_005.md:15:44:	ident	"Texts"	false	0	0.000000	(15, 44) -> (15, 49)
+test/test_005.md:15:49:	dot	"."	false	0	0.000000	(15, 49) -> (15, 50)
+test/test_005.md:15:50:	ident	"WriteLn"	false	0	0.000000	(15, 50) -> (15, 57)
+test/test_005.md:15:57:	semicolon	";"	false	0	0.000000	(15, 57) -> (15, 58)
 test/test_005.md:16:0:	end	"END"	false	0	0.000000	(16, 0) -> (16, 3)
 test/test_005.md:16:4:	ident	"Comparisons"	false	0	0.000000	(16, 4) -> (16, 15)
 test/test_005.md:16:15:	dot	"."	false	0	0.000000	(16, 15) -> (16, 16)
@@ -166,146 +251,242 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
   (stmts
     (expr2stmt
       (call
-        (procedure [void] "C.print")
-        (eq [boolean]
-          (number [i64] 1)
-          (number [i64] 2)
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (eq [boolean]
-          (slash [f64]
-            (number [f64] 3.000000)
-            (number [f64] 2.000000)
-          )
-          (slash [f64]
-            (number [f64] 6.000000)
-            (number [f64] 4.000000)
-          )
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (ne [boolean]
-          (number [i64] 1)
-          (number [i64] 2)
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (ne [boolean]
-          (div [i64]
-            (number [i64] 3)
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (eq [boolean]
+            (number [i64] 1)
             (number [i64] 2)
           )
-          (div [i64]
-            (number [i64] 6)
-            (number [i64] 4)
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (eq [boolean]
+            (slash [f64]
+              (number [f64] 3.000000)
+              (number [f64] 2.000000)
+            )
+            (slash [f64]
+              (number [f64] 6.000000)
+              (number [f64] 4.000000)
+            )
           )
         )
       )
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
-        (lt [boolean]
-          (number [i64] 1)
-          (number [i64] 2)
-        )
+        (procedure [void] "Texts.WriteLn")
       )
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
-        (lt [boolean]
-          (slash [f64]
-            (number [f64] 2.000000)
-            (number [f64] 1.000000)
-          )
-          (slash [f64]
-            (number [f64] 1.000000)
-            (number [f64] 1.000000)
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (ne [boolean]
+            (number [i64] 1)
+            (number [i64] 2)
           )
         )
       )
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
-        (le [boolean]
-          (number [i64] 1)
-          (number [i64] 1)
-        )
+        (procedure [void] "Texts.WriteLn")
       )
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
-        (le [boolean]
-          (slash [f64]
-            (number [f64] 1.000000)
-            (number [f64] 1.000000)
-          )
-          (slash [f64]
-            (number [f64] 1.000000)
-            (number [f64] 1.000000)
-          )
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (gt [boolean]
-          (number [i64] 1)
-          (number [i64] 2)
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (gt [boolean]
-          (slash [f64]
-            (number [f64] 2.000000)
-            (number [f64] 2.000000)
-          )
-          (slash [f64]
-            (number [f64] 2.000000)
-            (number [f64] 1.000000)
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (ne [boolean]
+            (div [i64]
+              (number [i64] 3)
+              (number [i64] 2)
+            )
+            (div [i64]
+              (number [i64] 6)
+              (number [i64] 4)
+            )
           )
         )
       )
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
-        (ge [boolean]
-          (number [i64] 2)
-          (number [i64] 2)
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (lt [boolean]
+            (number [i64] 1)
+            (number [i64] 2)
+          )
         )
       )
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
-        (ge [boolean]
-          (slash [f64]
-            (number [f64] 2.000000)
-            (number [f64] 1.000000)
-          )
-          (slash [f64]
-            (number [f64] 2.000000)
-            (number [f64] 1.000000)
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (lt [boolean]
+            (slash [f64]
+              (number [f64] 2.000000)
+              (number [f64] 1.000000)
+            )
+            (slash [f64]
+              (number [f64] 1.000000)
+              (number [f64] 1.000000)
+            )
           )
         )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (le [boolean]
+            (number [i64] 1)
+            (number [i64] 1)
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (le [boolean]
+            (slash [f64]
+              (number [f64] 1.000000)
+              (number [f64] 1.000000)
+            )
+            (slash [f64]
+              (number [f64] 1.000000)
+              (number [f64] 1.000000)
+            )
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (gt [boolean]
+            (number [i64] 1)
+            (number [i64] 2)
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (gt [boolean]
+            (slash [f64]
+              (number [f64] 2.000000)
+              (number [f64] 2.000000)
+            )
+            (slash [f64]
+              (number [f64] 2.000000)
+              (number [f64] 1.000000)
+            )
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (ge [boolean]
+            (number [i64] 2)
+            (number [i64] 2)
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (ge [boolean]
+            (slash [f64]
+              (number [f64] 2.000000)
+              (number [f64] 1.000000)
+            )
+            (slash [f64]
+              (number [f64] 2.000000)
+              (number [f64] 1.000000)
+            )
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
       )
     )
   )
@@ -313,8 +494,8 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 ```
 ## IR
 ```llvm
-@0 = global [5 x i8] c"TRUE\00"
-@1 = global [6 x i8] c"FALSE\00"
+@0 = global [3 x i8] c"%d\00"
+@1 = global [1 x i8] c"\00"
 
 declare i64 @puts(i8* %str)
 
@@ -331,201 +512,105 @@ declare i8* @free(i8* %ptr)
 define i64 @main() {
 entry:
 	%0 = icmp eq i64 1, 2
-	br i1 %0, label %1, label %3
-
-1:
-	%2 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %5
-
-3:
-	%4 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %5
-
-5:
-	%6 = phi i8* [ %2, %1 ], [ %4, %3 ]
-	%7 = call i64 @puts(i8* %6)
-	%8 = fdiv double 3.0, 2.0
-	%9 = fdiv double 6.0, 4.0
-	%10 = fcmp ueq double %8, %9
-	br i1 %10, label %11, label %13
-
-11:
-	%12 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %15
-
-13:
-	%14 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %15
-
-15:
-	%16 = phi i8* [ %12, %11 ], [ %14, %13 ]
-	%17 = call i64 @puts(i8* %16)
-	%18 = icmp ne i64 1, 2
-	br i1 %18, label %19, label %21
-
-19:
-	%20 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %23
-
-21:
-	%22 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %23
-
-23:
-	%24 = phi i8* [ %20, %19 ], [ %22, %21 ]
-	%25 = call i64 @puts(i8* %24)
-	%26 = sdiv i64 3, 2
-	%27 = sdiv i64 6, 4
-	%28 = icmp ne i64 %26, %27
-	br i1 %28, label %29, label %31
-
-29:
-	%30 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %33
-
-31:
-	%32 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %33
-
-33:
-	%34 = phi i8* [ %30, %29 ], [ %32, %31 ]
-	%35 = call i64 @puts(i8* %34)
-	%36 = icmp slt i64 1, 2
-	br i1 %36, label %37, label %39
-
-37:
-	%38 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %41
-
-39:
-	%40 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %41
-
-41:
-	%42 = phi i8* [ %38, %37 ], [ %40, %39 ]
-	%43 = call i64 @puts(i8* %42)
-	%44 = fdiv double 2.0, 1.0
-	%45 = fdiv double 1.0, 1.0
-	%46 = fcmp ult double %44, %45
-	br i1 %46, label %47, label %49
-
-47:
-	%48 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %51
-
-49:
-	%50 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %51
-
-51:
-	%52 = phi i8* [ %48, %47 ], [ %50, %49 ]
-	%53 = call i64 @puts(i8* %52)
-	%54 = icmp sle i64 1, 1
-	br i1 %54, label %55, label %57
-
-55:
-	%56 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %59
-
-57:
-	%58 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %59
-
-59:
-	%60 = phi i8* [ %56, %55 ], [ %58, %57 ]
+	%1 = zext i1 %0 to i64
+	%2 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%3 = call i64 (i8*, ...) @printf(i8* %2, i64 %1)
+	%4 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%5 = call i64 @puts(i8* %4)
+	%6 = fdiv double 3.0, 2.0
+	%7 = fdiv double 6.0, 4.0
+	%8 = fcmp ueq double %6, %7
+	%9 = zext i1 %8 to i64
+	%10 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%11 = call i64 (i8*, ...) @printf(i8* %10, i64 %9)
+	%12 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%13 = call i64 @puts(i8* %12)
+	%14 = icmp ne i64 1, 2
+	%15 = zext i1 %14 to i64
+	%16 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%17 = call i64 (i8*, ...) @printf(i8* %16, i64 %15)
+	%18 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%19 = call i64 @puts(i8* %18)
+	%20 = sdiv i64 3, 2
+	%21 = sdiv i64 6, 4
+	%22 = icmp ne i64 %20, %21
+	%23 = zext i1 %22 to i64
+	%24 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%25 = call i64 (i8*, ...) @printf(i8* %24, i64 %23)
+	%26 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%27 = call i64 @puts(i8* %26)
+	%28 = icmp slt i64 1, 2
+	%29 = zext i1 %28 to i64
+	%30 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%31 = call i64 (i8*, ...) @printf(i8* %30, i64 %29)
+	%32 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%33 = call i64 @puts(i8* %32)
+	%34 = fdiv double 2.0, 1.0
+	%35 = fdiv double 1.0, 1.0
+	%36 = fcmp ult double %34, %35
+	%37 = zext i1 %36 to i64
+	%38 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%39 = call i64 (i8*, ...) @printf(i8* %38, i64 %37)
+	%40 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%41 = call i64 @puts(i8* %40)
+	%42 = icmp sle i64 1, 1
+	%43 = zext i1 %42 to i64
+	%44 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%45 = call i64 (i8*, ...) @printf(i8* %44, i64 %43)
+	%46 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%47 = call i64 @puts(i8* %46)
+	%48 = fdiv double 1.0, 1.0
+	%49 = fdiv double 1.0, 1.0
+	%50 = fcmp ule double %48, %49
+	%51 = zext i1 %50 to i64
+	%52 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%53 = call i64 (i8*, ...) @printf(i8* %52, i64 %51)
+	%54 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%55 = call i64 @puts(i8* %54)
+	%56 = icmp sgt i64 1, 2
+	%57 = zext i1 %56 to i64
+	%58 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%59 = call i64 (i8*, ...) @printf(i8* %58, i64 %57)
+	%60 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
 	%61 = call i64 @puts(i8* %60)
-	%62 = fdiv double 1.0, 1.0
-	%63 = fdiv double 1.0, 1.0
-	%64 = fcmp ule double %62, %63
-	br i1 %64, label %65, label %67
-
-65:
-	%66 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %69
-
-67:
-	%68 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %69
-
-69:
-	%70 = phi i8* [ %66, %65 ], [ %68, %67 ]
-	%71 = call i64 @puts(i8* %70)
-	%72 = icmp sgt i64 1, 2
-	br i1 %72, label %73, label %75
-
-73:
-	%74 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %77
-
-75:
-	%76 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %77
-
-77:
-	%78 = phi i8* [ %74, %73 ], [ %76, %75 ]
-	%79 = call i64 @puts(i8* %78)
-	%80 = fdiv double 2.0, 2.0
-	%81 = fdiv double 2.0, 1.0
-	%82 = fcmp ugt double %80, %81
-	br i1 %82, label %83, label %85
-
-83:
-	%84 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %87
-
-85:
-	%86 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %87
-
-87:
-	%88 = phi i8* [ %84, %83 ], [ %86, %85 ]
-	%89 = call i64 @puts(i8* %88)
-	%90 = icmp sge i64 2, 2
-	br i1 %90, label %91, label %93
-
-91:
-	%92 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %95
-
-93:
-	%94 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %95
-
-95:
-	%96 = phi i8* [ %92, %91 ], [ %94, %93 ]
-	%97 = call i64 @puts(i8* %96)
-	%98 = fdiv double 2.0, 1.0
-	%99 = fdiv double 2.0, 1.0
-	%100 = fcmp uge double %98, %99
-	br i1 %100, label %101, label %103
-
-101:
-	%102 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %105
-
-103:
-	%104 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %105
-
-105:
-	%106 = phi i8* [ %102, %101 ], [ %104, %103 ]
-	%107 = call i64 @puts(i8* %106)
+	%62 = fdiv double 2.0, 2.0
+	%63 = fdiv double 2.0, 1.0
+	%64 = fcmp ugt double %62, %63
+	%65 = zext i1 %64 to i64
+	%66 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%67 = call i64 (i8*, ...) @printf(i8* %66, i64 %65)
+	%68 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%69 = call i64 @puts(i8* %68)
+	%70 = icmp sge i64 2, 2
+	%71 = zext i1 %70 to i64
+	%72 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%73 = call i64 (i8*, ...) @printf(i8* %72, i64 %71)
+	%74 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%75 = call i64 @puts(i8* %74)
+	%76 = fdiv double 2.0, 1.0
+	%77 = fdiv double 2.0, 1.0
+	%78 = fcmp uge double %76, %77
+	%79 = zext i1 %78 to i64
+	%80 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%81 = call i64 (i8*, ...) @printf(i8* %80, i64 %79)
+	%82 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%83 = call i64 @puts(i8* %82)
 	ret i64 0
 }
 
 ```
 ## Run
 ```bash
-FALSE
-TRUE
-TRUE
-FALSE
-TRUE
-FALSE
-TRUE
-TRUE
-FALSE
-FALSE
-TRUE
-TRUE
+0
+1
+1
+0
+1
+0
+1
+1
+0
+0
+1
+1
 ```

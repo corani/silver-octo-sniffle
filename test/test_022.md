@@ -12,7 +12,7 @@ BEGIN
   NEW(x);
   y := x;
   x^ := 33;
-  C.print(y^);
+  Texts.WriteInt(y^);   Texts.WriteLn;
   DELETE(x);
 END Pointers.
 ```
@@ -54,14 +54,18 @@ test/test_022.md:11:3:	caret	"^"	false	0	0.000000	(11, 3) -> (11, 4)
 test/test_022.md:11:5:	assign	":="	false	0	0.000000	(11, 5) -> (11, 7)
 test/test_022.md:11:8:	integer	"33"	false	33	0.000000	(11, 8) -> (11, 10)
 test/test_022.md:11:10:	semicolon	";"	false	0	0.000000	(11, 10) -> (11, 11)
-test/test_022.md:12:2:	ident	"C"	false	0	0.000000	(12, 2) -> (12, 3)
-test/test_022.md:12:3:	dot	"."	false	0	0.000000	(12, 3) -> (12, 4)
-test/test_022.md:12:4:	ident	"print"	false	0	0.000000	(12, 4) -> (12, 9)
-test/test_022.md:12:9:	lparen	"("	false	0	0.000000	(12, 9) -> (12, 10)
-test/test_022.md:12:10:	ident	"y"	false	0	0.000000	(12, 10) -> (12, 11)
-test/test_022.md:12:11:	caret	"^"	false	0	0.000000	(12, 11) -> (12, 12)
-test/test_022.md:12:12:	rparen	")"	false	0	0.000000	(12, 12) -> (12, 13)
-test/test_022.md:12:13:	semicolon	";"	false	0	0.000000	(12, 13) -> (12, 14)
+test/test_022.md:12:2:	ident	"Texts"	false	0	0.000000	(12, 2) -> (12, 7)
+test/test_022.md:12:7:	dot	"."	false	0	0.000000	(12, 7) -> (12, 8)
+test/test_022.md:12:8:	ident	"WriteInt"	false	0	0.000000	(12, 8) -> (12, 16)
+test/test_022.md:12:16:	lparen	"("	false	0	0.000000	(12, 16) -> (12, 17)
+test/test_022.md:12:17:	ident	"y"	false	0	0.000000	(12, 17) -> (12, 18)
+test/test_022.md:12:18:	caret	"^"	false	0	0.000000	(12, 18) -> (12, 19)
+test/test_022.md:12:19:	rparen	")"	false	0	0.000000	(12, 19) -> (12, 20)
+test/test_022.md:12:20:	semicolon	";"	false	0	0.000000	(12, 20) -> (12, 21)
+test/test_022.md:12:24:	ident	"Texts"	false	0	0.000000	(12, 24) -> (12, 29)
+test/test_022.md:12:29:	dot	"."	false	0	0.000000	(12, 29) -> (12, 30)
+test/test_022.md:12:30:	ident	"WriteLn"	false	0	0.000000	(12, 30) -> (12, 37)
+test/test_022.md:12:37:	semicolon	";"	false	0	0.000000	(12, 37) -> (12, 38)
 test/test_022.md:13:2:	ident	"DELETE"	false	0	0.000000	(13, 2) -> (13, 8)
 test/test_022.md:13:8:	lparen	"("	false	0	0.000000	(13, 8) -> (13, 9)
 test/test_022.md:13:9:	ident	"x"	false	0	0.000000	(13, 9) -> (13, 10)
@@ -111,8 +115,13 @@ test/test_022.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
+        (procedure [void] "Texts.WriteInt")
         (variable [i64] "y^")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
       )
     )
     (expr2stmt
@@ -128,7 +137,8 @@ test/test_022.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
 ```llvm
 @0 = global i64* inttoptr (i64 0 to i64*)
 @1 = global i64* inttoptr (i64 0 to i64*)
-@2 = global [4 x i8] c"%d\0A\00"
+@2 = global [3 x i8] c"%d\00"
+@3 = global [1 x i8] c"\00"
 
 declare i64 @puts(i8* %str)
 
@@ -153,11 +163,13 @@ entry:
 	store i64 33, i64* %3
 	%4 = load i64*, i64** @1
 	%5 = load i64, i64* %4
-	%6 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
+	%6 = getelementptr [3 x i8], [3 x i8]* @2, i64 0, i64 0
 	%7 = call i64 (i8*, ...) @printf(i8* %6, i64 %5)
-	%8 = load i64*, i64** @0
-	%9 = bitcast i64* %8 to i8*
-	%10 = call i8* @free(i8* %9)
+	%8 = getelementptr [1 x i8], [1 x i8]* @3, i64 0, i64 0
+	%9 = call i64 @puts(i8* %8)
+	%10 = load i64*, i64** @0
+	%11 = bitcast i64* %10 to i8*
+	%12 = call i8* @free(i8* %11)
 	ret i64 0
 }
 

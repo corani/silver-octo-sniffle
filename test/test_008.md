@@ -12,9 +12,9 @@ BEGIN
     res := x = y;
 
     IF res THEN
-        C.print("Equal")
+        Texts.WriteString("Equal");     Texts.WriteLn
     ELSE
-        C.print("Not Equal")
+        Texts.WriteString("Not Equal"); Texts.WriteLn
     END
 END GlobalVars.
 ```
@@ -52,19 +52,27 @@ test/test_008.md:9:16:	semicolon	";"	false	0	0.000000	(9, 16) -> (9, 17)
 test/test_008.md:11:4:	if	"IF"	false	0	0.000000	(11, 4) -> (11, 6)
 test/test_008.md:11:7:	ident	"res"	false	0	0.000000	(11, 7) -> (11, 10)
 test/test_008.md:11:11:	then	"THEN"	false	0	0.000000	(11, 11) -> (11, 15)
-test/test_008.md:12:8:	ident	"C"	false	0	0.000000	(12, 8) -> (12, 9)
-test/test_008.md:12:9:	dot	"."	false	0	0.000000	(12, 9) -> (12, 10)
-test/test_008.md:12:10:	ident	"print"	false	0	0.000000	(12, 10) -> (12, 15)
-test/test_008.md:12:15:	lparen	"("	false	0	0.000000	(12, 15) -> (12, 16)
-test/test_008.md:12:16:	string	"Equal"	false	0	0.000000	(12, 16) -> (12, 23)
-test/test_008.md:12:23:	rparen	")"	false	0	0.000000	(12, 23) -> (12, 24)
+test/test_008.md:12:8:	ident	"Texts"	false	0	0.000000	(12, 8) -> (12, 13)
+test/test_008.md:12:13:	dot	"."	false	0	0.000000	(12, 13) -> (12, 14)
+test/test_008.md:12:14:	ident	"WriteString"	false	0	0.000000	(12, 14) -> (12, 25)
+test/test_008.md:12:25:	lparen	"("	false	0	0.000000	(12, 25) -> (12, 26)
+test/test_008.md:12:26:	string	"Equal"	false	0	0.000000	(12, 26) -> (12, 33)
+test/test_008.md:12:33:	rparen	")"	false	0	0.000000	(12, 33) -> (12, 34)
+test/test_008.md:12:34:	semicolon	";"	false	0	0.000000	(12, 34) -> (12, 35)
+test/test_008.md:12:40:	ident	"Texts"	false	0	0.000000	(12, 40) -> (12, 45)
+test/test_008.md:12:45:	dot	"."	false	0	0.000000	(12, 45) -> (12, 46)
+test/test_008.md:12:46:	ident	"WriteLn"	false	0	0.000000	(12, 46) -> (12, 53)
 test/test_008.md:13:4:	else	"ELSE"	false	0	0.000000	(13, 4) -> (13, 8)
-test/test_008.md:14:8:	ident	"C"	false	0	0.000000	(14, 8) -> (14, 9)
-test/test_008.md:14:9:	dot	"."	false	0	0.000000	(14, 9) -> (14, 10)
-test/test_008.md:14:10:	ident	"print"	false	0	0.000000	(14, 10) -> (14, 15)
-test/test_008.md:14:15:	lparen	"("	false	0	0.000000	(14, 15) -> (14, 16)
-test/test_008.md:14:16:	string	"Not Equal"	false	0	0.000000	(14, 16) -> (14, 27)
-test/test_008.md:14:27:	rparen	")"	false	0	0.000000	(14, 27) -> (14, 28)
+test/test_008.md:14:8:	ident	"Texts"	false	0	0.000000	(14, 8) -> (14, 13)
+test/test_008.md:14:13:	dot	"."	false	0	0.000000	(14, 13) -> (14, 14)
+test/test_008.md:14:14:	ident	"WriteString"	false	0	0.000000	(14, 14) -> (14, 25)
+test/test_008.md:14:25:	lparen	"("	false	0	0.000000	(14, 25) -> (14, 26)
+test/test_008.md:14:26:	string	"Not Equal"	false	0	0.000000	(14, 26) -> (14, 37)
+test/test_008.md:14:37:	rparen	")"	false	0	0.000000	(14, 37) -> (14, 38)
+test/test_008.md:14:38:	semicolon	";"	false	0	0.000000	(14, 38) -> (14, 39)
+test/test_008.md:14:40:	ident	"Texts"	false	0	0.000000	(14, 40) -> (14, 45)
+test/test_008.md:14:45:	dot	"."	false	0	0.000000	(14, 45) -> (14, 46)
+test/test_008.md:14:46:	ident	"WriteLn"	false	0	0.000000	(14, 46) -> (14, 53)
 test/test_008.md:15:4:	end	"END"	false	0	0.000000	(15, 4) -> (15, 7)
 test/test_008.md:16:0:	end	"END"	false	0	0.000000	(16, 0) -> (16, 3)
 test/test_008.md:16:4:	ident	"GlobalVars"	false	0	0.000000	(16, 4) -> (16, 14)
@@ -106,16 +114,26 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteString")
             (string "Equal")
+          )
+        )
+        (expr2stmt
+          (call
+            (procedure [void] "Texts.WriteLn")
           )
         )
       )
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteString")
             (string "Not Equal")
+          )
+        )
+        (expr2stmt
+          (call
+            (procedure [void] "Texts.WriteLn")
           )
         )
       )
@@ -129,7 +147,8 @@ test/test_008.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 @1 = global i64 0
 @2 = global i1 false
 @3 = global [6 x i8] c"Equal\00"
-@4 = global [10 x i8] c"Not Equal\00"
+@4 = global [1 x i8] c"\00"
+@5 = global [10 x i8] c"Not Equal\00"
 
 declare i64 @puts(i8* %str)
 
@@ -152,19 +171,23 @@ entry:
 	%2 = icmp eq i64 %0, %1
 	store i1 %2, i1* @2
 	%3 = load i1, i1* @2
-	br i1 %3, label %4, label %7
+	br i1 %3, label %4, label %9
 
 4:
 	%5 = getelementptr [6 x i8], [6 x i8]* @3, i64 0, i64 0
-	%6 = call i64 @puts(i8* %5)
-	br label %10
+	%6 = call i64 (i8*, ...) @printf(i8* %5)
+	%7 = getelementptr [1 x i8], [1 x i8]* @4, i64 0, i64 0
+	%8 = call i64 @puts(i8* %7)
+	br label %14
 
-7:
-	%8 = getelementptr [10 x i8], [10 x i8]* @4, i64 0, i64 0
-	%9 = call i64 @puts(i8* %8)
-	br label %10
+9:
+	%10 = getelementptr [10 x i8], [10 x i8]* @5, i64 0, i64 0
+	%11 = call i64 (i8*, ...) @printf(i8* %10)
+	%12 = getelementptr [1 x i8], [1 x i8]* @4, i64 0, i64 0
+	%13 = call i64 @puts(i8* %12)
+	br label %14
 
-10:
+14:
 	ret i64 0
 }
 

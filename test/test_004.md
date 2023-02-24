@@ -4,12 +4,12 @@
 MODULE BooleanOperators;
 
 BEGIN
-    C.print(~TRUE);
-    C.print(~FALSE);
-    C.print(TRUE & FALSE);
-    C.print(TRUE OR FALSE);
-    C.print(ORD(TRUE));
-    C.print(ORD(FALSE))
+    Texts.WriteInt(ORD(~TRUE));         Texts.WriteLn;
+    Texts.WriteInt(ORD(~FALSE));        Texts.WriteLn;
+    Texts.WriteInt(ORD(TRUE & FALSE));  Texts.WriteLn;
+    Texts.WriteInt(ORD(TRUE OR FALSE)); Texts.WriteLn;
+    Texts.WriteInt(ORD(TRUE));          Texts.WriteLn;
+    Texts.WriteInt(ORD(FALSE))          Texts.WriteLn;
 END BooleanOperators.
 ```
 ## Tokens
@@ -18,215 +18,104 @@ test/test_004.md:1:1:	module	"MODULE"	false	0	0.000000	(1, 1) -> (1, 7)
 test/test_004.md:1:8:	ident	"BooleanOperators"	false	0	0.000000	(1, 8) -> (1, 24)
 test/test_004.md:1:24:	semicolon	";"	false	0	0.000000	(1, 24) -> (1, 25)
 test/test_004.md:3:0:	begin	"BEGIN"	false	0	0.000000	(3, 0) -> (3, 5)
-test/test_004.md:4:4:	ident	"C"	false	0	0.000000	(4, 4) -> (4, 5)
-test/test_004.md:4:5:	dot	"."	false	0	0.000000	(4, 5) -> (4, 6)
-test/test_004.md:4:6:	ident	"print"	false	0	0.000000	(4, 6) -> (4, 11)
-test/test_004.md:4:11:	lparen	"("	false	0	0.000000	(4, 11) -> (4, 12)
-test/test_004.md:4:12:	tilde	"~"	false	0	0.000000	(4, 12) -> (4, 13)
-test/test_004.md:4:13:	boolean	"TRUE"	true	0	0.000000	(4, 13) -> (4, 17)
-test/test_004.md:4:17:	rparen	")"	false	0	0.000000	(4, 17) -> (4, 18)
-test/test_004.md:4:18:	semicolon	";"	false	0	0.000000	(4, 18) -> (4, 19)
-test/test_004.md:5:4:	ident	"C"	false	0	0.000000	(5, 4) -> (5, 5)
-test/test_004.md:5:5:	dot	"."	false	0	0.000000	(5, 5) -> (5, 6)
-test/test_004.md:5:6:	ident	"print"	false	0	0.000000	(5, 6) -> (5, 11)
-test/test_004.md:5:11:	lparen	"("	false	0	0.000000	(5, 11) -> (5, 12)
-test/test_004.md:5:12:	tilde	"~"	false	0	0.000000	(5, 12) -> (5, 13)
-test/test_004.md:5:13:	boolean	"FALSE"	false	0	0.000000	(5, 13) -> (5, 18)
-test/test_004.md:5:18:	rparen	")"	false	0	0.000000	(5, 18) -> (5, 19)
-test/test_004.md:5:19:	semicolon	";"	false	0	0.000000	(5, 19) -> (5, 20)
-test/test_004.md:6:4:	ident	"C"	false	0	0.000000	(6, 4) -> (6, 5)
-test/test_004.md:6:5:	dot	"."	false	0	0.000000	(6, 5) -> (6, 6)
-test/test_004.md:6:6:	ident	"print"	false	0	0.000000	(6, 6) -> (6, 11)
-test/test_004.md:6:11:	lparen	"("	false	0	0.000000	(6, 11) -> (6, 12)
-test/test_004.md:6:12:	boolean	"TRUE"	true	0	0.000000	(6, 12) -> (6, 16)
-test/test_004.md:6:17:	ampersand	"&"	false	0	0.000000	(6, 17) -> (6, 18)
-test/test_004.md:6:19:	boolean	"FALSE"	false	0	0.000000	(6, 19) -> (6, 24)
-test/test_004.md:6:24:	rparen	")"	false	0	0.000000	(6, 24) -> (6, 25)
-test/test_004.md:6:25:	semicolon	";"	false	0	0.000000	(6, 25) -> (6, 26)
-test/test_004.md:7:4:	ident	"C"	false	0	0.000000	(7, 4) -> (7, 5)
-test/test_004.md:7:5:	dot	"."	false	0	0.000000	(7, 5) -> (7, 6)
-test/test_004.md:7:6:	ident	"print"	false	0	0.000000	(7, 6) -> (7, 11)
-test/test_004.md:7:11:	lparen	"("	false	0	0.000000	(7, 11) -> (7, 12)
-test/test_004.md:7:12:	boolean	"TRUE"	true	0	0.000000	(7, 12) -> (7, 16)
-test/test_004.md:7:17:	or	"OR"	false	0	0.000000	(7, 17) -> (7, 19)
-test/test_004.md:7:20:	boolean	"FALSE"	false	0	0.000000	(7, 20) -> (7, 25)
-test/test_004.md:7:25:	rparen	")"	false	0	0.000000	(7, 25) -> (7, 26)
-test/test_004.md:7:26:	semicolon	";"	false	0	0.000000	(7, 26) -> (7, 27)
-test/test_004.md:8:4:	ident	"C"	false	0	0.000000	(8, 4) -> (8, 5)
-test/test_004.md:8:5:	dot	"."	false	0	0.000000	(8, 5) -> (8, 6)
-test/test_004.md:8:6:	ident	"print"	false	0	0.000000	(8, 6) -> (8, 11)
-test/test_004.md:8:11:	lparen	"("	false	0	0.000000	(8, 11) -> (8, 12)
-test/test_004.md:8:12:	ident	"ORD"	false	0	0.000000	(8, 12) -> (8, 15)
-test/test_004.md:8:15:	lparen	"("	false	0	0.000000	(8, 15) -> (8, 16)
-test/test_004.md:8:16:	boolean	"TRUE"	true	0	0.000000	(8, 16) -> (8, 20)
-test/test_004.md:8:20:	rparen	")"	false	0	0.000000	(8, 20) -> (8, 21)
-test/test_004.md:8:21:	rparen	")"	false	0	0.000000	(8, 21) -> (8, 22)
-test/test_004.md:8:22:	semicolon	";"	false	0	0.000000	(8, 22) -> (8, 23)
-test/test_004.md:9:4:	ident	"C"	false	0	0.000000	(9, 4) -> (9, 5)
-test/test_004.md:9:5:	dot	"."	false	0	0.000000	(9, 5) -> (9, 6)
-test/test_004.md:9:6:	ident	"print"	false	0	0.000000	(9, 6) -> (9, 11)
-test/test_004.md:9:11:	lparen	"("	false	0	0.000000	(9, 11) -> (9, 12)
-test/test_004.md:9:12:	ident	"ORD"	false	0	0.000000	(9, 12) -> (9, 15)
-test/test_004.md:9:15:	lparen	"("	false	0	0.000000	(9, 15) -> (9, 16)
-test/test_004.md:9:16:	boolean	"FALSE"	false	0	0.000000	(9, 16) -> (9, 21)
-test/test_004.md:9:21:	rparen	")"	false	0	0.000000	(9, 21) -> (9, 22)
-test/test_004.md:9:22:	rparen	")"	false	0	0.000000	(9, 22) -> (9, 23)
+test/test_004.md:4:4:	ident	"Texts"	false	0	0.000000	(4, 4) -> (4, 9)
+test/test_004.md:4:9:	dot	"."	false	0	0.000000	(4, 9) -> (4, 10)
+test/test_004.md:4:10:	ident	"WriteInt"	false	0	0.000000	(4, 10) -> (4, 18)
+test/test_004.md:4:18:	lparen	"("	false	0	0.000000	(4, 18) -> (4, 19)
+test/test_004.md:4:19:	ident	"ORD"	false	0	0.000000	(4, 19) -> (4, 22)
+test/test_004.md:4:22:	lparen	"("	false	0	0.000000	(4, 22) -> (4, 23)
+test/test_004.md:4:23:	tilde	"~"	false	0	0.000000	(4, 23) -> (4, 24)
+test/test_004.md:4:24:	boolean	"TRUE"	true	0	0.000000	(4, 24) -> (4, 28)
+test/test_004.md:4:28:	rparen	")"	false	0	0.000000	(4, 28) -> (4, 29)
+test/test_004.md:4:29:	rparen	")"	false	0	0.000000	(4, 29) -> (4, 30)
+test/test_004.md:4:30:	semicolon	";"	false	0	0.000000	(4, 30) -> (4, 31)
+test/test_004.md:4:40:	ident	"Texts"	false	0	0.000000	(4, 40) -> (4, 45)
+test/test_004.md:4:45:	dot	"."	false	0	0.000000	(4, 45) -> (4, 46)
+test/test_004.md:4:46:	ident	"WriteLn"	false	0	0.000000	(4, 46) -> (4, 53)
+test/test_004.md:4:53:	semicolon	";"	false	0	0.000000	(4, 53) -> (4, 54)
+test/test_004.md:5:4:	ident	"Texts"	false	0	0.000000	(5, 4) -> (5, 9)
+test/test_004.md:5:9:	dot	"."	false	0	0.000000	(5, 9) -> (5, 10)
+test/test_004.md:5:10:	ident	"WriteInt"	false	0	0.000000	(5, 10) -> (5, 18)
+test/test_004.md:5:18:	lparen	"("	false	0	0.000000	(5, 18) -> (5, 19)
+test/test_004.md:5:19:	ident	"ORD"	false	0	0.000000	(5, 19) -> (5, 22)
+test/test_004.md:5:22:	lparen	"("	false	0	0.000000	(5, 22) -> (5, 23)
+test/test_004.md:5:23:	tilde	"~"	false	0	0.000000	(5, 23) -> (5, 24)
+test/test_004.md:5:24:	boolean	"FALSE"	false	0	0.000000	(5, 24) -> (5, 29)
+test/test_004.md:5:29:	rparen	")"	false	0	0.000000	(5, 29) -> (5, 30)
+test/test_004.md:5:30:	rparen	")"	false	0	0.000000	(5, 30) -> (5, 31)
+test/test_004.md:5:31:	semicolon	";"	false	0	0.000000	(5, 31) -> (5, 32)
+test/test_004.md:5:40:	ident	"Texts"	false	0	0.000000	(5, 40) -> (5, 45)
+test/test_004.md:5:45:	dot	"."	false	0	0.000000	(5, 45) -> (5, 46)
+test/test_004.md:5:46:	ident	"WriteLn"	false	0	0.000000	(5, 46) -> (5, 53)
+test/test_004.md:5:53:	semicolon	";"	false	0	0.000000	(5, 53) -> (5, 54)
+test/test_004.md:6:4:	ident	"Texts"	false	0	0.000000	(6, 4) -> (6, 9)
+test/test_004.md:6:9:	dot	"."	false	0	0.000000	(6, 9) -> (6, 10)
+test/test_004.md:6:10:	ident	"WriteInt"	false	0	0.000000	(6, 10) -> (6, 18)
+test/test_004.md:6:18:	lparen	"("	false	0	0.000000	(6, 18) -> (6, 19)
+test/test_004.md:6:19:	ident	"ORD"	false	0	0.000000	(6, 19) -> (6, 22)
+test/test_004.md:6:22:	lparen	"("	false	0	0.000000	(6, 22) -> (6, 23)
+test/test_004.md:6:23:	boolean	"TRUE"	true	0	0.000000	(6, 23) -> (6, 27)
+test/test_004.md:6:28:	ampersand	"&"	false	0	0.000000	(6, 28) -> (6, 29)
+test/test_004.md:6:30:	boolean	"FALSE"	false	0	0.000000	(6, 30) -> (6, 35)
+test/test_004.md:6:35:	rparen	")"	false	0	0.000000	(6, 35) -> (6, 36)
+test/test_004.md:6:36:	rparen	")"	false	0	0.000000	(6, 36) -> (6, 37)
+test/test_004.md:6:37:	semicolon	";"	false	0	0.000000	(6, 37) -> (6, 38)
+test/test_004.md:6:40:	ident	"Texts"	false	0	0.000000	(6, 40) -> (6, 45)
+test/test_004.md:6:45:	dot	"."	false	0	0.000000	(6, 45) -> (6, 46)
+test/test_004.md:6:46:	ident	"WriteLn"	false	0	0.000000	(6, 46) -> (6, 53)
+test/test_004.md:6:53:	semicolon	";"	false	0	0.000000	(6, 53) -> (6, 54)
+test/test_004.md:7:4:	ident	"Texts"	false	0	0.000000	(7, 4) -> (7, 9)
+test/test_004.md:7:9:	dot	"."	false	0	0.000000	(7, 9) -> (7, 10)
+test/test_004.md:7:10:	ident	"WriteInt"	false	0	0.000000	(7, 10) -> (7, 18)
+test/test_004.md:7:18:	lparen	"("	false	0	0.000000	(7, 18) -> (7, 19)
+test/test_004.md:7:19:	ident	"ORD"	false	0	0.000000	(7, 19) -> (7, 22)
+test/test_004.md:7:22:	lparen	"("	false	0	0.000000	(7, 22) -> (7, 23)
+test/test_004.md:7:23:	boolean	"TRUE"	true	0	0.000000	(7, 23) -> (7, 27)
+test/test_004.md:7:28:	or	"OR"	false	0	0.000000	(7, 28) -> (7, 30)
+test/test_004.md:7:31:	boolean	"FALSE"	false	0	0.000000	(7, 31) -> (7, 36)
+test/test_004.md:7:36:	rparen	")"	false	0	0.000000	(7, 36) -> (7, 37)
+test/test_004.md:7:37:	rparen	")"	false	0	0.000000	(7, 37) -> (7, 38)
+test/test_004.md:7:38:	semicolon	";"	false	0	0.000000	(7, 38) -> (7, 39)
+test/test_004.md:7:40:	ident	"Texts"	false	0	0.000000	(7, 40) -> (7, 45)
+test/test_004.md:7:45:	dot	"."	false	0	0.000000	(7, 45) -> (7, 46)
+test/test_004.md:7:46:	ident	"WriteLn"	false	0	0.000000	(7, 46) -> (7, 53)
+test/test_004.md:7:53:	semicolon	";"	false	0	0.000000	(7, 53) -> (7, 54)
+test/test_004.md:8:4:	ident	"Texts"	false	0	0.000000	(8, 4) -> (8, 9)
+test/test_004.md:8:9:	dot	"."	false	0	0.000000	(8, 9) -> (8, 10)
+test/test_004.md:8:10:	ident	"WriteInt"	false	0	0.000000	(8, 10) -> (8, 18)
+test/test_004.md:8:18:	lparen	"("	false	0	0.000000	(8, 18) -> (8, 19)
+test/test_004.md:8:19:	ident	"ORD"	false	0	0.000000	(8, 19) -> (8, 22)
+test/test_004.md:8:22:	lparen	"("	false	0	0.000000	(8, 22) -> (8, 23)
+test/test_004.md:8:23:	boolean	"TRUE"	true	0	0.000000	(8, 23) -> (8, 27)
+test/test_004.md:8:27:	rparen	")"	false	0	0.000000	(8, 27) -> (8, 28)
+test/test_004.md:8:28:	rparen	")"	false	0	0.000000	(8, 28) -> (8, 29)
+test/test_004.md:8:29:	semicolon	";"	false	0	0.000000	(8, 29) -> (8, 30)
+test/test_004.md:8:40:	ident	"Texts"	false	0	0.000000	(8, 40) -> (8, 45)
+test/test_004.md:8:45:	dot	"."	false	0	0.000000	(8, 45) -> (8, 46)
+test/test_004.md:8:46:	ident	"WriteLn"	false	0	0.000000	(8, 46) -> (8, 53)
+test/test_004.md:8:53:	semicolon	";"	false	0	0.000000	(8, 53) -> (8, 54)
+test/test_004.md:9:4:	ident	"Texts"	false	0	0.000000	(9, 4) -> (9, 9)
+test/test_004.md:9:9:	dot	"."	false	0	0.000000	(9, 9) -> (9, 10)
+test/test_004.md:9:10:	ident	"WriteInt"	false	0	0.000000	(9, 10) -> (9, 18)
+test/test_004.md:9:18:	lparen	"("	false	0	0.000000	(9, 18) -> (9, 19)
+test/test_004.md:9:19:	ident	"ORD"	false	0	0.000000	(9, 19) -> (9, 22)
+test/test_004.md:9:22:	lparen	"("	false	0	0.000000	(9, 22) -> (9, 23)
+test/test_004.md:9:23:	boolean	"FALSE"	false	0	0.000000	(9, 23) -> (9, 28)
+test/test_004.md:9:28:	rparen	")"	false	0	0.000000	(9, 28) -> (9, 29)
+test/test_004.md:9:29:	rparen	")"	false	0	0.000000	(9, 29) -> (9, 30)
+test/test_004.md:9:40:	ident	"Texts"	false	0	0.000000	(9, 40) -> (9, 45)
+test/test_004.md:9:45:	dot	"."	false	0	0.000000	(9, 45) -> (9, 46)
+test/test_004.md:9:46:	ident	"WriteLn"	false	0	0.000000	(9, 46) -> (9, 53)
+test/test_004.md:9:53:	semicolon	";"	false	0	0.000000	(9, 53) -> (9, 54)
 test/test_004.md:10:0:	end	"END"	false	0	0.000000	(10, 0) -> (10, 3)
 test/test_004.md:10:4:	ident	"BooleanOperators"	false	0	0.000000	(10, 4) -> (10, 20)
 test/test_004.md:10:20:	dot	"."	false	0	0.000000	(10, 20) -> (10, 21)
 test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
 ```
-## AST
-```scheme
-(module "BooleanOperators"
-  (stmts
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (not [boolean]
-          #true
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (not [boolean]
-          #false
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (ampersand [boolean]
-          #true
-          #false
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (or [boolean]
-          #true
-          #false
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (call
-          (procedure [i64] "ORD")
-          #true
-        )
-      )
-    )
-    (expr2stmt
-      (call
-        (procedure [void] "C.print")
-        (call
-          (procedure [i64] "ORD")
-          #false
-        )
-      )
-    )
-  )
-)
+## Parser errors
 ```
-## IR
-```llvm
-@0 = global [5 x i8] c"TRUE\00"
-@1 = global [6 x i8] c"FALSE\00"
-@2 = global [4 x i8] c"%d\0A\00"
-
-declare i64 @puts(i8* %str)
-
-declare i64 @rand()
-
-declare i64 @sprintf(i8* %buf, i8* %format, ...)
-
-declare i64 @printf(i8* %format, ...)
-
-declare i8* @malloc(i64 %size)
-
-declare i8* @free(i8* %ptr)
-
-define i64 @main() {
-entry:
-	%0 = icmp eq i1 true, false
-	br i1 %0, label %1, label %3
-
-1:
-	%2 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %5
-
-3:
-	%4 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %5
-
-5:
-	%6 = phi i8* [ %2, %1 ], [ %4, %3 ]
-	%7 = call i64 @puts(i8* %6)
-	%8 = icmp eq i1 false, false
-	br i1 %8, label %9, label %11
-
-9:
-	%10 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %13
-
-11:
-	%12 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %13
-
-13:
-	%14 = phi i8* [ %10, %9 ], [ %12, %11 ]
-	%15 = call i64 @puts(i8* %14)
-	%16 = and i1 true, false
-	br i1 %16, label %17, label %19
-
-17:
-	%18 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %21
-
-19:
-	%20 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %21
-
-21:
-	%22 = phi i8* [ %18, %17 ], [ %20, %19 ]
-	%23 = call i64 @puts(i8* %22)
-	%24 = or i1 true, false
-	br i1 %24, label %25, label %27
-
-25:
-	%26 = getelementptr [5 x i8], [5 x i8]* @0, i64 0, i64 0
-	br label %29
-
-27:
-	%28 = getelementptr [6 x i8], [6 x i8]* @1, i64 0, i64 0
-	br label %29
-
-29:
-	%30 = phi i8* [ %26, %25 ], [ %28, %27 ]
-	%31 = call i64 @puts(i8* %30)
-	%32 = zext i1 true to i64
-	%33 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
-	%34 = call i64 (i8*, ...) @printf(i8* %33, i64 %32)
-	%35 = zext i1 false to i64
-	%36 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
-	%37 = call i64 (i8*, ...) @printf(i8* %36, i64 %35)
-	ret i64 0
-}
-
-```
-## Run
-```bash
-FALSE
-TRUE
-FALSE
-TRUE
-1
-0
+test/test_004.md:9:40: ERROR: unexpected token: Texts
+test/test_004.md:9:40: INFO : expected: semicolon
+test/test_004.md:9:53: ERROR: unexpected token: ;
+test/test_004.md:9:53: INFO : expected: end
 ```

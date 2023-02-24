@@ -586,22 +586,22 @@ func (p *Parser) parseReturnStmt() ast.Stmt {
 }
 
 func (p *Parser) parseCallExpr(des *ast.DesignatorExpr) ast.Expr {
-	p.consume(token.TokenLParen)
-
 	var args []ast.Expr
 
-	for p.currentType() != token.TokenRParen {
-		expr := p.parseExpr()
+	if p.expect(token.TokenLParen) {
+		for p.currentType() != token.TokenRParen {
+			expr := p.parseExpr()
 
-		args = append(args, expr)
+			args = append(args, expr)
 
-		if !p.expect(token.TokenComma) {
-			break
+			if !p.expect(token.TokenComma) {
+				break
+			}
 		}
-	}
 
-	if _, err := p.require(token.TokenRParen); err != nil {
-		p.findNextSyncPoint(token.TokenSemicolon, token.TokenEND)
+		if _, err := p.require(token.TokenRParen); err != nil {
+			p.findNextSyncPoint(token.TokenSemicolon, token.TokenEND)
+		}
 	}
 
 	return ast.NewCallExpr(des, args)

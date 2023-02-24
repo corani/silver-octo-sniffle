@@ -9,9 +9,11 @@ VAR x: INTEGER;
 BEGIN
   x := 0; y := 1;
   WHILE x < 10 DO
-    INC(x); C.print(x*y)
+    INC(x); 
+    Texts.WriteInt(x*y);  Texts.Write(",")
   ELSIF y < 10 DO 
     INC(y); x := 0;
+    Texts.WriteLn
   END
 END ExtendedWhile.
 ```
@@ -48,33 +50,43 @@ test/test_014.md:9:7:	lparen	"("	false	0	0.000000	(9, 7) -> (9, 8)
 test/test_014.md:9:8:	ident	"x"	false	0	0.000000	(9, 8) -> (9, 9)
 test/test_014.md:9:9:	rparen	")"	false	0	0.000000	(9, 9) -> (9, 10)
 test/test_014.md:9:10:	semicolon	";"	false	0	0.000000	(9, 10) -> (9, 11)
-test/test_014.md:9:12:	ident	"C"	false	0	0.000000	(9, 12) -> (9, 13)
-test/test_014.md:9:13:	dot	"."	false	0	0.000000	(9, 13) -> (9, 14)
-test/test_014.md:9:14:	ident	"print"	false	0	0.000000	(9, 14) -> (9, 19)
-test/test_014.md:9:19:	lparen	"("	false	0	0.000000	(9, 19) -> (9, 20)
-test/test_014.md:9:20:	ident	"x"	false	0	0.000000	(9, 20) -> (9, 21)
-test/test_014.md:9:21:	asterisk	"*"	false	0	0.000000	(9, 21) -> (9, 22)
-test/test_014.md:9:22:	ident	"y"	false	0	0.000000	(9, 22) -> (9, 23)
-test/test_014.md:9:23:	rparen	")"	false	0	0.000000	(9, 23) -> (9, 24)
-test/test_014.md:10:2:	elsif	"ELSIF"	false	0	0.000000	(10, 2) -> (10, 7)
-test/test_014.md:10:8:	ident	"y"	false	0	0.000000	(10, 8) -> (10, 9)
-test/test_014.md:10:10:	lt	"<"	false	0	0.000000	(10, 10) -> (10, 11)
-test/test_014.md:10:12:	integer	"10"	false	10	0.000000	(10, 12) -> (10, 14)
-test/test_014.md:10:15:	do	"DO"	false	0	0.000000	(10, 15) -> (10, 17)
-test/test_014.md:11:4:	ident	"INC"	false	0	0.000000	(11, 4) -> (11, 7)
-test/test_014.md:11:7:	lparen	"("	false	0	0.000000	(11, 7) -> (11, 8)
+test/test_014.md:10:4:	ident	"Texts"	false	0	0.000000	(10, 4) -> (10, 9)
+test/test_014.md:10:9:	dot	"."	false	0	0.000000	(10, 9) -> (10, 10)
+test/test_014.md:10:10:	ident	"WriteInt"	false	0	0.000000	(10, 10) -> (10, 18)
+test/test_014.md:10:18:	lparen	"("	false	0	0.000000	(10, 18) -> (10, 19)
+test/test_014.md:10:19:	ident	"x"	false	0	0.000000	(10, 19) -> (10, 20)
+test/test_014.md:10:20:	asterisk	"*"	false	0	0.000000	(10, 20) -> (10, 21)
+test/test_014.md:10:21:	ident	"y"	false	0	0.000000	(10, 21) -> (10, 22)
+test/test_014.md:10:22:	rparen	")"	false	0	0.000000	(10, 22) -> (10, 23)
+test/test_014.md:10:23:	semicolon	";"	false	0	0.000000	(10, 23) -> (10, 24)
+test/test_014.md:10:26:	ident	"Texts"	false	0	0.000000	(10, 26) -> (10, 31)
+test/test_014.md:10:31:	dot	"."	false	0	0.000000	(10, 31) -> (10, 32)
+test/test_014.md:10:32:	ident	"Write"	false	0	0.000000	(10, 32) -> (10, 37)
+test/test_014.md:10:37:	lparen	"("	false	0	0.000000	(10, 37) -> (10, 38)
+test/test_014.md:10:38:	string	","	false	0	0.000000	(10, 38) -> (10, 41)
+test/test_014.md:10:41:	rparen	")"	false	0	0.000000	(10, 41) -> (10, 42)
+test/test_014.md:11:2:	elsif	"ELSIF"	false	0	0.000000	(11, 2) -> (11, 7)
 test/test_014.md:11:8:	ident	"y"	false	0	0.000000	(11, 8) -> (11, 9)
-test/test_014.md:11:9:	rparen	")"	false	0	0.000000	(11, 9) -> (11, 10)
-test/test_014.md:11:10:	semicolon	";"	false	0	0.000000	(11, 10) -> (11, 11)
-test/test_014.md:11:12:	ident	"x"	false	0	0.000000	(11, 12) -> (11, 13)
-test/test_014.md:11:14:	assign	":="	false	0	0.000000	(11, 14) -> (11, 16)
-test/test_014.md:11:17:	integer	"0"	false	0	0.000000	(11, 17) -> (11, 18)
-test/test_014.md:11:18:	semicolon	";"	false	0	0.000000	(11, 18) -> (11, 19)
-test/test_014.md:12:2:	end	"END"	false	0	0.000000	(12, 2) -> (12, 5)
-test/test_014.md:13:0:	end	"END"	false	0	0.000000	(13, 0) -> (13, 3)
-test/test_014.md:13:4:	ident	"ExtendedWhile"	false	0	0.000000	(13, 4) -> (13, 17)
-test/test_014.md:13:17:	dot	"."	false	0	0.000000	(13, 17) -> (13, 18)
-test/test_014.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
+test/test_014.md:11:10:	lt	"<"	false	0	0.000000	(11, 10) -> (11, 11)
+test/test_014.md:11:12:	integer	"10"	false	10	0.000000	(11, 12) -> (11, 14)
+test/test_014.md:11:15:	do	"DO"	false	0	0.000000	(11, 15) -> (11, 17)
+test/test_014.md:12:4:	ident	"INC"	false	0	0.000000	(12, 4) -> (12, 7)
+test/test_014.md:12:7:	lparen	"("	false	0	0.000000	(12, 7) -> (12, 8)
+test/test_014.md:12:8:	ident	"y"	false	0	0.000000	(12, 8) -> (12, 9)
+test/test_014.md:12:9:	rparen	")"	false	0	0.000000	(12, 9) -> (12, 10)
+test/test_014.md:12:10:	semicolon	";"	false	0	0.000000	(12, 10) -> (12, 11)
+test/test_014.md:12:12:	ident	"x"	false	0	0.000000	(12, 12) -> (12, 13)
+test/test_014.md:12:14:	assign	":="	false	0	0.000000	(12, 14) -> (12, 16)
+test/test_014.md:12:17:	integer	"0"	false	0	0.000000	(12, 17) -> (12, 18)
+test/test_014.md:12:18:	semicolon	";"	false	0	0.000000	(12, 18) -> (12, 19)
+test/test_014.md:13:4:	ident	"Texts"	false	0	0.000000	(13, 4) -> (13, 9)
+test/test_014.md:13:9:	dot	"."	false	0	0.000000	(13, 9) -> (13, 10)
+test/test_014.md:13:10:	ident	"WriteLn"	false	0	0.000000	(13, 10) -> (13, 17)
+test/test_014.md:14:2:	end	"END"	false	0	0.000000	(14, 2) -> (14, 5)
+test/test_014.md:15:0:	end	"END"	false	0	0.000000	(15, 0) -> (15, 3)
+test/test_014.md:15:4:	ident	"ExtendedWhile"	false	0	0.000000	(15, 4) -> (15, 17)
+test/test_014.md:15:17:	dot	"."	false	0	0.000000	(15, 17) -> (15, 18)
+test/test_014.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
 ```
 ## AST
 ```scheme
@@ -111,11 +123,17 @@ test/test_014.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
           )
           (expr2stmt
             (call
-              (procedure [void] "C.print")
+              (procedure [void] "Texts.WriteInt")
               (asterisk [i64]
                 (variable [i64] "x")
                 (variable [i64] "y")
               )
+            )
+          )
+          (expr2stmt
+            (call
+              (procedure [void] "Texts.Write")
+              (char ",")
             )
           )
         )
@@ -136,6 +154,11 @@ test/test_014.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
             (variable [i64] "x")
             (number [i64] 0)
           )
+          (expr2stmt
+            (call
+              (procedure [void] "Texts.WriteLn")
+            )
+          )
         )
       )
     )
@@ -146,7 +169,9 @@ test/test_014.md:14:0:	eof	""	false	0	0.000000	(14, 0) -> (14, 0)
 ```llvm
 @0 = global i64 0
 @1 = global i64 0
-@2 = global [4 x i8] c"%d\0A\00"
+@2 = global [3 x i8] c"%d\00"
+@3 = global [3 x i8] c"%c\00"
+@4 = global [1 x i8] c"\00"
 
 declare i64 @puts(i8* %str)
 
@@ -169,7 +194,7 @@ entry:
 0:
 	%1 = load i64, i64* @0
 	%2 = icmp slt i64 %1, 10
-	br i1 %2, label %3, label %11
+	br i1 %2, label %3, label %13
 
 3:
 	%4 = load i64, i64* @0
@@ -178,127 +203,40 @@ entry:
 	%6 = load i64, i64* @0
 	%7 = load i64, i64* @1
 	%8 = mul i64 %6, %7
-	%9 = getelementptr [4 x i8], [4 x i8]* @2, i64 0, i64 0
+	%9 = getelementptr [3 x i8], [3 x i8]* @2, i64 0, i64 0
 	%10 = call i64 (i8*, ...) @printf(i8* %9, i64 %8)
+	%11 = getelementptr [3 x i8], [3 x i8]* @3, i64 0, i64 0
+	%12 = call i64 (i8*, ...) @printf(i8* %11, i8 44)
 	br label %0
 
-11:
-	%12 = load i64, i64* @1
-	%13 = icmp slt i64 %12, 10
-	br i1 %13, label %14, label %17
+13:
+	%14 = load i64, i64* @1
+	%15 = icmp slt i64 %14, 10
+	br i1 %15, label %16, label %21
 
-14:
-	%15 = load i64, i64* @1
-	%16 = add i64 %15, 1
-	store i64 %16, i64* @1
+16:
+	%17 = load i64, i64* @1
+	%18 = add i64 %17, 1
+	store i64 %18, i64* @1
 	store i64 0, i64* @0
+	%19 = getelementptr [1 x i8], [1 x i8]* @4, i64 0, i64 0
+	%20 = call i64 @puts(i8* %19)
 	br label %0
 
-17:
+21:
 	ret i64 0
 }
 
 ```
 ## Run
 ```bash
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-2
-4
-6
-8
-10
-12
-14
-16
-18
-20
-3
-6
-9
-12
-15
-18
-21
-24
-27
-30
-4
-8
-12
-16
-20
-24
-28
-32
-36
-40
-5
-10
-15
-20
-25
-30
-35
-40
-45
-50
-6
-12
-18
-24
-30
-36
-42
-48
-54
-60
-7
-14
-21
-28
-35
-42
-49
-56
-63
-70
-8
-16
-24
-32
-40
-48
-56
-64
-72
-80
-9
-18
-27
-36
-45
-54
-63
-72
-81
-90
-10
-20
-30
-40
-50
-60
-70
-80
-90
-100
-```
+1,2,3,4,5,6,7,8,9,10,
+2,4,6,8,10,12,14,16,18,20,
+3,6,9,12,15,18,21,24,27,30,
+4,8,12,16,20,24,28,32,36,40,
+5,10,15,20,25,30,35,40,45,50,
+6,12,18,24,30,36,42,48,54,60,
+7,14,21,28,35,42,49,56,63,70,
+8,16,24,32,40,48,56,64,72,80,
+9,18,27,36,45,54,63,72,81,90,
+10,20,30,40,50,60,70,80,90,100,```
