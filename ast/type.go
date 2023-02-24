@@ -57,21 +57,21 @@ type TypeDecl interface {
 
 // ----- TypeRef --------------------------------------------------------------
 
-func NewTypeRef(token token.Token) *TypeRef {
+func NewTypeRef(q *QualIdent) *TypeRef {
 	return &TypeRef{
-		token: token,
+		qualIdent: q,
 	}
 }
 
 type TypeRef struct {
-	token    token.Token
-	typeDecl TypeDecl
+	qualIdent *QualIdent
+	typeDecl  TypeDecl
 }
 
 var _ TypeDecl = (*TypeRef)(nil)
 
 func (t *TypeRef) Token() token.Token {
-	return t.token
+	return t.qualIdent.Token()
 }
 
 func (t *TypeRef) Visit(v AstVisitor) {

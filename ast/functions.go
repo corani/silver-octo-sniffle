@@ -79,7 +79,6 @@ type Function interface {
 }
 
 type BuiltinVisitor interface {
-	VisitBuiltinPrint(*BuiltinPrint, []Expr)
 	VisitBuiltinABS(*BuiltinABS, []Expr)
 	VisitBuiltinODD(*BuiltinODD, []Expr)
 	VisitBuiltinLSL(*BuiltinLSL, []Expr)
@@ -99,11 +98,14 @@ type BuiltinVisitor interface {
 	VisitBuiltinNEW(*BuiltinNEW, []Expr)
 	VisitBuiltinDELETE(*BuiltinDELETE, []Expr)
 	VisitBuiltinASSERT(*BuiltinASSERT, []Expr)
+
+	VisitCPrint(*CPrint, []Expr)
+
+	VisitTextsWriteInt(*TextsWriteInt, []Expr)
 }
 
 func GetBuiltinFunctions() map[string]Function {
 	return map[string]Function{
-		"print":  newBuiltinPrint(),
 		"ABS":    newBuiltinABS(),
 		"ODD":    newBuiltinODD(),
 		"LSL":    newBuiltinLSL(),
@@ -126,16 +128,28 @@ func GetBuiltinFunctions() map[string]Function {
 	}
 }
 
+func GetTextsFunctions() map[string]Function {
+	return map[string]Function{
+		"WriteInt": newTextsWriteInt(),
+	}
+}
+
+func GetCFunctions() map[string]Function {
+	return map[string]Function{
+		"print": newCPrint(),
+	}
+}
+
 // ----- print ----------------------------------------------------------------
 
-type BuiltinPrint struct {
+type CPrint struct {
 	function
 }
 
-var _ Function = (*BuiltinPrint)(nil)
+var _ Function = (*CPrint)(nil)
 
-func newBuiltinPrint() *BuiltinPrint {
-	return &BuiltinPrint{
+func newCPrint() *CPrint {
+	return &CPrint{
 		function: newFunction([]functionOverload{
 			{
 				returnType: TypeVoid,
@@ -177,8 +191,8 @@ func newBuiltinPrint() *BuiltinPrint {
 	}
 }
 
-func (f *BuiltinPrint) Visit(v BuiltinVisitor, args []Expr) {
-	v.VisitBuiltinPrint(f, args)
+func (f *CPrint) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitCPrint(f, args)
 }
 
 // ----- ABS ------------------------------------------------------------------
@@ -694,4 +708,29 @@ func newBuiltinASSERT() *BuiltinASSERT {
 
 func (f *BuiltinASSERT) Visit(v BuiltinVisitor, args []Expr) {
 	v.VisitBuiltinASSERT(f, args)
+}
+
+// ----- TextsWriteInt ---------------------------------------------------------------
+
+type TextsWriteInt struct {
+	function
+}
+
+var _ Function = (*TextsWriteInt)(nil)
+
+func newTextsWriteInt() *TextsWriteInt {
+	return &TextsWriteInt{
+		function: newFunction([]functionOverload{
+			{
+				returnType: TypeVoid,
+				args: []functionArg{
+					{Type: TypeInt64, Kind: KindUndefined},
+				},
+			},
+		}),
+	}
+}
+
+func (f *TextsWriteInt) Visit(v BuiltinVisitor, args []Expr) {
+	v.VisitTextsWriteInt(f, args)
 }

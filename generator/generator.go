@@ -682,7 +682,7 @@ func (g *Generator) VisitBuiltinDELETE(f *ast.BuiltinDELETE, args []ast.Expr) {
 func (g *Generator) VisitBuiltinASSERT(f *ast.BuiltinASSERT, args []ast.Expr) {
 }
 
-func (g *Generator) VisitBuiltinPrint(f *ast.BuiltinPrint, args []ast.Expr) {
+func (g *Generator) VisitCPrint(f *ast.CPrint, args []ast.Expr) {
 	arg := args[0]
 
 	// NOTE(daniel): we could probably do something smarter here, but for now this works.
@@ -703,6 +703,10 @@ func (g *Generator) VisitBuiltinPrint(f *ast.BuiltinPrint, args []ast.Expr) {
 		g.out.Errorf(arg.Token(), "don't know how to print type: %s",
 			arg.Type())
 	}
+}
+
+func (g *Generator) VisitTextsWriteInt(f *ast.TextsWriteInt, args []ast.Expr) {
+	g.printInteger(args[0])
 }
 
 func (g *Generator) printInteger(arg ast.Expr) {

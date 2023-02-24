@@ -10,21 +10,21 @@ CONST x = 1;
 
 BEGIN
     IF FLT(x) = y THEN
-        print("Equal")
+        C.print("Equal")
     ELSE
-        print("Not Equal")
+        C.print("Not Equal")
     END;
 
     IF FLT(x) + y = z THEN
-        print("Equal")
+        C.print("Equal")
     ELSE
-        print("Not Equal")
+        C.print("Not Equal")
     END;
 
     IF ne THEN
-        print("Not Equal")
+        C.print("Not Equal")
     ELSE
-        print("Equal")
+        C.print("Equal")
     END;
 END GlobalConsts.
 ```
@@ -71,15 +71,19 @@ test/test_009.md:9:12:	rparen	")"	false	0	0.000000	(9, 12) -> (9, 13)
 test/test_009.md:9:14:	eq	"="	false	0	0.000000	(9, 14) -> (9, 15)
 test/test_009.md:9:16:	ident	"y"	false	0	0.000000	(9, 16) -> (9, 17)
 test/test_009.md:9:18:	then	"THEN"	false	0	0.000000	(9, 18) -> (9, 22)
-test/test_009.md:10:8:	ident	"print"	false	0	0.000000	(10, 8) -> (10, 13)
-test/test_009.md:10:13:	lparen	"("	false	0	0.000000	(10, 13) -> (10, 14)
-test/test_009.md:10:14:	string	"Equal"	false	0	0.000000	(10, 14) -> (10, 21)
-test/test_009.md:10:21:	rparen	")"	false	0	0.000000	(10, 21) -> (10, 22)
+test/test_009.md:10:8:	ident	"C"	false	0	0.000000	(10, 8) -> (10, 9)
+test/test_009.md:10:9:	dot	"."	false	0	0.000000	(10, 9) -> (10, 10)
+test/test_009.md:10:10:	ident	"print"	false	0	0.000000	(10, 10) -> (10, 15)
+test/test_009.md:10:15:	lparen	"("	false	0	0.000000	(10, 15) -> (10, 16)
+test/test_009.md:10:16:	string	"Equal"	false	0	0.000000	(10, 16) -> (10, 23)
+test/test_009.md:10:23:	rparen	")"	false	0	0.000000	(10, 23) -> (10, 24)
 test/test_009.md:11:4:	else	"ELSE"	false	0	0.000000	(11, 4) -> (11, 8)
-test/test_009.md:12:8:	ident	"print"	false	0	0.000000	(12, 8) -> (12, 13)
-test/test_009.md:12:13:	lparen	"("	false	0	0.000000	(12, 13) -> (12, 14)
-test/test_009.md:12:14:	string	"Not Equal"	false	0	0.000000	(12, 14) -> (12, 25)
-test/test_009.md:12:25:	rparen	")"	false	0	0.000000	(12, 25) -> (12, 26)
+test/test_009.md:12:8:	ident	"C"	false	0	0.000000	(12, 8) -> (12, 9)
+test/test_009.md:12:9:	dot	"."	false	0	0.000000	(12, 9) -> (12, 10)
+test/test_009.md:12:10:	ident	"print"	false	0	0.000000	(12, 10) -> (12, 15)
+test/test_009.md:12:15:	lparen	"("	false	0	0.000000	(12, 15) -> (12, 16)
+test/test_009.md:12:16:	string	"Not Equal"	false	0	0.000000	(12, 16) -> (12, 27)
+test/test_009.md:12:27:	rparen	")"	false	0	0.000000	(12, 27) -> (12, 28)
 test/test_009.md:13:4:	end	"END"	false	0	0.000000	(13, 4) -> (13, 7)
 test/test_009.md:13:7:	semicolon	";"	false	0	0.000000	(13, 7) -> (13, 8)
 test/test_009.md:15:4:	if	"IF"	false	0	0.000000	(15, 4) -> (15, 6)
@@ -92,29 +96,37 @@ test/test_009.md:15:16:	ident	"y"	false	0	0.000000	(15, 16) -> (15, 17)
 test/test_009.md:15:18:	eq	"="	false	0	0.000000	(15, 18) -> (15, 19)
 test/test_009.md:15:20:	ident	"z"	false	0	0.000000	(15, 20) -> (15, 21)
 test/test_009.md:15:22:	then	"THEN"	false	0	0.000000	(15, 22) -> (15, 26)
-test/test_009.md:16:8:	ident	"print"	false	0	0.000000	(16, 8) -> (16, 13)
-test/test_009.md:16:13:	lparen	"("	false	0	0.000000	(16, 13) -> (16, 14)
-test/test_009.md:16:14:	string	"Equal"	false	0	0.000000	(16, 14) -> (16, 21)
-test/test_009.md:16:21:	rparen	")"	false	0	0.000000	(16, 21) -> (16, 22)
+test/test_009.md:16:8:	ident	"C"	false	0	0.000000	(16, 8) -> (16, 9)
+test/test_009.md:16:9:	dot	"."	false	0	0.000000	(16, 9) -> (16, 10)
+test/test_009.md:16:10:	ident	"print"	false	0	0.000000	(16, 10) -> (16, 15)
+test/test_009.md:16:15:	lparen	"("	false	0	0.000000	(16, 15) -> (16, 16)
+test/test_009.md:16:16:	string	"Equal"	false	0	0.000000	(16, 16) -> (16, 23)
+test/test_009.md:16:23:	rparen	")"	false	0	0.000000	(16, 23) -> (16, 24)
 test/test_009.md:17:4:	else	"ELSE"	false	0	0.000000	(17, 4) -> (17, 8)
-test/test_009.md:18:8:	ident	"print"	false	0	0.000000	(18, 8) -> (18, 13)
-test/test_009.md:18:13:	lparen	"("	false	0	0.000000	(18, 13) -> (18, 14)
-test/test_009.md:18:14:	string	"Not Equal"	false	0	0.000000	(18, 14) -> (18, 25)
-test/test_009.md:18:25:	rparen	")"	false	0	0.000000	(18, 25) -> (18, 26)
+test/test_009.md:18:8:	ident	"C"	false	0	0.000000	(18, 8) -> (18, 9)
+test/test_009.md:18:9:	dot	"."	false	0	0.000000	(18, 9) -> (18, 10)
+test/test_009.md:18:10:	ident	"print"	false	0	0.000000	(18, 10) -> (18, 15)
+test/test_009.md:18:15:	lparen	"("	false	0	0.000000	(18, 15) -> (18, 16)
+test/test_009.md:18:16:	string	"Not Equal"	false	0	0.000000	(18, 16) -> (18, 27)
+test/test_009.md:18:27:	rparen	")"	false	0	0.000000	(18, 27) -> (18, 28)
 test/test_009.md:19:4:	end	"END"	false	0	0.000000	(19, 4) -> (19, 7)
 test/test_009.md:19:7:	semicolon	";"	false	0	0.000000	(19, 7) -> (19, 8)
 test/test_009.md:21:4:	if	"IF"	false	0	0.000000	(21, 4) -> (21, 6)
 test/test_009.md:21:7:	ident	"ne"	false	0	0.000000	(21, 7) -> (21, 9)
 test/test_009.md:21:10:	then	"THEN"	false	0	0.000000	(21, 10) -> (21, 14)
-test/test_009.md:22:8:	ident	"print"	false	0	0.000000	(22, 8) -> (22, 13)
-test/test_009.md:22:13:	lparen	"("	false	0	0.000000	(22, 13) -> (22, 14)
-test/test_009.md:22:14:	string	"Not Equal"	false	0	0.000000	(22, 14) -> (22, 25)
-test/test_009.md:22:25:	rparen	")"	false	0	0.000000	(22, 25) -> (22, 26)
+test/test_009.md:22:8:	ident	"C"	false	0	0.000000	(22, 8) -> (22, 9)
+test/test_009.md:22:9:	dot	"."	false	0	0.000000	(22, 9) -> (22, 10)
+test/test_009.md:22:10:	ident	"print"	false	0	0.000000	(22, 10) -> (22, 15)
+test/test_009.md:22:15:	lparen	"("	false	0	0.000000	(22, 15) -> (22, 16)
+test/test_009.md:22:16:	string	"Not Equal"	false	0	0.000000	(22, 16) -> (22, 27)
+test/test_009.md:22:27:	rparen	")"	false	0	0.000000	(22, 27) -> (22, 28)
 test/test_009.md:23:4:	else	"ELSE"	false	0	0.000000	(23, 4) -> (23, 8)
-test/test_009.md:24:8:	ident	"print"	false	0	0.000000	(24, 8) -> (24, 13)
-test/test_009.md:24:13:	lparen	"("	false	0	0.000000	(24, 13) -> (24, 14)
-test/test_009.md:24:14:	string	"Equal"	false	0	0.000000	(24, 14) -> (24, 21)
-test/test_009.md:24:21:	rparen	")"	false	0	0.000000	(24, 21) -> (24, 22)
+test/test_009.md:24:8:	ident	"C"	false	0	0.000000	(24, 8) -> (24, 9)
+test/test_009.md:24:9:	dot	"."	false	0	0.000000	(24, 9) -> (24, 10)
+test/test_009.md:24:10:	ident	"print"	false	0	0.000000	(24, 10) -> (24, 15)
+test/test_009.md:24:15:	lparen	"("	false	0	0.000000	(24, 15) -> (24, 16)
+test/test_009.md:24:16:	string	"Equal"	false	0	0.000000	(24, 16) -> (24, 23)
+test/test_009.md:24:23:	rparen	")"	false	0	0.000000	(24, 23) -> (24, 24)
 test/test_009.md:25:4:	end	"END"	false	0	0.000000	(25, 4) -> (25, 7)
 test/test_009.md:25:7:	semicolon	";"	false	0	0.000000	(25, 7) -> (25, 8)
 test/test_009.md:26:0:	end	"END"	false	0	0.000000	(26, 0) -> (26, 3)
@@ -163,7 +175,7 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (string "Equal")
           )
         )
@@ -171,7 +183,7 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (string "Not Equal")
           )
         )
@@ -191,7 +203,7 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (string "Equal")
           )
         )
@@ -199,7 +211,7 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (string "Not Equal")
           )
         )
@@ -210,7 +222,7 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (string "Not Equal")
           )
         )
@@ -218,7 +230,7 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (string "Equal")
           )
         )

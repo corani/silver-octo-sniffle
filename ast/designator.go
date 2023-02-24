@@ -4,8 +4,48 @@ import "github.com/corani/silver-octo-sniffle/token"
 
 // ----- DesignatorExpr -------------------------------------------------------
 
+type QualIdent struct {
+	qual  *token.Token
+	ident token.Token
+}
+
+func NewQualIdent(t1 token.Token, t2 ...token.Token) *QualIdent {
+	switch len(t2) {
+	case 0:
+		return &QualIdent{
+			qual:  nil,
+			ident: t1,
+		}
+	case 1:
+		return &QualIdent{
+			qual:  &t1,
+			ident: t2[0],
+		}
+	default:
+		panic("too many arguments")
+	}
+}
+
+func (n *QualIdent) Qualifier() *token.Token {
+	return n.qual
+}
+
+func (n *QualIdent) Ident() token.Token {
+	return n.ident
+}
+
+func (n *QualIdent) Token() token.Token {
+	if n.qual != nil {
+		return *n.qual
+	}
+
+	return n.ident
+}
+
+// ----- DesignatorExpr -------------------------------------------------------
+
 type DesignatorExpr struct {
-	token      token.Token
+	qualIdent  *QualIdent
 	typ        Type
 	constValue *Value
 	kind       Kind
@@ -15,14 +55,14 @@ type DesignatorExpr struct {
 
 var _ Expr = (*DesignatorExpr)(nil)
 
-func NewDesignatorExpr(t token.Token) *DesignatorExpr {
+func NewDesignatorExpr(q *QualIdent) *DesignatorExpr {
 	return &DesignatorExpr{
-		token: t,
+		qualIdent: q,
 	}
 }
 
 func (n *DesignatorExpr) Token() token.Token {
-	return n.token
+	return n.qualIdent.Token()
 }
 
 func (n *DesignatorExpr) Type() Type {
@@ -40,6 +80,10 @@ func (n *DesignatorExpr) ConstValue() *Value {
 func (n *DesignatorExpr) IsAssignment() bool {
 	// TODO(daniel): do we need to know this during generation?
 	return n.assignment
+}
+
+func (n *DesignatorExpr) QualIdent() *QualIdent {
+	return n.qualIdent
 }
 
 func (n *DesignatorExpr) AddSelector(s Selector) {

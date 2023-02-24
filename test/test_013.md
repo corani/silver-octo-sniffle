@@ -11,7 +11,7 @@ BEGIN
     INC(x);
     y := 0; WHILE y < 10 DO
       INC(y);
-      print(x*y)
+      C.print(x*y)
     END
   END
 END While.
@@ -59,12 +59,14 @@ test/test_013.md:10:9:	lparen	"("	false	0	0.000000	(10, 9) -> (10, 10)
 test/test_013.md:10:10:	ident	"y"	false	0	0.000000	(10, 10) -> (10, 11)
 test/test_013.md:10:11:	rparen	")"	false	0	0.000000	(10, 11) -> (10, 12)
 test/test_013.md:10:12:	semicolon	";"	false	0	0.000000	(10, 12) -> (10, 13)
-test/test_013.md:11:6:	ident	"print"	false	0	0.000000	(11, 6) -> (11, 11)
-test/test_013.md:11:11:	lparen	"("	false	0	0.000000	(11, 11) -> (11, 12)
-test/test_013.md:11:12:	ident	"x"	false	0	0.000000	(11, 12) -> (11, 13)
-test/test_013.md:11:13:	asterisk	"*"	false	0	0.000000	(11, 13) -> (11, 14)
-test/test_013.md:11:14:	ident	"y"	false	0	0.000000	(11, 14) -> (11, 15)
-test/test_013.md:11:15:	rparen	")"	false	0	0.000000	(11, 15) -> (11, 16)
+test/test_013.md:11:6:	ident	"C"	false	0	0.000000	(11, 6) -> (11, 7)
+test/test_013.md:11:7:	dot	"."	false	0	0.000000	(11, 7) -> (11, 8)
+test/test_013.md:11:8:	ident	"print"	false	0	0.000000	(11, 8) -> (11, 13)
+test/test_013.md:11:13:	lparen	"("	false	0	0.000000	(11, 13) -> (11, 14)
+test/test_013.md:11:14:	ident	"x"	false	0	0.000000	(11, 14) -> (11, 15)
+test/test_013.md:11:15:	asterisk	"*"	false	0	0.000000	(11, 15) -> (11, 16)
+test/test_013.md:11:16:	ident	"y"	false	0	0.000000	(11, 16) -> (11, 17)
+test/test_013.md:11:17:	rparen	")"	false	0	0.000000	(11, 17) -> (11, 18)
 test/test_013.md:12:4:	end	"END"	false	0	0.000000	(12, 4) -> (12, 7)
 test/test_013.md:13:2:	end	"END"	false	0	0.000000	(13, 2) -> (13, 5)
 test/test_013.md:14:0:	end	"END"	false	0	0.000000	(14, 0) -> (14, 3)
@@ -120,7 +122,7 @@ test/test_013.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
                 )
                 (expr2stmt
                   (call
-                    (procedure [void] "print")
+                    (procedure [void] "C.print")
                     (asterisk [i64]
                       (variable [i64] "x")
                       (variable [i64] "y")

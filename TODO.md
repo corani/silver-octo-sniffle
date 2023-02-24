@@ -68,8 +68,9 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] do we need to distinguish lhs / rhs designators?
 - [x] support pointer dereferences.
 - [x] support temporary built-in `DELETE` procedure.
-- [ ] support reference counting or garbage collection.
-- [ ] support qualified-identifiers.
+- [x] support qualified-identifiers.
+- [ ] replace `print` with builtin `Texts` procedures.
+- [ ] support multiple modules in checker (and generator?).
 - [ ] better sync points during parser error recovery.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
 - [ ] improve AST and type information for variables.
@@ -84,9 +85,10 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [ ] support `PROCEDURE` types.
 - [ ] support `CASE` / `OF` statement.
 - [ ] basic local variable and assignment support.
-- [ ] make `print` a real procedure.
+- [ ] make builtin `Texts` procedures real procedures.
 - [ ] better command line arguments.
 - [ ] update "golden test" files in-place, so any additional content doesn't get overwritten.
+- [ ] support reference counting or garbage collection.
 - [ ] a magic "C" call built-in module?
 - [ ] a standard library.
 - [ ] ...

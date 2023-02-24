@@ -5,7 +5,7 @@
 MODULE trailing;
 
 BEGIN
-  print(1);
+  C.print(1);
 END trailing.
 ```
 ## Tokens
@@ -14,11 +14,13 @@ test/test_006.md:2:0:	module	"MODULE"	false	0	0.000000	(2, 0) -> (2, 6)
 test/test_006.md:2:7:	ident	"trailing"	false	0	0.000000	(2, 7) -> (2, 15)
 test/test_006.md:2:15:	semicolon	";"	false	0	0.000000	(2, 15) -> (2, 16)
 test/test_006.md:4:0:	begin	"BEGIN"	false	0	0.000000	(4, 0) -> (4, 5)
-test/test_006.md:5:2:	ident	"print"	false	0	0.000000	(5, 2) -> (5, 7)
-test/test_006.md:5:7:	lparen	"("	false	0	0.000000	(5, 7) -> (5, 8)
-test/test_006.md:5:8:	integer	"1"	false	1	0.000000	(5, 8) -> (5, 9)
-test/test_006.md:5:9:	rparen	")"	false	0	0.000000	(5, 9) -> (5, 10)
-test/test_006.md:5:10:	semicolon	";"	false	0	0.000000	(5, 10) -> (5, 11)
+test/test_006.md:5:2:	ident	"C"	false	0	0.000000	(5, 2) -> (5, 3)
+test/test_006.md:5:3:	dot	"."	false	0	0.000000	(5, 3) -> (5, 4)
+test/test_006.md:5:4:	ident	"print"	false	0	0.000000	(5, 4) -> (5, 9)
+test/test_006.md:5:9:	lparen	"("	false	0	0.000000	(5, 9) -> (5, 10)
+test/test_006.md:5:10:	integer	"1"	false	1	0.000000	(5, 10) -> (5, 11)
+test/test_006.md:5:11:	rparen	")"	false	0	0.000000	(5, 11) -> (5, 12)
+test/test_006.md:5:12:	semicolon	";"	false	0	0.000000	(5, 12) -> (5, 13)
 test/test_006.md:6:0:	end	"END"	false	0	0.000000	(6, 0) -> (6, 3)
 test/test_006.md:6:4:	ident	"trailing"	false	0	0.000000	(6, 4) -> (6, 12)
 test/test_006.md:6:12:	dot	"."	false	0	0.000000	(6, 12) -> (6, 13)
@@ -30,7 +32,7 @@ test/test_006.md:7:0:	eof	""	false	0	0.000000	(7, 0) -> (7, 0)
   (stmts
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (number [i64] 1)
       )
     )

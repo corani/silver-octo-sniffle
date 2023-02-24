@@ -9,7 +9,7 @@ BEGIN
   x := 10;
   REPEAT
     DEC(x);
-    print(x);
+    C.print(x);
   UNTIL x = 0;
 END Repeat.
 ```
@@ -34,11 +34,13 @@ test/test_012.md:8:7:	lparen	"("	false	0	0.000000	(8, 7) -> (8, 8)
 test/test_012.md:8:8:	ident	"x"	false	0	0.000000	(8, 8) -> (8, 9)
 test/test_012.md:8:9:	rparen	")"	false	0	0.000000	(8, 9) -> (8, 10)
 test/test_012.md:8:10:	semicolon	";"	false	0	0.000000	(8, 10) -> (8, 11)
-test/test_012.md:9:4:	ident	"print"	false	0	0.000000	(9, 4) -> (9, 9)
-test/test_012.md:9:9:	lparen	"("	false	0	0.000000	(9, 9) -> (9, 10)
-test/test_012.md:9:10:	ident	"x"	false	0	0.000000	(9, 10) -> (9, 11)
-test/test_012.md:9:11:	rparen	")"	false	0	0.000000	(9, 11) -> (9, 12)
-test/test_012.md:9:12:	semicolon	";"	false	0	0.000000	(9, 12) -> (9, 13)
+test/test_012.md:9:4:	ident	"C"	false	0	0.000000	(9, 4) -> (9, 5)
+test/test_012.md:9:5:	dot	"."	false	0	0.000000	(9, 5) -> (9, 6)
+test/test_012.md:9:6:	ident	"print"	false	0	0.000000	(9, 6) -> (9, 11)
+test/test_012.md:9:11:	lparen	"("	false	0	0.000000	(9, 11) -> (9, 12)
+test/test_012.md:9:12:	ident	"x"	false	0	0.000000	(9, 12) -> (9, 13)
+test/test_012.md:9:13:	rparen	")"	false	0	0.000000	(9, 13) -> (9, 14)
+test/test_012.md:9:14:	semicolon	";"	false	0	0.000000	(9, 14) -> (9, 15)
 test/test_012.md:10:2:	until	"UNTIL"	false	0	0.000000	(10, 2) -> (10, 7)
 test/test_012.md:10:8:	ident	"x"	false	0	0.000000	(10, 8) -> (10, 9)
 test/test_012.md:10:10:	eq	"="	false	0	0.000000	(10, 10) -> (10, 11)
@@ -72,7 +74,7 @@ test/test_012.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
         )
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (variable [i64] "x")
           )
         )

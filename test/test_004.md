@@ -4,12 +4,12 @@
 MODULE BooleanOperators;
 
 BEGIN
-    print(~TRUE);
-    print(~FALSE);
-    print(TRUE & FALSE);
-    print(TRUE OR FALSE);
-    print(ORD(TRUE));
-    print(ORD(FALSE))
+    C.print(~TRUE);
+    C.print(~FALSE);
+    C.print(TRUE & FALSE);
+    C.print(TRUE OR FALSE);
+    C.print(ORD(TRUE));
+    C.print(ORD(FALSE))
 END BooleanOperators.
 ```
 ## Tokens
@@ -18,47 +18,59 @@ test/test_004.md:1:1:	module	"MODULE"	false	0	0.000000	(1, 1) -> (1, 7)
 test/test_004.md:1:8:	ident	"BooleanOperators"	false	0	0.000000	(1, 8) -> (1, 24)
 test/test_004.md:1:24:	semicolon	";"	false	0	0.000000	(1, 24) -> (1, 25)
 test/test_004.md:3:0:	begin	"BEGIN"	false	0	0.000000	(3, 0) -> (3, 5)
-test/test_004.md:4:4:	ident	"print"	false	0	0.000000	(4, 4) -> (4, 9)
-test/test_004.md:4:9:	lparen	"("	false	0	0.000000	(4, 9) -> (4, 10)
-test/test_004.md:4:10:	tilde	"~"	false	0	0.000000	(4, 10) -> (4, 11)
-test/test_004.md:4:11:	boolean	"TRUE"	true	0	0.000000	(4, 11) -> (4, 15)
-test/test_004.md:4:15:	rparen	")"	false	0	0.000000	(4, 15) -> (4, 16)
-test/test_004.md:4:16:	semicolon	";"	false	0	0.000000	(4, 16) -> (4, 17)
-test/test_004.md:5:4:	ident	"print"	false	0	0.000000	(5, 4) -> (5, 9)
-test/test_004.md:5:9:	lparen	"("	false	0	0.000000	(5, 9) -> (5, 10)
-test/test_004.md:5:10:	tilde	"~"	false	0	0.000000	(5, 10) -> (5, 11)
-test/test_004.md:5:11:	boolean	"FALSE"	false	0	0.000000	(5, 11) -> (5, 16)
-test/test_004.md:5:16:	rparen	")"	false	0	0.000000	(5, 16) -> (5, 17)
-test/test_004.md:5:17:	semicolon	";"	false	0	0.000000	(5, 17) -> (5, 18)
-test/test_004.md:6:4:	ident	"print"	false	0	0.000000	(6, 4) -> (6, 9)
-test/test_004.md:6:9:	lparen	"("	false	0	0.000000	(6, 9) -> (6, 10)
-test/test_004.md:6:10:	boolean	"TRUE"	true	0	0.000000	(6, 10) -> (6, 14)
-test/test_004.md:6:15:	ampersand	"&"	false	0	0.000000	(6, 15) -> (6, 16)
-test/test_004.md:6:17:	boolean	"FALSE"	false	0	0.000000	(6, 17) -> (6, 22)
-test/test_004.md:6:22:	rparen	")"	false	0	0.000000	(6, 22) -> (6, 23)
-test/test_004.md:6:23:	semicolon	";"	false	0	0.000000	(6, 23) -> (6, 24)
-test/test_004.md:7:4:	ident	"print"	false	0	0.000000	(7, 4) -> (7, 9)
-test/test_004.md:7:9:	lparen	"("	false	0	0.000000	(7, 9) -> (7, 10)
-test/test_004.md:7:10:	boolean	"TRUE"	true	0	0.000000	(7, 10) -> (7, 14)
-test/test_004.md:7:15:	or	"OR"	false	0	0.000000	(7, 15) -> (7, 17)
-test/test_004.md:7:18:	boolean	"FALSE"	false	0	0.000000	(7, 18) -> (7, 23)
-test/test_004.md:7:23:	rparen	")"	false	0	0.000000	(7, 23) -> (7, 24)
-test/test_004.md:7:24:	semicolon	";"	false	0	0.000000	(7, 24) -> (7, 25)
-test/test_004.md:8:4:	ident	"print"	false	0	0.000000	(8, 4) -> (8, 9)
-test/test_004.md:8:9:	lparen	"("	false	0	0.000000	(8, 9) -> (8, 10)
-test/test_004.md:8:10:	ident	"ORD"	false	0	0.000000	(8, 10) -> (8, 13)
-test/test_004.md:8:13:	lparen	"("	false	0	0.000000	(8, 13) -> (8, 14)
-test/test_004.md:8:14:	boolean	"TRUE"	true	0	0.000000	(8, 14) -> (8, 18)
-test/test_004.md:8:18:	rparen	")"	false	0	0.000000	(8, 18) -> (8, 19)
-test/test_004.md:8:19:	rparen	")"	false	0	0.000000	(8, 19) -> (8, 20)
-test/test_004.md:8:20:	semicolon	";"	false	0	0.000000	(8, 20) -> (8, 21)
-test/test_004.md:9:4:	ident	"print"	false	0	0.000000	(9, 4) -> (9, 9)
-test/test_004.md:9:9:	lparen	"("	false	0	0.000000	(9, 9) -> (9, 10)
-test/test_004.md:9:10:	ident	"ORD"	false	0	0.000000	(9, 10) -> (9, 13)
-test/test_004.md:9:13:	lparen	"("	false	0	0.000000	(9, 13) -> (9, 14)
-test/test_004.md:9:14:	boolean	"FALSE"	false	0	0.000000	(9, 14) -> (9, 19)
-test/test_004.md:9:19:	rparen	")"	false	0	0.000000	(9, 19) -> (9, 20)
-test/test_004.md:9:20:	rparen	")"	false	0	0.000000	(9, 20) -> (9, 21)
+test/test_004.md:4:4:	ident	"C"	false	0	0.000000	(4, 4) -> (4, 5)
+test/test_004.md:4:5:	dot	"."	false	0	0.000000	(4, 5) -> (4, 6)
+test/test_004.md:4:6:	ident	"print"	false	0	0.000000	(4, 6) -> (4, 11)
+test/test_004.md:4:11:	lparen	"("	false	0	0.000000	(4, 11) -> (4, 12)
+test/test_004.md:4:12:	tilde	"~"	false	0	0.000000	(4, 12) -> (4, 13)
+test/test_004.md:4:13:	boolean	"TRUE"	true	0	0.000000	(4, 13) -> (4, 17)
+test/test_004.md:4:17:	rparen	")"	false	0	0.000000	(4, 17) -> (4, 18)
+test/test_004.md:4:18:	semicolon	";"	false	0	0.000000	(4, 18) -> (4, 19)
+test/test_004.md:5:4:	ident	"C"	false	0	0.000000	(5, 4) -> (5, 5)
+test/test_004.md:5:5:	dot	"."	false	0	0.000000	(5, 5) -> (5, 6)
+test/test_004.md:5:6:	ident	"print"	false	0	0.000000	(5, 6) -> (5, 11)
+test/test_004.md:5:11:	lparen	"("	false	0	0.000000	(5, 11) -> (5, 12)
+test/test_004.md:5:12:	tilde	"~"	false	0	0.000000	(5, 12) -> (5, 13)
+test/test_004.md:5:13:	boolean	"FALSE"	false	0	0.000000	(5, 13) -> (5, 18)
+test/test_004.md:5:18:	rparen	")"	false	0	0.000000	(5, 18) -> (5, 19)
+test/test_004.md:5:19:	semicolon	";"	false	0	0.000000	(5, 19) -> (5, 20)
+test/test_004.md:6:4:	ident	"C"	false	0	0.000000	(6, 4) -> (6, 5)
+test/test_004.md:6:5:	dot	"."	false	0	0.000000	(6, 5) -> (6, 6)
+test/test_004.md:6:6:	ident	"print"	false	0	0.000000	(6, 6) -> (6, 11)
+test/test_004.md:6:11:	lparen	"("	false	0	0.000000	(6, 11) -> (6, 12)
+test/test_004.md:6:12:	boolean	"TRUE"	true	0	0.000000	(6, 12) -> (6, 16)
+test/test_004.md:6:17:	ampersand	"&"	false	0	0.000000	(6, 17) -> (6, 18)
+test/test_004.md:6:19:	boolean	"FALSE"	false	0	0.000000	(6, 19) -> (6, 24)
+test/test_004.md:6:24:	rparen	")"	false	0	0.000000	(6, 24) -> (6, 25)
+test/test_004.md:6:25:	semicolon	";"	false	0	0.000000	(6, 25) -> (6, 26)
+test/test_004.md:7:4:	ident	"C"	false	0	0.000000	(7, 4) -> (7, 5)
+test/test_004.md:7:5:	dot	"."	false	0	0.000000	(7, 5) -> (7, 6)
+test/test_004.md:7:6:	ident	"print"	false	0	0.000000	(7, 6) -> (7, 11)
+test/test_004.md:7:11:	lparen	"("	false	0	0.000000	(7, 11) -> (7, 12)
+test/test_004.md:7:12:	boolean	"TRUE"	true	0	0.000000	(7, 12) -> (7, 16)
+test/test_004.md:7:17:	or	"OR"	false	0	0.000000	(7, 17) -> (7, 19)
+test/test_004.md:7:20:	boolean	"FALSE"	false	0	0.000000	(7, 20) -> (7, 25)
+test/test_004.md:7:25:	rparen	")"	false	0	0.000000	(7, 25) -> (7, 26)
+test/test_004.md:7:26:	semicolon	";"	false	0	0.000000	(7, 26) -> (7, 27)
+test/test_004.md:8:4:	ident	"C"	false	0	0.000000	(8, 4) -> (8, 5)
+test/test_004.md:8:5:	dot	"."	false	0	0.000000	(8, 5) -> (8, 6)
+test/test_004.md:8:6:	ident	"print"	false	0	0.000000	(8, 6) -> (8, 11)
+test/test_004.md:8:11:	lparen	"("	false	0	0.000000	(8, 11) -> (8, 12)
+test/test_004.md:8:12:	ident	"ORD"	false	0	0.000000	(8, 12) -> (8, 15)
+test/test_004.md:8:15:	lparen	"("	false	0	0.000000	(8, 15) -> (8, 16)
+test/test_004.md:8:16:	boolean	"TRUE"	true	0	0.000000	(8, 16) -> (8, 20)
+test/test_004.md:8:20:	rparen	")"	false	0	0.000000	(8, 20) -> (8, 21)
+test/test_004.md:8:21:	rparen	")"	false	0	0.000000	(8, 21) -> (8, 22)
+test/test_004.md:8:22:	semicolon	";"	false	0	0.000000	(8, 22) -> (8, 23)
+test/test_004.md:9:4:	ident	"C"	false	0	0.000000	(9, 4) -> (9, 5)
+test/test_004.md:9:5:	dot	"."	false	0	0.000000	(9, 5) -> (9, 6)
+test/test_004.md:9:6:	ident	"print"	false	0	0.000000	(9, 6) -> (9, 11)
+test/test_004.md:9:11:	lparen	"("	false	0	0.000000	(9, 11) -> (9, 12)
+test/test_004.md:9:12:	ident	"ORD"	false	0	0.000000	(9, 12) -> (9, 15)
+test/test_004.md:9:15:	lparen	"("	false	0	0.000000	(9, 15) -> (9, 16)
+test/test_004.md:9:16:	boolean	"FALSE"	false	0	0.000000	(9, 16) -> (9, 21)
+test/test_004.md:9:21:	rparen	")"	false	0	0.000000	(9, 21) -> (9, 22)
+test/test_004.md:9:22:	rparen	")"	false	0	0.000000	(9, 22) -> (9, 23)
 test/test_004.md:10:0:	end	"END"	false	0	0.000000	(10, 0) -> (10, 3)
 test/test_004.md:10:4:	ident	"BooleanOperators"	false	0	0.000000	(10, 4) -> (10, 20)
 test/test_004.md:10:20:	dot	"."	false	0	0.000000	(10, 20) -> (10, 21)
@@ -70,7 +82,7 @@ test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
   (stmts
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (not [boolean]
           #true
         )
@@ -78,7 +90,7 @@ test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (not [boolean]
           #false
         )
@@ -86,7 +98,7 @@ test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (ampersand [boolean]
           #true
           #false
@@ -95,7 +107,7 @@ test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (or [boolean]
           #true
           #false
@@ -104,7 +116,7 @@ test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (call
           (procedure [i64] "ORD")
           #true
@@ -113,7 +125,7 @@ test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (call
           (procedure [i64] "ORD")
           #false

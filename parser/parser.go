@@ -384,9 +384,22 @@ func (p *Parser) parseFormalType() ast.TypeDecl {
 	return nil
 }
 
-func (p *Parser) parseQualIdent() (token.Token, error) {
-	// TODO(daniel): parseQualIdent
-	return p.require(token.TokenIdent)
+func (p *Parser) parseQualIdent() (*ast.QualIdent, error) {
+	t1, err := p.require(token.TokenIdent)
+	if err != nil {
+		return nil, err
+	}
+
+	if p.expect(token.TokenDot) {
+		t2, err := p.require(token.TokenIdent)
+		if err != nil {
+			return nil, err
+		}
+
+		return ast.NewQualIdent(t1, t2), nil
+	}
+
+	return ast.NewQualIdent(t1), nil
 }
 
 func (p *Parser) parseStmt() ast.Stmt {

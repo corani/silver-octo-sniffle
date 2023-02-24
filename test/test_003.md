@@ -8,7 +8,7 @@ BEGIN
       multi-line comments
       should work
     *)
-    print("
+    C.print("
       multi-line strings
       should work
     ")
@@ -20,9 +20,11 @@ test/test_003.md:1:1:	module	"MODULE"	false	0	0.000000	(1, 1) -> (1, 7)
 test/test_003.md:1:8:	ident	"MultiLine"	false	0	0.000000	(1, 8) -> (1, 17)
 test/test_003.md:1:17:	semicolon	";"	false	0	0.000000	(1, 17) -> (1, 18)
 test/test_003.md:3:0:	begin	"BEGIN"	false	0	0.000000	(3, 0) -> (3, 5)
-test/test_003.md:8:4:	ident	"print"	false	0	0.000000	(8, 4) -> (8, 9)
-test/test_003.md:8:9:	lparen	"("	false	0	0.000000	(8, 9) -> (8, 10)
-test/test_003.md:8:10:	string	"\n      multi-line strings\n      should work\n    "	false	0	0.000000	(8, 10) -> (11, 5)
+test/test_003.md:8:4:	ident	"C"	false	0	0.000000	(8, 4) -> (8, 5)
+test/test_003.md:8:5:	dot	"."	false	0	0.000000	(8, 5) -> (8, 6)
+test/test_003.md:8:6:	ident	"print"	false	0	0.000000	(8, 6) -> (8, 11)
+test/test_003.md:8:11:	lparen	"("	false	0	0.000000	(8, 11) -> (8, 12)
+test/test_003.md:8:12:	string	"\n      multi-line strings\n      should work\n    "	false	0	0.000000	(8, 12) -> (11, 5)
 test/test_003.md:11:5:	rparen	")"	false	0	0.000000	(11, 5) -> (11, 6)
 test/test_003.md:12:0:	end	"END"	false	0	0.000000	(12, 0) -> (12, 3)
 test/test_003.md:12:4:	ident	"MultiLine"	false	0	0.000000	(12, 4) -> (12, 13)
@@ -35,7 +37,7 @@ test/test_003.md:13:0:	eof	""	false	0	0.000000	(13, 0) -> (13, 0)
   (stmts
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (string "\n      multi-line strings\n      should work\n    ")
       )
     )

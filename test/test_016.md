@@ -7,23 +7,23 @@ VAR x: CHAR;
     y: INTEGER;
 
 BEGIN
-    print("A");
+    C.print("A");
 
     x := 42X;
-    print(x);
+    C.print(x);
 
     y := ORD(x);
-    print(y);
+    C.print(y);
 
     INC(y);
-    print(CHR(y));
+    C.print(CHR(y));
 
-    print(x <= "B");
+    C.print(x <= "B");
 
     x := "A";
 
     REPEAT
-      print(x);
+      C.print(x);
       x := CHR(ORD(x)+1)
     UNTIL x > "Z"
 END Chars.
@@ -43,20 +43,24 @@ test/test_016.md:4:5:	colon	":"	false	0	0.000000	(4, 5) -> (4, 6)
 test/test_016.md:4:7:	ident	"INTEGER"	false	0	0.000000	(4, 7) -> (4, 14)
 test/test_016.md:4:14:	semicolon	";"	false	0	0.000000	(4, 14) -> (4, 15)
 test/test_016.md:6:0:	begin	"BEGIN"	false	0	0.000000	(6, 0) -> (6, 5)
-test/test_016.md:7:4:	ident	"print"	false	0	0.000000	(7, 4) -> (7, 9)
-test/test_016.md:7:9:	lparen	"("	false	0	0.000000	(7, 9) -> (7, 10)
-test/test_016.md:7:10:	string	"A"	false	0	0.000000	(7, 10) -> (7, 13)
-test/test_016.md:7:13:	rparen	")"	false	0	0.000000	(7, 13) -> (7, 14)
-test/test_016.md:7:14:	semicolon	";"	false	0	0.000000	(7, 14) -> (7, 15)
+test/test_016.md:7:4:	ident	"C"	false	0	0.000000	(7, 4) -> (7, 5)
+test/test_016.md:7:5:	dot	"."	false	0	0.000000	(7, 5) -> (7, 6)
+test/test_016.md:7:6:	ident	"print"	false	0	0.000000	(7, 6) -> (7, 11)
+test/test_016.md:7:11:	lparen	"("	false	0	0.000000	(7, 11) -> (7, 12)
+test/test_016.md:7:12:	string	"A"	false	0	0.000000	(7, 12) -> (7, 15)
+test/test_016.md:7:15:	rparen	")"	false	0	0.000000	(7, 15) -> (7, 16)
+test/test_016.md:7:16:	semicolon	";"	false	0	0.000000	(7, 16) -> (7, 17)
 test/test_016.md:9:4:	ident	"x"	false	0	0.000000	(9, 4) -> (9, 5)
 test/test_016.md:9:6:	assign	":="	false	0	0.000000	(9, 6) -> (9, 8)
 test/test_016.md:9:9:	string	"B"	false	0	0.000000	(9, 9) -> (9, 12)
 test/test_016.md:9:12:	semicolon	";"	false	0	0.000000	(9, 12) -> (9, 13)
-test/test_016.md:10:4:	ident	"print"	false	0	0.000000	(10, 4) -> (10, 9)
-test/test_016.md:10:9:	lparen	"("	false	0	0.000000	(10, 9) -> (10, 10)
-test/test_016.md:10:10:	ident	"x"	false	0	0.000000	(10, 10) -> (10, 11)
-test/test_016.md:10:11:	rparen	")"	false	0	0.000000	(10, 11) -> (10, 12)
-test/test_016.md:10:12:	semicolon	";"	false	0	0.000000	(10, 12) -> (10, 13)
+test/test_016.md:10:4:	ident	"C"	false	0	0.000000	(10, 4) -> (10, 5)
+test/test_016.md:10:5:	dot	"."	false	0	0.000000	(10, 5) -> (10, 6)
+test/test_016.md:10:6:	ident	"print"	false	0	0.000000	(10, 6) -> (10, 11)
+test/test_016.md:10:11:	lparen	"("	false	0	0.000000	(10, 11) -> (10, 12)
+test/test_016.md:10:12:	ident	"x"	false	0	0.000000	(10, 12) -> (10, 13)
+test/test_016.md:10:13:	rparen	")"	false	0	0.000000	(10, 13) -> (10, 14)
+test/test_016.md:10:14:	semicolon	";"	false	0	0.000000	(10, 14) -> (10, 15)
 test/test_016.md:12:4:	ident	"y"	false	0	0.000000	(12, 4) -> (12, 5)
 test/test_016.md:12:6:	assign	":="	false	0	0.000000	(12, 6) -> (12, 8)
 test/test_016.md:12:9:	ident	"ORD"	false	0	0.000000	(12, 9) -> (12, 12)
@@ -64,41 +68,49 @@ test/test_016.md:12:12:	lparen	"("	false	0	0.000000	(12, 12) -> (12, 13)
 test/test_016.md:12:13:	ident	"x"	false	0	0.000000	(12, 13) -> (12, 14)
 test/test_016.md:12:14:	rparen	")"	false	0	0.000000	(12, 14) -> (12, 15)
 test/test_016.md:12:15:	semicolon	";"	false	0	0.000000	(12, 15) -> (12, 16)
-test/test_016.md:13:4:	ident	"print"	false	0	0.000000	(13, 4) -> (13, 9)
-test/test_016.md:13:9:	lparen	"("	false	0	0.000000	(13, 9) -> (13, 10)
-test/test_016.md:13:10:	ident	"y"	false	0	0.000000	(13, 10) -> (13, 11)
-test/test_016.md:13:11:	rparen	")"	false	0	0.000000	(13, 11) -> (13, 12)
-test/test_016.md:13:12:	semicolon	";"	false	0	0.000000	(13, 12) -> (13, 13)
+test/test_016.md:13:4:	ident	"C"	false	0	0.000000	(13, 4) -> (13, 5)
+test/test_016.md:13:5:	dot	"."	false	0	0.000000	(13, 5) -> (13, 6)
+test/test_016.md:13:6:	ident	"print"	false	0	0.000000	(13, 6) -> (13, 11)
+test/test_016.md:13:11:	lparen	"("	false	0	0.000000	(13, 11) -> (13, 12)
+test/test_016.md:13:12:	ident	"y"	false	0	0.000000	(13, 12) -> (13, 13)
+test/test_016.md:13:13:	rparen	")"	false	0	0.000000	(13, 13) -> (13, 14)
+test/test_016.md:13:14:	semicolon	";"	false	0	0.000000	(13, 14) -> (13, 15)
 test/test_016.md:15:4:	ident	"INC"	false	0	0.000000	(15, 4) -> (15, 7)
 test/test_016.md:15:7:	lparen	"("	false	0	0.000000	(15, 7) -> (15, 8)
 test/test_016.md:15:8:	ident	"y"	false	0	0.000000	(15, 8) -> (15, 9)
 test/test_016.md:15:9:	rparen	")"	false	0	0.000000	(15, 9) -> (15, 10)
 test/test_016.md:15:10:	semicolon	";"	false	0	0.000000	(15, 10) -> (15, 11)
-test/test_016.md:16:4:	ident	"print"	false	0	0.000000	(16, 4) -> (16, 9)
-test/test_016.md:16:9:	lparen	"("	false	0	0.000000	(16, 9) -> (16, 10)
-test/test_016.md:16:10:	ident	"CHR"	false	0	0.000000	(16, 10) -> (16, 13)
-test/test_016.md:16:13:	lparen	"("	false	0	0.000000	(16, 13) -> (16, 14)
-test/test_016.md:16:14:	ident	"y"	false	0	0.000000	(16, 14) -> (16, 15)
-test/test_016.md:16:15:	rparen	")"	false	0	0.000000	(16, 15) -> (16, 16)
-test/test_016.md:16:16:	rparen	")"	false	0	0.000000	(16, 16) -> (16, 17)
-test/test_016.md:16:17:	semicolon	";"	false	0	0.000000	(16, 17) -> (16, 18)
-test/test_016.md:18:4:	ident	"print"	false	0	0.000000	(18, 4) -> (18, 9)
-test/test_016.md:18:9:	lparen	"("	false	0	0.000000	(18, 9) -> (18, 10)
-test/test_016.md:18:10:	ident	"x"	false	0	0.000000	(18, 10) -> (18, 11)
-test/test_016.md:18:12:	le	"<="	false	0	0.000000	(18, 12) -> (18, 14)
-test/test_016.md:18:15:	string	"B"	false	0	0.000000	(18, 15) -> (18, 18)
-test/test_016.md:18:18:	rparen	")"	false	0	0.000000	(18, 18) -> (18, 19)
-test/test_016.md:18:19:	semicolon	";"	false	0	0.000000	(18, 19) -> (18, 20)
+test/test_016.md:16:4:	ident	"C"	false	0	0.000000	(16, 4) -> (16, 5)
+test/test_016.md:16:5:	dot	"."	false	0	0.000000	(16, 5) -> (16, 6)
+test/test_016.md:16:6:	ident	"print"	false	0	0.000000	(16, 6) -> (16, 11)
+test/test_016.md:16:11:	lparen	"("	false	0	0.000000	(16, 11) -> (16, 12)
+test/test_016.md:16:12:	ident	"CHR"	false	0	0.000000	(16, 12) -> (16, 15)
+test/test_016.md:16:15:	lparen	"("	false	0	0.000000	(16, 15) -> (16, 16)
+test/test_016.md:16:16:	ident	"y"	false	0	0.000000	(16, 16) -> (16, 17)
+test/test_016.md:16:17:	rparen	")"	false	0	0.000000	(16, 17) -> (16, 18)
+test/test_016.md:16:18:	rparen	")"	false	0	0.000000	(16, 18) -> (16, 19)
+test/test_016.md:16:19:	semicolon	";"	false	0	0.000000	(16, 19) -> (16, 20)
+test/test_016.md:18:4:	ident	"C"	false	0	0.000000	(18, 4) -> (18, 5)
+test/test_016.md:18:5:	dot	"."	false	0	0.000000	(18, 5) -> (18, 6)
+test/test_016.md:18:6:	ident	"print"	false	0	0.000000	(18, 6) -> (18, 11)
+test/test_016.md:18:11:	lparen	"("	false	0	0.000000	(18, 11) -> (18, 12)
+test/test_016.md:18:12:	ident	"x"	false	0	0.000000	(18, 12) -> (18, 13)
+test/test_016.md:18:14:	le	"<="	false	0	0.000000	(18, 14) -> (18, 16)
+test/test_016.md:18:17:	string	"B"	false	0	0.000000	(18, 17) -> (18, 20)
+test/test_016.md:18:20:	rparen	")"	false	0	0.000000	(18, 20) -> (18, 21)
+test/test_016.md:18:21:	semicolon	";"	false	0	0.000000	(18, 21) -> (18, 22)
 test/test_016.md:20:4:	ident	"x"	false	0	0.000000	(20, 4) -> (20, 5)
 test/test_016.md:20:6:	assign	":="	false	0	0.000000	(20, 6) -> (20, 8)
 test/test_016.md:20:9:	string	"A"	false	0	0.000000	(20, 9) -> (20, 12)
 test/test_016.md:20:12:	semicolon	";"	false	0	0.000000	(20, 12) -> (20, 13)
 test/test_016.md:22:4:	repeat	"REPEAT"	false	0	0.000000	(22, 4) -> (22, 10)
-test/test_016.md:23:6:	ident	"print"	false	0	0.000000	(23, 6) -> (23, 11)
-test/test_016.md:23:11:	lparen	"("	false	0	0.000000	(23, 11) -> (23, 12)
-test/test_016.md:23:12:	ident	"x"	false	0	0.000000	(23, 12) -> (23, 13)
-test/test_016.md:23:13:	rparen	")"	false	0	0.000000	(23, 13) -> (23, 14)
-test/test_016.md:23:14:	semicolon	";"	false	0	0.000000	(23, 14) -> (23, 15)
+test/test_016.md:23:6:	ident	"C"	false	0	0.000000	(23, 6) -> (23, 7)
+test/test_016.md:23:7:	dot	"."	false	0	0.000000	(23, 7) -> (23, 8)
+test/test_016.md:23:8:	ident	"print"	false	0	0.000000	(23, 8) -> (23, 13)
+test/test_016.md:23:13:	lparen	"("	false	0	0.000000	(23, 13) -> (23, 14)
+test/test_016.md:23:14:	ident	"x"	false	0	0.000000	(23, 14) -> (23, 15)
+test/test_016.md:23:15:	rparen	")"	false	0	0.000000	(23, 15) -> (23, 16)
+test/test_016.md:23:16:	semicolon	";"	false	0	0.000000	(23, 16) -> (23, 17)
 test/test_016.md:24:6:	ident	"x"	false	0	0.000000	(24, 6) -> (24, 7)
 test/test_016.md:24:8:	assign	":="	false	0	0.000000	(24, 8) -> (24, 10)
 test/test_016.md:24:11:	ident	"CHR"	false	0	0.000000	(24, 11) -> (24, 14)
@@ -133,7 +145,7 @@ test/test_016.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
   (stmts
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (char "A")
       )
     )
@@ -143,7 +155,7 @@ test/test_016.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (variable [char] "x")
       )
     )
@@ -156,7 +168,7 @@ test/test_016.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (variable [i64] "y")
       )
     )
@@ -168,7 +180,7 @@ test/test_016.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (call
           (procedure [char] "CHR")
           (variable [i64] "y")
@@ -177,7 +189,7 @@ test/test_016.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "print")
+        (procedure [void] "C.print")
         (le [boolean]
           (variable [char] "x")
           (char "B")
@@ -192,7 +204,7 @@ test/test_016.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "print")
+            (procedure [void] "C.print")
             (variable [char] "x")
           )
         )
