@@ -10,21 +10,21 @@ CONST x = 1;
 
 BEGIN
     IF FLT(x) = y THEN
-        C.print("Equal")
+        Texts.WriteString("Equal");     Texts.WriteLn
     ELSE
-        C.print("Not Equal")
+        Texts.WriteString("Not Equal"); Texts.WriteLn
     END;
 
     IF FLT(x) + y = z THEN
-        C.print("Equal")
+        Texts.WriteString("Equal");     Texts.WriteLn
     ELSE
-        C.print("Not Equal")
+        Texts.WriteString("Not Equal"); Texts.WriteLn
     END;
 
     IF ne THEN
-        C.print("Not Equal")
+        Texts.WriteString("Not Equal"); Texts.WriteLn
     ELSE
-        C.print("Equal")
+        Texts.WriteString("Equal");     Texts.WriteLn
     END;
 END GlobalConsts.
 ```
@@ -71,19 +71,27 @@ test/test_009.md:9:12:	rparen	")"	false	0	0.000000	(9, 12) -> (9, 13)
 test/test_009.md:9:14:	eq	"="	false	0	0.000000	(9, 14) -> (9, 15)
 test/test_009.md:9:16:	ident	"y"	false	0	0.000000	(9, 16) -> (9, 17)
 test/test_009.md:9:18:	then	"THEN"	false	0	0.000000	(9, 18) -> (9, 22)
-test/test_009.md:10:8:	ident	"C"	false	0	0.000000	(10, 8) -> (10, 9)
-test/test_009.md:10:9:	dot	"."	false	0	0.000000	(10, 9) -> (10, 10)
-test/test_009.md:10:10:	ident	"print"	false	0	0.000000	(10, 10) -> (10, 15)
-test/test_009.md:10:15:	lparen	"("	false	0	0.000000	(10, 15) -> (10, 16)
-test/test_009.md:10:16:	string	"Equal"	false	0	0.000000	(10, 16) -> (10, 23)
-test/test_009.md:10:23:	rparen	")"	false	0	0.000000	(10, 23) -> (10, 24)
+test/test_009.md:10:8:	ident	"Texts"	false	0	0.000000	(10, 8) -> (10, 13)
+test/test_009.md:10:13:	dot	"."	false	0	0.000000	(10, 13) -> (10, 14)
+test/test_009.md:10:14:	ident	"WriteString"	false	0	0.000000	(10, 14) -> (10, 25)
+test/test_009.md:10:25:	lparen	"("	false	0	0.000000	(10, 25) -> (10, 26)
+test/test_009.md:10:26:	string	"Equal"	false	0	0.000000	(10, 26) -> (10, 33)
+test/test_009.md:10:33:	rparen	")"	false	0	0.000000	(10, 33) -> (10, 34)
+test/test_009.md:10:34:	semicolon	";"	false	0	0.000000	(10, 34) -> (10, 35)
+test/test_009.md:10:40:	ident	"Texts"	false	0	0.000000	(10, 40) -> (10, 45)
+test/test_009.md:10:45:	dot	"."	false	0	0.000000	(10, 45) -> (10, 46)
+test/test_009.md:10:46:	ident	"WriteLn"	false	0	0.000000	(10, 46) -> (10, 53)
 test/test_009.md:11:4:	else	"ELSE"	false	0	0.000000	(11, 4) -> (11, 8)
-test/test_009.md:12:8:	ident	"C"	false	0	0.000000	(12, 8) -> (12, 9)
-test/test_009.md:12:9:	dot	"."	false	0	0.000000	(12, 9) -> (12, 10)
-test/test_009.md:12:10:	ident	"print"	false	0	0.000000	(12, 10) -> (12, 15)
-test/test_009.md:12:15:	lparen	"("	false	0	0.000000	(12, 15) -> (12, 16)
-test/test_009.md:12:16:	string	"Not Equal"	false	0	0.000000	(12, 16) -> (12, 27)
-test/test_009.md:12:27:	rparen	")"	false	0	0.000000	(12, 27) -> (12, 28)
+test/test_009.md:12:8:	ident	"Texts"	false	0	0.000000	(12, 8) -> (12, 13)
+test/test_009.md:12:13:	dot	"."	false	0	0.000000	(12, 13) -> (12, 14)
+test/test_009.md:12:14:	ident	"WriteString"	false	0	0.000000	(12, 14) -> (12, 25)
+test/test_009.md:12:25:	lparen	"("	false	0	0.000000	(12, 25) -> (12, 26)
+test/test_009.md:12:26:	string	"Not Equal"	false	0	0.000000	(12, 26) -> (12, 37)
+test/test_009.md:12:37:	rparen	")"	false	0	0.000000	(12, 37) -> (12, 38)
+test/test_009.md:12:38:	semicolon	";"	false	0	0.000000	(12, 38) -> (12, 39)
+test/test_009.md:12:40:	ident	"Texts"	false	0	0.000000	(12, 40) -> (12, 45)
+test/test_009.md:12:45:	dot	"."	false	0	0.000000	(12, 45) -> (12, 46)
+test/test_009.md:12:46:	ident	"WriteLn"	false	0	0.000000	(12, 46) -> (12, 53)
 test/test_009.md:13:4:	end	"END"	false	0	0.000000	(13, 4) -> (13, 7)
 test/test_009.md:13:7:	semicolon	";"	false	0	0.000000	(13, 7) -> (13, 8)
 test/test_009.md:15:4:	if	"IF"	false	0	0.000000	(15, 4) -> (15, 6)
@@ -96,37 +104,53 @@ test/test_009.md:15:16:	ident	"y"	false	0	0.000000	(15, 16) -> (15, 17)
 test/test_009.md:15:18:	eq	"="	false	0	0.000000	(15, 18) -> (15, 19)
 test/test_009.md:15:20:	ident	"z"	false	0	0.000000	(15, 20) -> (15, 21)
 test/test_009.md:15:22:	then	"THEN"	false	0	0.000000	(15, 22) -> (15, 26)
-test/test_009.md:16:8:	ident	"C"	false	0	0.000000	(16, 8) -> (16, 9)
-test/test_009.md:16:9:	dot	"."	false	0	0.000000	(16, 9) -> (16, 10)
-test/test_009.md:16:10:	ident	"print"	false	0	0.000000	(16, 10) -> (16, 15)
-test/test_009.md:16:15:	lparen	"("	false	0	0.000000	(16, 15) -> (16, 16)
-test/test_009.md:16:16:	string	"Equal"	false	0	0.000000	(16, 16) -> (16, 23)
-test/test_009.md:16:23:	rparen	")"	false	0	0.000000	(16, 23) -> (16, 24)
+test/test_009.md:16:8:	ident	"Texts"	false	0	0.000000	(16, 8) -> (16, 13)
+test/test_009.md:16:13:	dot	"."	false	0	0.000000	(16, 13) -> (16, 14)
+test/test_009.md:16:14:	ident	"WriteString"	false	0	0.000000	(16, 14) -> (16, 25)
+test/test_009.md:16:25:	lparen	"("	false	0	0.000000	(16, 25) -> (16, 26)
+test/test_009.md:16:26:	string	"Equal"	false	0	0.000000	(16, 26) -> (16, 33)
+test/test_009.md:16:33:	rparen	")"	false	0	0.000000	(16, 33) -> (16, 34)
+test/test_009.md:16:34:	semicolon	";"	false	0	0.000000	(16, 34) -> (16, 35)
+test/test_009.md:16:40:	ident	"Texts"	false	0	0.000000	(16, 40) -> (16, 45)
+test/test_009.md:16:45:	dot	"."	false	0	0.000000	(16, 45) -> (16, 46)
+test/test_009.md:16:46:	ident	"WriteLn"	false	0	0.000000	(16, 46) -> (16, 53)
 test/test_009.md:17:4:	else	"ELSE"	false	0	0.000000	(17, 4) -> (17, 8)
-test/test_009.md:18:8:	ident	"C"	false	0	0.000000	(18, 8) -> (18, 9)
-test/test_009.md:18:9:	dot	"."	false	0	0.000000	(18, 9) -> (18, 10)
-test/test_009.md:18:10:	ident	"print"	false	0	0.000000	(18, 10) -> (18, 15)
-test/test_009.md:18:15:	lparen	"("	false	0	0.000000	(18, 15) -> (18, 16)
-test/test_009.md:18:16:	string	"Not Equal"	false	0	0.000000	(18, 16) -> (18, 27)
-test/test_009.md:18:27:	rparen	")"	false	0	0.000000	(18, 27) -> (18, 28)
+test/test_009.md:18:8:	ident	"Texts"	false	0	0.000000	(18, 8) -> (18, 13)
+test/test_009.md:18:13:	dot	"."	false	0	0.000000	(18, 13) -> (18, 14)
+test/test_009.md:18:14:	ident	"WriteString"	false	0	0.000000	(18, 14) -> (18, 25)
+test/test_009.md:18:25:	lparen	"("	false	0	0.000000	(18, 25) -> (18, 26)
+test/test_009.md:18:26:	string	"Not Equal"	false	0	0.000000	(18, 26) -> (18, 37)
+test/test_009.md:18:37:	rparen	")"	false	0	0.000000	(18, 37) -> (18, 38)
+test/test_009.md:18:38:	semicolon	";"	false	0	0.000000	(18, 38) -> (18, 39)
+test/test_009.md:18:40:	ident	"Texts"	false	0	0.000000	(18, 40) -> (18, 45)
+test/test_009.md:18:45:	dot	"."	false	0	0.000000	(18, 45) -> (18, 46)
+test/test_009.md:18:46:	ident	"WriteLn"	false	0	0.000000	(18, 46) -> (18, 53)
 test/test_009.md:19:4:	end	"END"	false	0	0.000000	(19, 4) -> (19, 7)
 test/test_009.md:19:7:	semicolon	";"	false	0	0.000000	(19, 7) -> (19, 8)
 test/test_009.md:21:4:	if	"IF"	false	0	0.000000	(21, 4) -> (21, 6)
 test/test_009.md:21:7:	ident	"ne"	false	0	0.000000	(21, 7) -> (21, 9)
 test/test_009.md:21:10:	then	"THEN"	false	0	0.000000	(21, 10) -> (21, 14)
-test/test_009.md:22:8:	ident	"C"	false	0	0.000000	(22, 8) -> (22, 9)
-test/test_009.md:22:9:	dot	"."	false	0	0.000000	(22, 9) -> (22, 10)
-test/test_009.md:22:10:	ident	"print"	false	0	0.000000	(22, 10) -> (22, 15)
-test/test_009.md:22:15:	lparen	"("	false	0	0.000000	(22, 15) -> (22, 16)
-test/test_009.md:22:16:	string	"Not Equal"	false	0	0.000000	(22, 16) -> (22, 27)
-test/test_009.md:22:27:	rparen	")"	false	0	0.000000	(22, 27) -> (22, 28)
+test/test_009.md:22:8:	ident	"Texts"	false	0	0.000000	(22, 8) -> (22, 13)
+test/test_009.md:22:13:	dot	"."	false	0	0.000000	(22, 13) -> (22, 14)
+test/test_009.md:22:14:	ident	"WriteString"	false	0	0.000000	(22, 14) -> (22, 25)
+test/test_009.md:22:25:	lparen	"("	false	0	0.000000	(22, 25) -> (22, 26)
+test/test_009.md:22:26:	string	"Not Equal"	false	0	0.000000	(22, 26) -> (22, 37)
+test/test_009.md:22:37:	rparen	")"	false	0	0.000000	(22, 37) -> (22, 38)
+test/test_009.md:22:38:	semicolon	";"	false	0	0.000000	(22, 38) -> (22, 39)
+test/test_009.md:22:40:	ident	"Texts"	false	0	0.000000	(22, 40) -> (22, 45)
+test/test_009.md:22:45:	dot	"."	false	0	0.000000	(22, 45) -> (22, 46)
+test/test_009.md:22:46:	ident	"WriteLn"	false	0	0.000000	(22, 46) -> (22, 53)
 test/test_009.md:23:4:	else	"ELSE"	false	0	0.000000	(23, 4) -> (23, 8)
-test/test_009.md:24:8:	ident	"C"	false	0	0.000000	(24, 8) -> (24, 9)
-test/test_009.md:24:9:	dot	"."	false	0	0.000000	(24, 9) -> (24, 10)
-test/test_009.md:24:10:	ident	"print"	false	0	0.000000	(24, 10) -> (24, 15)
-test/test_009.md:24:15:	lparen	"("	false	0	0.000000	(24, 15) -> (24, 16)
-test/test_009.md:24:16:	string	"Equal"	false	0	0.000000	(24, 16) -> (24, 23)
-test/test_009.md:24:23:	rparen	")"	false	0	0.000000	(24, 23) -> (24, 24)
+test/test_009.md:24:8:	ident	"Texts"	false	0	0.000000	(24, 8) -> (24, 13)
+test/test_009.md:24:13:	dot	"."	false	0	0.000000	(24, 13) -> (24, 14)
+test/test_009.md:24:14:	ident	"WriteString"	false	0	0.000000	(24, 14) -> (24, 25)
+test/test_009.md:24:25:	lparen	"("	false	0	0.000000	(24, 25) -> (24, 26)
+test/test_009.md:24:26:	string	"Equal"	false	0	0.000000	(24, 26) -> (24, 33)
+test/test_009.md:24:33:	rparen	")"	false	0	0.000000	(24, 33) -> (24, 34)
+test/test_009.md:24:34:	semicolon	";"	false	0	0.000000	(24, 34) -> (24, 35)
+test/test_009.md:24:40:	ident	"Texts"	false	0	0.000000	(24, 40) -> (24, 45)
+test/test_009.md:24:45:	dot	"."	false	0	0.000000	(24, 45) -> (24, 46)
+test/test_009.md:24:46:	ident	"WriteLn"	false	0	0.000000	(24, 46) -> (24, 53)
 test/test_009.md:25:4:	end	"END"	false	0	0.000000	(25, 4) -> (25, 7)
 test/test_009.md:25:7:	semicolon	";"	false	0	0.000000	(25, 7) -> (25, 8)
 test/test_009.md:26:0:	end	"END"	false	0	0.000000	(26, 0) -> (26, 3)
@@ -175,16 +199,26 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteString")
             (string "Equal")
+          )
+        )
+        (expr2stmt
+          (call
+            (procedure [void] "Texts.WriteLn")
           )
         )
       )
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteString")
             (string "Not Equal")
+          )
+        )
+        (expr2stmt
+          (call
+            (procedure [void] "Texts.WriteLn")
           )
         )
       )
@@ -203,16 +237,26 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteString")
             (string "Equal")
+          )
+        )
+        (expr2stmt
+          (call
+            (procedure [void] "Texts.WriteLn")
           )
         )
       )
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteString")
             (string "Not Equal")
+          )
+        )
+        (expr2stmt
+          (call
+            (procedure [void] "Texts.WriteLn")
           )
         )
       )
@@ -222,16 +266,26 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteString")
             (string "Not Equal")
+          )
+        )
+        (expr2stmt
+          (call
+            (procedure [void] "Texts.WriteLn")
           )
         )
       )
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteString")
             (string "Equal")
+          )
+        )
+        (expr2stmt
+          (call
+            (procedure [void] "Texts.WriteLn")
           )
         )
       )
@@ -242,7 +296,8 @@ test/test_009.md:27:0:	eof	""	false	0	0.000000	(27, 0) -> (27, 0)
 ## IR
 ```llvm
 @0 = global [6 x i8] c"Equal\00"
-@1 = global [10 x i8] c"Not Equal\00"
+@1 = global [1 x i8] c"\00"
+@2 = global [10 x i8] c"Not Equal\00"
 
 declare i64 @puts(i8* %str)
 
@@ -260,48 +315,60 @@ define i64 @main() {
 entry:
 	%0 = sitofp i64 1 to double
 	%1 = fcmp ueq double %0, 0x400199999999999A
-	br i1 %1, label %2, label %5
+	br i1 %1, label %2, label %7
 
 2:
 	%3 = getelementptr [6 x i8], [6 x i8]* @0, i64 0, i64 0
-	%4 = call i64 @puts(i8* %3)
-	br label %8
+	%4 = call i64 (i8*, ...) @printf(i8* %3)
+	%5 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%6 = call i64 @puts(i8* %5)
+	br label %12
 
-5:
-	%6 = getelementptr [10 x i8], [10 x i8]* @1, i64 0, i64 0
-	%7 = call i64 @puts(i8* %6)
-	br label %8
-
-8:
-	%9 = sitofp i64 1 to double
-	%10 = fadd double %9, 0x400199999999999A
-	%11 = fcmp ueq double %10, 0x400999999999999A
-	br i1 %11, label %12, label %15
+7:
+	%8 = getelementptr [10 x i8], [10 x i8]* @2, i64 0, i64 0
+	%9 = call i64 (i8*, ...) @printf(i8* %8)
+	%10 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%11 = call i64 @puts(i8* %10)
+	br label %12
 
 12:
-	%13 = getelementptr [6 x i8], [6 x i8]* @0, i64 0, i64 0
-	%14 = call i64 @puts(i8* %13)
-	br label %18
+	%13 = sitofp i64 1 to double
+	%14 = fadd double %13, 0x400199999999999A
+	%15 = fcmp ueq double %14, 0x400999999999999A
+	br i1 %15, label %16, label %21
 
-15:
-	%16 = getelementptr [10 x i8], [10 x i8]* @1, i64 0, i64 0
-	%17 = call i64 @puts(i8* %16)
-	br label %18
+16:
+	%17 = getelementptr [6 x i8], [6 x i8]* @0, i64 0, i64 0
+	%18 = call i64 (i8*, ...) @printf(i8* %17)
+	%19 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%20 = call i64 @puts(i8* %19)
+	br label %26
 
-18:
-	br i1 true, label %19, label %22
+21:
+	%22 = getelementptr [10 x i8], [10 x i8]* @2, i64 0, i64 0
+	%23 = call i64 (i8*, ...) @printf(i8* %22)
+	%24 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%25 = call i64 @puts(i8* %24)
+	br label %26
 
-19:
-	%20 = getelementptr [10 x i8], [10 x i8]* @1, i64 0, i64 0
-	%21 = call i64 @puts(i8* %20)
-	br label %25
+26:
+	br i1 true, label %27, label %32
 
-22:
-	%23 = getelementptr [6 x i8], [6 x i8]* @0, i64 0, i64 0
-	%24 = call i64 @puts(i8* %23)
-	br label %25
+27:
+	%28 = getelementptr [10 x i8], [10 x i8]* @2, i64 0, i64 0
+	%29 = call i64 (i8*, ...) @printf(i8* %28)
+	%30 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%31 = call i64 @puts(i8* %30)
+	br label %37
 
-25:
+32:
+	%33 = getelementptr [6 x i8], [6 x i8]* @0, i64 0, i64 0
+	%34 = call i64 (i8*, ...) @printf(i8* %33)
+	%35 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%36 = call i64 @puts(i8* %35)
+	br label %37
+
+37:
 	ret i64 0
 }
 

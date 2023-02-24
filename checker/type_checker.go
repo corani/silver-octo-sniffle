@@ -559,7 +559,7 @@ func (c *typeChecker) VisitBuiltinORD(f *ast.BuiltinORD, args []ast.Expr) {
 
 	if v := args[0].ConstValue(); v != nil {
 		switch args[0].Type() {
-		case ast.TypeBoolean, ast.TypeChar:
+		case ast.TypeBoolean, ast.TypeChar, ast.TypeSet:
 			c.currentValue = ast.NewInt(v.Int())
 		}
 	}
@@ -630,5 +630,21 @@ func (c *typeChecker) VisitCPrint(*ast.CPrint, []ast.Expr) {
 }
 
 func (c *typeChecker) VisitTextsWriteInt(*ast.TextsWriteInt, []ast.Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitTextsWriteReal(*ast.TextsWriteReal, []ast.Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitTextsWriteString(*ast.TextsWriteString, []ast.Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitTextsWriteChar(*ast.TextsWriteChar, []ast.Expr) {
+	c.currentValue = nil
+}
+
+func (c *typeChecker) VisitTextsWriteLn(*ast.TextsWriteLn, []ast.Expr) {
 	c.currentValue = nil
 }

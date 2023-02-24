@@ -6,9 +6,9 @@ MODULE IncDec;
 VAR x: INTEGER;
 
 BEGIN
-  x := 1; C.print(x);
-  INC(x); C.print(x);
-  DEC(x); C.print(x);
+  x := 1; Texts.WriteInt(x);    Texts.WriteLn;
+  INC(x); Texts.WriteInt(x);    Texts.WriteLn;
+  DEC(x); Texts.WriteInt(x);    Texts.WriteLn;
 END IncDec.
 ```
 ## Tokens
@@ -26,37 +26,49 @@ test/test_010.md:6:2:	ident	"x"	false	0	0.000000	(6, 2) -> (6, 3)
 test/test_010.md:6:4:	assign	":="	false	0	0.000000	(6, 4) -> (6, 6)
 test/test_010.md:6:7:	integer	"1"	false	1	0.000000	(6, 7) -> (6, 8)
 test/test_010.md:6:8:	semicolon	";"	false	0	0.000000	(6, 8) -> (6, 9)
-test/test_010.md:6:10:	ident	"C"	false	0	0.000000	(6, 10) -> (6, 11)
-test/test_010.md:6:11:	dot	"."	false	0	0.000000	(6, 11) -> (6, 12)
-test/test_010.md:6:12:	ident	"print"	false	0	0.000000	(6, 12) -> (6, 17)
-test/test_010.md:6:17:	lparen	"("	false	0	0.000000	(6, 17) -> (6, 18)
-test/test_010.md:6:18:	ident	"x"	false	0	0.000000	(6, 18) -> (6, 19)
-test/test_010.md:6:19:	rparen	")"	false	0	0.000000	(6, 19) -> (6, 20)
-test/test_010.md:6:20:	semicolon	";"	false	0	0.000000	(6, 20) -> (6, 21)
+test/test_010.md:6:10:	ident	"Texts"	false	0	0.000000	(6, 10) -> (6, 15)
+test/test_010.md:6:15:	dot	"."	false	0	0.000000	(6, 15) -> (6, 16)
+test/test_010.md:6:16:	ident	"WriteInt"	false	0	0.000000	(6, 16) -> (6, 24)
+test/test_010.md:6:24:	lparen	"("	false	0	0.000000	(6, 24) -> (6, 25)
+test/test_010.md:6:25:	ident	"x"	false	0	0.000000	(6, 25) -> (6, 26)
+test/test_010.md:6:26:	rparen	")"	false	0	0.000000	(6, 26) -> (6, 27)
+test/test_010.md:6:27:	semicolon	";"	false	0	0.000000	(6, 27) -> (6, 28)
+test/test_010.md:6:32:	ident	"Texts"	false	0	0.000000	(6, 32) -> (6, 37)
+test/test_010.md:6:37:	dot	"."	false	0	0.000000	(6, 37) -> (6, 38)
+test/test_010.md:6:38:	ident	"WriteLn"	false	0	0.000000	(6, 38) -> (6, 45)
+test/test_010.md:6:45:	semicolon	";"	false	0	0.000000	(6, 45) -> (6, 46)
 test/test_010.md:7:2:	ident	"INC"	false	0	0.000000	(7, 2) -> (7, 5)
 test/test_010.md:7:5:	lparen	"("	false	0	0.000000	(7, 5) -> (7, 6)
 test/test_010.md:7:6:	ident	"x"	false	0	0.000000	(7, 6) -> (7, 7)
 test/test_010.md:7:7:	rparen	")"	false	0	0.000000	(7, 7) -> (7, 8)
 test/test_010.md:7:8:	semicolon	";"	false	0	0.000000	(7, 8) -> (7, 9)
-test/test_010.md:7:10:	ident	"C"	false	0	0.000000	(7, 10) -> (7, 11)
-test/test_010.md:7:11:	dot	"."	false	0	0.000000	(7, 11) -> (7, 12)
-test/test_010.md:7:12:	ident	"print"	false	0	0.000000	(7, 12) -> (7, 17)
-test/test_010.md:7:17:	lparen	"("	false	0	0.000000	(7, 17) -> (7, 18)
-test/test_010.md:7:18:	ident	"x"	false	0	0.000000	(7, 18) -> (7, 19)
-test/test_010.md:7:19:	rparen	")"	false	0	0.000000	(7, 19) -> (7, 20)
-test/test_010.md:7:20:	semicolon	";"	false	0	0.000000	(7, 20) -> (7, 21)
+test/test_010.md:7:10:	ident	"Texts"	false	0	0.000000	(7, 10) -> (7, 15)
+test/test_010.md:7:15:	dot	"."	false	0	0.000000	(7, 15) -> (7, 16)
+test/test_010.md:7:16:	ident	"WriteInt"	false	0	0.000000	(7, 16) -> (7, 24)
+test/test_010.md:7:24:	lparen	"("	false	0	0.000000	(7, 24) -> (7, 25)
+test/test_010.md:7:25:	ident	"x"	false	0	0.000000	(7, 25) -> (7, 26)
+test/test_010.md:7:26:	rparen	")"	false	0	0.000000	(7, 26) -> (7, 27)
+test/test_010.md:7:27:	semicolon	";"	false	0	0.000000	(7, 27) -> (7, 28)
+test/test_010.md:7:32:	ident	"Texts"	false	0	0.000000	(7, 32) -> (7, 37)
+test/test_010.md:7:37:	dot	"."	false	0	0.000000	(7, 37) -> (7, 38)
+test/test_010.md:7:38:	ident	"WriteLn"	false	0	0.000000	(7, 38) -> (7, 45)
+test/test_010.md:7:45:	semicolon	";"	false	0	0.000000	(7, 45) -> (7, 46)
 test/test_010.md:8:2:	ident	"DEC"	false	0	0.000000	(8, 2) -> (8, 5)
 test/test_010.md:8:5:	lparen	"("	false	0	0.000000	(8, 5) -> (8, 6)
 test/test_010.md:8:6:	ident	"x"	false	0	0.000000	(8, 6) -> (8, 7)
 test/test_010.md:8:7:	rparen	")"	false	0	0.000000	(8, 7) -> (8, 8)
 test/test_010.md:8:8:	semicolon	";"	false	0	0.000000	(8, 8) -> (8, 9)
-test/test_010.md:8:10:	ident	"C"	false	0	0.000000	(8, 10) -> (8, 11)
-test/test_010.md:8:11:	dot	"."	false	0	0.000000	(8, 11) -> (8, 12)
-test/test_010.md:8:12:	ident	"print"	false	0	0.000000	(8, 12) -> (8, 17)
-test/test_010.md:8:17:	lparen	"("	false	0	0.000000	(8, 17) -> (8, 18)
-test/test_010.md:8:18:	ident	"x"	false	0	0.000000	(8, 18) -> (8, 19)
-test/test_010.md:8:19:	rparen	")"	false	0	0.000000	(8, 19) -> (8, 20)
-test/test_010.md:8:20:	semicolon	";"	false	0	0.000000	(8, 20) -> (8, 21)
+test/test_010.md:8:10:	ident	"Texts"	false	0	0.000000	(8, 10) -> (8, 15)
+test/test_010.md:8:15:	dot	"."	false	0	0.000000	(8, 15) -> (8, 16)
+test/test_010.md:8:16:	ident	"WriteInt"	false	0	0.000000	(8, 16) -> (8, 24)
+test/test_010.md:8:24:	lparen	"("	false	0	0.000000	(8, 24) -> (8, 25)
+test/test_010.md:8:25:	ident	"x"	false	0	0.000000	(8, 25) -> (8, 26)
+test/test_010.md:8:26:	rparen	")"	false	0	0.000000	(8, 26) -> (8, 27)
+test/test_010.md:8:27:	semicolon	";"	false	0	0.000000	(8, 27) -> (8, 28)
+test/test_010.md:8:32:	ident	"Texts"	false	0	0.000000	(8, 32) -> (8, 37)
+test/test_010.md:8:37:	dot	"."	false	0	0.000000	(8, 37) -> (8, 38)
+test/test_010.md:8:38:	ident	"WriteLn"	false	0	0.000000	(8, 38) -> (8, 45)
+test/test_010.md:8:45:	semicolon	";"	false	0	0.000000	(8, 45) -> (8, 46)
 test/test_010.md:9:0:	end	"END"	false	0	0.000000	(9, 0) -> (9, 3)
 test/test_010.md:9:4:	ident	"IncDec"	false	0	0.000000	(9, 4) -> (9, 10)
 test/test_010.md:9:10:	dot	"."	false	0	0.000000	(9, 10) -> (9, 11)
@@ -77,8 +89,13 @@ test/test_010.md:10:0:	eof	""	false	0	0.000000	(10, 0) -> (10, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
+        (procedure [void] "Texts.WriteInt")
         (variable [i64] "x")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
       )
     )
     (expr2stmt
@@ -89,8 +106,13 @@ test/test_010.md:10:0:	eof	""	false	0	0.000000	(10, 0) -> (10, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
+        (procedure [void] "Texts.WriteInt")
         (variable [i64] "x")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
       )
     )
     (expr2stmt
@@ -101,8 +123,13 @@ test/test_010.md:10:0:	eof	""	false	0	0.000000	(10, 0) -> (10, 0)
     )
     (expr2stmt
       (call
-        (procedure [void] "C.print")
+        (procedure [void] "Texts.WriteInt")
         (variable [i64] "x")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
       )
     )
   )
@@ -111,7 +138,8 @@ test/test_010.md:10:0:	eof	""	false	0	0.000000	(10, 0) -> (10, 0)
 ## IR
 ```llvm
 @0 = global i64 0
-@1 = global [4 x i8] c"%d\0A\00"
+@1 = global [3 x i8] c"%d\00"
+@2 = global [1 x i8] c"\00"
 
 declare i64 @puts(i8* %str)
 
@@ -129,20 +157,26 @@ define i64 @main() {
 entry:
 	store i64 1, i64* @0
 	%0 = load i64, i64* @0
-	%1 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%1 = getelementptr [3 x i8], [3 x i8]* @1, i64 0, i64 0
 	%2 = call i64 (i8*, ...) @printf(i8* %1, i64 %0)
-	%3 = load i64, i64* @0
-	%4 = add i64 %3, 1
-	store i64 %4, i64* @0
+	%3 = getelementptr [1 x i8], [1 x i8]* @2, i64 0, i64 0
+	%4 = call i64 @puts(i8* %3)
 	%5 = load i64, i64* @0
-	%6 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
-	%7 = call i64 (i8*, ...) @printf(i8* %6, i64 %5)
-	%8 = load i64, i64* @0
-	%9 = sub i64 %8, 1
-	store i64 %9, i64* @0
-	%10 = load i64, i64* @0
-	%11 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
-	%12 = call i64 (i8*, ...) @printf(i8* %11, i64 %10)
+	%6 = add i64 %5, 1
+	store i64 %6, i64* @0
+	%7 = load i64, i64* @0
+	%8 = getelementptr [3 x i8], [3 x i8]* @1, i64 0, i64 0
+	%9 = call i64 (i8*, ...) @printf(i8* %8, i64 %7)
+	%10 = getelementptr [1 x i8], [1 x i8]* @2, i64 0, i64 0
+	%11 = call i64 @puts(i8* %10)
+	%12 = load i64, i64* @0
+	%13 = sub i64 %12, 1
+	store i64 %13, i64* @0
+	%14 = load i64, i64* @0
+	%15 = getelementptr [3 x i8], [3 x i8]* @1, i64 0, i64 0
+	%16 = call i64 (i8*, ...) @printf(i8* %15, i64 %14)
+	%17 = getelementptr [1 x i8], [1 x i8]* @2, i64 0, i64 0
+	%18 = call i64 @puts(i8* %17)
 	ret i64 0
 }
 

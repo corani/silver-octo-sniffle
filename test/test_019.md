@@ -10,7 +10,7 @@ BEGIN
   x := (1+2;
   set := {1, 2;};
   set := {1..};
-  print(3+
+  Texts.WriteInt(3+
 END Parse.
 ```
 ## Tokens
@@ -51,10 +51,12 @@ test/test_019.md:9:10:	integer	"1"	false	1	0.000000	(9, 10) -> (9, 13)
 test/test_019.md:9:13:	dotdot	".."	false	0	0.000000	(9, 13) -> (9, 15)
 test/test_019.md:9:15:	rbrace	"}"	false	0	0.000000	(9, 15) -> (9, 16)
 test/test_019.md:9:16:	semicolon	";"	false	0	0.000000	(9, 16) -> (9, 17)
-test/test_019.md:10:2:	ident	"print"	false	0	0.000000	(10, 2) -> (10, 7)
-test/test_019.md:10:7:	lparen	"("	false	0	0.000000	(10, 7) -> (10, 8)
-test/test_019.md:10:8:	integer	"3"	false	3	0.000000	(10, 8) -> (10, 9)
-test/test_019.md:10:9:	plus	"+"	false	0	0.000000	(10, 9) -> (10, 10)
+test/test_019.md:10:2:	ident	"Texts"	false	0	0.000000	(10, 2) -> (10, 7)
+test/test_019.md:10:7:	dot	"."	false	0	0.000000	(10, 7) -> (10, 8)
+test/test_019.md:10:8:	ident	"WriteInt"	false	0	0.000000	(10, 8) -> (10, 16)
+test/test_019.md:10:16:	lparen	"("	false	0	0.000000	(10, 16) -> (10, 17)
+test/test_019.md:10:17:	integer	"3"	false	3	0.000000	(10, 17) -> (10, 18)
+test/test_019.md:10:18:	plus	"+"	false	0	0.000000	(10, 18) -> (10, 19)
 test/test_019.md:11:0:	end	"END"	false	0	0.000000	(11, 0) -> (11, 3)
 test/test_019.md:11:4:	ident	"Parse"	false	0	0.000000	(11, 4) -> (11, 9)
 test/test_019.md:11:9:	dot	"."	false	0	0.000000	(11, 9) -> (11, 10)
@@ -74,8 +76,8 @@ test/test_019.md:9:15: ERROR: unexpected token: }
 test/test_019.md:9:15: INFO : expected: semicolon
 test/test_019.md:9:16: ERROR: unexpected token: ;
 test/test_019.md:9:16: INFO : expected: end
-test/test_019.md:10:7: ERROR: unexpected identifier "print" at end of module
+test/test_019.md:10:7: ERROR: unexpected identifier "Texts" at end of module
 test/test_019.md:10:7: INFO : module name is "ParseErrors"
-test/test_019.md:10:7: ERROR: unexpected token: (
-test/test_019.md:10:7: INFO : expected: dot
+test/test_019.md:10:8: ERROR: unexpected token: WriteInt
+test/test_019.md:10:8: INFO : expected: eof
 ```

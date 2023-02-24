@@ -69,7 +69,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] support pointer dereferences.
 - [x] support temporary built-in `DELETE` procedure.
 - [x] support qualified-identifiers.
-- [ ] replace `print` with builtin `Texts` procedures.
+- [x] replace `print` with builtin `Texts` procedures.
 - [ ] support multiple modules in checker (and generator?).
 - [ ] better sync points during parser error recovery.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
@@ -90,5 +90,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [ ] update "golden test" files in-place, so any additional content doesn't get overwritten.
 - [ ] support reference counting or garbage collection.
 - [ ] a magic "C" call built-in module?
+- [ ] remove builtin `print` procedure. 
+- [ ] remove builtin `DELETE` procedure.
 - [ ] a standard library.
 - [ ] ...

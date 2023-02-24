@@ -593,6 +593,8 @@ func (g *Generator) VisitBuiltinORD(f *ast.BuiltinORD, args []ast.Expr) {
 	case ast.TypeChar:
 		v := g.visitAndReturnValue(args[0])
 		g.currentValue = g.currentBlock.NewZExt(v, types.I64)
+	case ast.TypeSet:
+		g.visitAndReturnValue(args[0])
 	}
 }
 
@@ -689,16 +691,16 @@ func (g *Generator) VisitCPrint(f *ast.CPrint, args []ast.Expr) {
 	switch arg.Type() {
 	case ast.TypeInt64:
 		g.printInteger(arg)
+		g.println()
 	case ast.TypeFloat64:
 		g.printReal(arg)
+		g.println()
 	case ast.TypeString:
 		g.printString(arg)
-	case ast.TypeBoolean:
-		g.printBoolean(arg)
+		g.println()
 	case ast.TypeChar:
 		g.printChar(arg)
-	case ast.TypeSet:
-		g.printSet(arg)
+		g.println()
 	default:
 		g.out.Errorf(arg.Token(), "don't know how to print type: %s",
 			arg.Type())
@@ -709,13 +711,29 @@ func (g *Generator) VisitTextsWriteInt(f *ast.TextsWriteInt, args []ast.Expr) {
 	g.printInteger(args[0])
 }
 
+func (g *Generator) VisitTextsWriteReal(f *ast.TextsWriteReal, args []ast.Expr) {
+	g.printReal(args[0])
+}
+
+func (g *Generator) VisitTextsWriteString(f *ast.TextsWriteString, args []ast.Expr) {
+	g.printString(args[0])
+}
+
+func (g *Generator) VisitTextsWriteChar(f *ast.TextsWriteChar, args []ast.Expr) {
+	g.printChar(args[0])
+}
+
+func (g *Generator) VisitTextsWriteLn(f *ast.TextsWriteLn, args []ast.Expr) {
+	g.println()
+}
+
 func (g *Generator) printInteger(arg ast.Expr) {
 	leaveNode := g.enterNode(arg)
 	defer leaveNode()
 
 	number := g.visitAndReturnValue(arg)
 
-	format := g.internString("%d\n\000")
+	format := g.internString("%d\000")
 	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
 
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
@@ -727,7 +745,7 @@ func (g *Generator) printReal(arg ast.Expr) {
 
 	number := g.visitAndReturnValue(arg)
 
-	format := g.internString("%f\n\000")
+	format := g.internString("%f\000")
 	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
 
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, number)
@@ -739,35 +757,7 @@ func (g *Generator) printString(arg ast.Expr) {
 
 	str := g.visitAndReturnValue(arg)
 
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], str)
-}
-
-func (g *Generator) printBoolean(arg ast.Expr) {
-	leaveNode := g.enterNode(arg)
-	defer leaveNode()
-
-	TRUE := g.internString("TRUE\000")
-	FALSE := g.internString("FALSE\000")
-
-	boolean := g.visitAndReturnValue(arg)
-
-	trueBlk := g.currentFunc.NewBlock("")
-	falseBlk := g.currentFunc.NewBlock("")
-	endBlk := g.currentFunc.NewBlock("")
-
-	g.currentBlock.NewCondBr(boolean, trueBlk, falseBlk)
-
-	g.currentBlock = trueBlk
-	truePtr := g.currentBlock.NewGetElementPtr(TRUE.ContentType, TRUE, zero, zero)
-	g.currentBlock.NewBr(endBlk)
-
-	g.currentBlock = falseBlk
-	falsePtr := g.currentBlock.NewGetElementPtr(FALSE.ContentType, FALSE, zero, zero)
-	g.currentBlock.NewBr(endBlk)
-
-	g.currentBlock = endBlk
-	strptr := g.currentBlock.NewPhi(ir.NewIncoming(truePtr, trueBlk), ir.NewIncoming(falsePtr, falseBlk))
-	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], strptr)
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], str)
 }
 
 func (g *Generator) printChar(arg ast.Expr) {
@@ -776,18 +766,17 @@ func (g *Generator) printChar(arg ast.Expr) {
 
 	v := g.visitAndReturnValue(arg)
 
-	format := g.internString("%c\n\000")
+	format := g.internString("%c\000")
 	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
 
 	g.currentValue = g.currentBlock.NewCall(g.stdlib["printf"], formatptr, v)
 }
 
-func (g *Generator) printSet(arg ast.Expr) {
-	leaveNode := g.enterNode(arg)
-	defer leaveNode()
+func (g *Generator) println() {
+	format := g.internString("\000")
+	formatptr := g.currentBlock.NewGetElementPtr(format.ContentType, format, zero, zero)
 
-	// TODO(daniel): can we get a better print for sets?
-	g.printInteger(arg)
+	g.currentValue = g.currentBlock.NewCall(g.stdlib["puts"], formatptr)
 }
 
 // ----- helper functions --------------------------------------------------------------------------

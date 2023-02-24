@@ -9,7 +9,7 @@ BEGIN
   x := 10;
   REPEAT
     DEC(x);
-    C.print(x);
+    Texts.WriteInt(x); Texts.WriteLn;
   UNTIL x = 0;
 END Repeat.
 ```
@@ -34,13 +34,17 @@ test/test_012.md:8:7:	lparen	"("	false	0	0.000000	(8, 7) -> (8, 8)
 test/test_012.md:8:8:	ident	"x"	false	0	0.000000	(8, 8) -> (8, 9)
 test/test_012.md:8:9:	rparen	")"	false	0	0.000000	(8, 9) -> (8, 10)
 test/test_012.md:8:10:	semicolon	";"	false	0	0.000000	(8, 10) -> (8, 11)
-test/test_012.md:9:4:	ident	"C"	false	0	0.000000	(9, 4) -> (9, 5)
-test/test_012.md:9:5:	dot	"."	false	0	0.000000	(9, 5) -> (9, 6)
-test/test_012.md:9:6:	ident	"print"	false	0	0.000000	(9, 6) -> (9, 11)
-test/test_012.md:9:11:	lparen	"("	false	0	0.000000	(9, 11) -> (9, 12)
-test/test_012.md:9:12:	ident	"x"	false	0	0.000000	(9, 12) -> (9, 13)
-test/test_012.md:9:13:	rparen	")"	false	0	0.000000	(9, 13) -> (9, 14)
-test/test_012.md:9:14:	semicolon	";"	false	0	0.000000	(9, 14) -> (9, 15)
+test/test_012.md:9:4:	ident	"Texts"	false	0	0.000000	(9, 4) -> (9, 9)
+test/test_012.md:9:9:	dot	"."	false	0	0.000000	(9, 9) -> (9, 10)
+test/test_012.md:9:10:	ident	"WriteInt"	false	0	0.000000	(9, 10) -> (9, 18)
+test/test_012.md:9:18:	lparen	"("	false	0	0.000000	(9, 18) -> (9, 19)
+test/test_012.md:9:19:	ident	"x"	false	0	0.000000	(9, 19) -> (9, 20)
+test/test_012.md:9:20:	rparen	")"	false	0	0.000000	(9, 20) -> (9, 21)
+test/test_012.md:9:21:	semicolon	";"	false	0	0.000000	(9, 21) -> (9, 22)
+test/test_012.md:9:23:	ident	"Texts"	false	0	0.000000	(9, 23) -> (9, 28)
+test/test_012.md:9:28:	dot	"."	false	0	0.000000	(9, 28) -> (9, 29)
+test/test_012.md:9:29:	ident	"WriteLn"	false	0	0.000000	(9, 29) -> (9, 36)
+test/test_012.md:9:36:	semicolon	";"	false	0	0.000000	(9, 36) -> (9, 37)
 test/test_012.md:10:2:	until	"UNTIL"	false	0	0.000000	(10, 2) -> (10, 7)
 test/test_012.md:10:8:	ident	"x"	false	0	0.000000	(10, 8) -> (10, 9)
 test/test_012.md:10:10:	eq	"="	false	0	0.000000	(10, 10) -> (10, 11)
@@ -74,8 +78,13 @@ test/test_012.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
         )
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteInt")
             (variable [i64] "x")
+          )
+        )
+        (expr2stmt
+          (call
+            (procedure [void] "Texts.WriteLn")
           )
         )
       )
@@ -90,7 +99,8 @@ test/test_012.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
 ## IR
 ```llvm
 @0 = global i64 0
-@1 = global [4 x i8] c"%d\0A\00"
+@1 = global [3 x i8] c"%d\00"
+@2 = global [1 x i8] c"\00"
 
 declare i64 @puts(i8* %str)
 
@@ -114,13 +124,15 @@ entry:
 	%2 = sub i64 %1, 1
 	store i64 %2, i64* @0
 	%3 = load i64, i64* @0
-	%4 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%4 = getelementptr [3 x i8], [3 x i8]* @1, i64 0, i64 0
 	%5 = call i64 (i8*, ...) @printf(i8* %4, i64 %3)
-	%6 = load i64, i64* @0
-	%7 = icmp eq i64 %6, 0
-	br i1 %7, label %8, label %0
+	%6 = getelementptr [1 x i8], [1 x i8]* @2, i64 0, i64 0
+	%7 = call i64 @puts(i8* %6)
+	%8 = load i64, i64* @0
+	%9 = icmp eq i64 %8, 0
+	br i1 %9, label %10, label %0
 
-8:
+10:
 	ret i64 0
 }
 

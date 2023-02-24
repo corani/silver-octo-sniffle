@@ -7,14 +7,19 @@ VAR x: INTEGER;
 
 BEGIN
   FOR x := 1 TO 10 BY 2 DO
-    C.print(x)
+    Texts.WriteInt(x);
   END;
+  Texts.WriteLn;
+
   FOR x := 9 TO 1 BY -3 DO
-    C.print(x)
+    Texts.WriteInt(x);
   END;
+  Texts.WriteLn;
+
   FOR x := 1 TO 3 DO 
-    C.print(x)
-  END
+    Texts.WriteInt(x);
+  END;
+  Texts.WriteLn
 END ForBy.
 ```
 ## Tokens
@@ -37,50 +42,65 @@ test/test_015.md:6:16:	integer	"10"	false	10	0.000000	(6, 16) -> (6, 18)
 test/test_015.md:6:19:	by	"BY"	false	0	0.000000	(6, 19) -> (6, 21)
 test/test_015.md:6:22:	integer	"2"	false	2	0.000000	(6, 22) -> (6, 23)
 test/test_015.md:6:24:	do	"DO"	false	0	0.000000	(6, 24) -> (6, 26)
-test/test_015.md:7:4:	ident	"C"	false	0	0.000000	(7, 4) -> (7, 5)
-test/test_015.md:7:5:	dot	"."	false	0	0.000000	(7, 5) -> (7, 6)
-test/test_015.md:7:6:	ident	"print"	false	0	0.000000	(7, 6) -> (7, 11)
-test/test_015.md:7:11:	lparen	"("	false	0	0.000000	(7, 11) -> (7, 12)
-test/test_015.md:7:12:	ident	"x"	false	0	0.000000	(7, 12) -> (7, 13)
-test/test_015.md:7:13:	rparen	")"	false	0	0.000000	(7, 13) -> (7, 14)
+test/test_015.md:7:4:	ident	"Texts"	false	0	0.000000	(7, 4) -> (7, 9)
+test/test_015.md:7:9:	dot	"."	false	0	0.000000	(7, 9) -> (7, 10)
+test/test_015.md:7:10:	ident	"WriteInt"	false	0	0.000000	(7, 10) -> (7, 18)
+test/test_015.md:7:18:	lparen	"("	false	0	0.000000	(7, 18) -> (7, 19)
+test/test_015.md:7:19:	ident	"x"	false	0	0.000000	(7, 19) -> (7, 20)
+test/test_015.md:7:20:	rparen	")"	false	0	0.000000	(7, 20) -> (7, 21)
+test/test_015.md:7:21:	semicolon	";"	false	0	0.000000	(7, 21) -> (7, 22)
 test/test_015.md:8:2:	end	"END"	false	0	0.000000	(8, 2) -> (8, 5)
 test/test_015.md:8:5:	semicolon	";"	false	0	0.000000	(8, 5) -> (8, 6)
-test/test_015.md:9:2:	for	"FOR"	false	0	0.000000	(9, 2) -> (9, 5)
-test/test_015.md:9:6:	ident	"x"	false	0	0.000000	(9, 6) -> (9, 7)
-test/test_015.md:9:8:	assign	":="	false	0	0.000000	(9, 8) -> (9, 10)
-test/test_015.md:9:11:	integer	"9"	false	9	0.000000	(9, 11) -> (9, 12)
-test/test_015.md:9:13:	to	"TO"	false	0	0.000000	(9, 13) -> (9, 15)
-test/test_015.md:9:16:	integer	"1"	false	1	0.000000	(9, 16) -> (9, 17)
-test/test_015.md:9:18:	by	"BY"	false	0	0.000000	(9, 18) -> (9, 20)
-test/test_015.md:9:21:	minus	"-"	false	0	0.000000	(9, 21) -> (9, 22)
-test/test_015.md:9:22:	integer	"3"	false	3	0.000000	(9, 22) -> (9, 23)
-test/test_015.md:9:24:	do	"DO"	false	0	0.000000	(9, 24) -> (9, 26)
-test/test_015.md:10:4:	ident	"C"	false	0	0.000000	(10, 4) -> (10, 5)
-test/test_015.md:10:5:	dot	"."	false	0	0.000000	(10, 5) -> (10, 6)
-test/test_015.md:10:6:	ident	"print"	false	0	0.000000	(10, 6) -> (10, 11)
-test/test_015.md:10:11:	lparen	"("	false	0	0.000000	(10, 11) -> (10, 12)
-test/test_015.md:10:12:	ident	"x"	false	0	0.000000	(10, 12) -> (10, 13)
-test/test_015.md:10:13:	rparen	")"	false	0	0.000000	(10, 13) -> (10, 14)
-test/test_015.md:11:2:	end	"END"	false	0	0.000000	(11, 2) -> (11, 5)
-test/test_015.md:11:5:	semicolon	";"	false	0	0.000000	(11, 5) -> (11, 6)
-test/test_015.md:12:2:	for	"FOR"	false	0	0.000000	(12, 2) -> (12, 5)
-test/test_015.md:12:6:	ident	"x"	false	0	0.000000	(12, 6) -> (12, 7)
-test/test_015.md:12:8:	assign	":="	false	0	0.000000	(12, 8) -> (12, 10)
-test/test_015.md:12:11:	integer	"1"	false	1	0.000000	(12, 11) -> (12, 12)
-test/test_015.md:12:13:	to	"TO"	false	0	0.000000	(12, 13) -> (12, 15)
-test/test_015.md:12:16:	integer	"3"	false	3	0.000000	(12, 16) -> (12, 17)
-test/test_015.md:12:18:	do	"DO"	false	0	0.000000	(12, 18) -> (12, 20)
-test/test_015.md:13:4:	ident	"C"	false	0	0.000000	(13, 4) -> (13, 5)
-test/test_015.md:13:5:	dot	"."	false	0	0.000000	(13, 5) -> (13, 6)
-test/test_015.md:13:6:	ident	"print"	false	0	0.000000	(13, 6) -> (13, 11)
-test/test_015.md:13:11:	lparen	"("	false	0	0.000000	(13, 11) -> (13, 12)
-test/test_015.md:13:12:	ident	"x"	false	0	0.000000	(13, 12) -> (13, 13)
-test/test_015.md:13:13:	rparen	")"	false	0	0.000000	(13, 13) -> (13, 14)
-test/test_015.md:14:2:	end	"END"	false	0	0.000000	(14, 2) -> (14, 5)
-test/test_015.md:15:0:	end	"END"	false	0	0.000000	(15, 0) -> (15, 3)
-test/test_015.md:15:4:	ident	"ForBy"	false	0	0.000000	(15, 4) -> (15, 9)
-test/test_015.md:15:9:	dot	"."	false	0	0.000000	(15, 9) -> (15, 10)
-test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
+test/test_015.md:9:2:	ident	"Texts"	false	0	0.000000	(9, 2) -> (9, 7)
+test/test_015.md:9:7:	dot	"."	false	0	0.000000	(9, 7) -> (9, 8)
+test/test_015.md:9:8:	ident	"WriteLn"	false	0	0.000000	(9, 8) -> (9, 15)
+test/test_015.md:9:15:	semicolon	";"	false	0	0.000000	(9, 15) -> (9, 16)
+test/test_015.md:11:2:	for	"FOR"	false	0	0.000000	(11, 2) -> (11, 5)
+test/test_015.md:11:6:	ident	"x"	false	0	0.000000	(11, 6) -> (11, 7)
+test/test_015.md:11:8:	assign	":="	false	0	0.000000	(11, 8) -> (11, 10)
+test/test_015.md:11:11:	integer	"9"	false	9	0.000000	(11, 11) -> (11, 12)
+test/test_015.md:11:13:	to	"TO"	false	0	0.000000	(11, 13) -> (11, 15)
+test/test_015.md:11:16:	integer	"1"	false	1	0.000000	(11, 16) -> (11, 17)
+test/test_015.md:11:18:	by	"BY"	false	0	0.000000	(11, 18) -> (11, 20)
+test/test_015.md:11:21:	minus	"-"	false	0	0.000000	(11, 21) -> (11, 22)
+test/test_015.md:11:22:	integer	"3"	false	3	0.000000	(11, 22) -> (11, 23)
+test/test_015.md:11:24:	do	"DO"	false	0	0.000000	(11, 24) -> (11, 26)
+test/test_015.md:12:4:	ident	"Texts"	false	0	0.000000	(12, 4) -> (12, 9)
+test/test_015.md:12:9:	dot	"."	false	0	0.000000	(12, 9) -> (12, 10)
+test/test_015.md:12:10:	ident	"WriteInt"	false	0	0.000000	(12, 10) -> (12, 18)
+test/test_015.md:12:18:	lparen	"("	false	0	0.000000	(12, 18) -> (12, 19)
+test/test_015.md:12:19:	ident	"x"	false	0	0.000000	(12, 19) -> (12, 20)
+test/test_015.md:12:20:	rparen	")"	false	0	0.000000	(12, 20) -> (12, 21)
+test/test_015.md:12:21:	semicolon	";"	false	0	0.000000	(12, 21) -> (12, 22)
+test/test_015.md:13:2:	end	"END"	false	0	0.000000	(13, 2) -> (13, 5)
+test/test_015.md:13:5:	semicolon	";"	false	0	0.000000	(13, 5) -> (13, 6)
+test/test_015.md:14:2:	ident	"Texts"	false	0	0.000000	(14, 2) -> (14, 7)
+test/test_015.md:14:7:	dot	"."	false	0	0.000000	(14, 7) -> (14, 8)
+test/test_015.md:14:8:	ident	"WriteLn"	false	0	0.000000	(14, 8) -> (14, 15)
+test/test_015.md:14:15:	semicolon	";"	false	0	0.000000	(14, 15) -> (14, 16)
+test/test_015.md:16:2:	for	"FOR"	false	0	0.000000	(16, 2) -> (16, 5)
+test/test_015.md:16:6:	ident	"x"	false	0	0.000000	(16, 6) -> (16, 7)
+test/test_015.md:16:8:	assign	":="	false	0	0.000000	(16, 8) -> (16, 10)
+test/test_015.md:16:11:	integer	"1"	false	1	0.000000	(16, 11) -> (16, 12)
+test/test_015.md:16:13:	to	"TO"	false	0	0.000000	(16, 13) -> (16, 15)
+test/test_015.md:16:16:	integer	"3"	false	3	0.000000	(16, 16) -> (16, 17)
+test/test_015.md:16:18:	do	"DO"	false	0	0.000000	(16, 18) -> (16, 20)
+test/test_015.md:17:4:	ident	"Texts"	false	0	0.000000	(17, 4) -> (17, 9)
+test/test_015.md:17:9:	dot	"."	false	0	0.000000	(17, 9) -> (17, 10)
+test/test_015.md:17:10:	ident	"WriteInt"	false	0	0.000000	(17, 10) -> (17, 18)
+test/test_015.md:17:18:	lparen	"("	false	0	0.000000	(17, 18) -> (17, 19)
+test/test_015.md:17:19:	ident	"x"	false	0	0.000000	(17, 19) -> (17, 20)
+test/test_015.md:17:20:	rparen	")"	false	0	0.000000	(17, 20) -> (17, 21)
+test/test_015.md:17:21:	semicolon	";"	false	0	0.000000	(17, 21) -> (17, 22)
+test/test_015.md:18:2:	end	"END"	false	0	0.000000	(18, 2) -> (18, 5)
+test/test_015.md:18:5:	semicolon	";"	false	0	0.000000	(18, 5) -> (18, 6)
+test/test_015.md:19:2:	ident	"Texts"	false	0	0.000000	(19, 2) -> (19, 7)
+test/test_015.md:19:7:	dot	"."	false	0	0.000000	(19, 7) -> (19, 8)
+test/test_015.md:19:8:	ident	"WriteLn"	false	0	0.000000	(19, 8) -> (19, 15)
+test/test_015.md:20:0:	end	"END"	false	0	0.000000	(20, 0) -> (20, 3)
+test/test_015.md:20:4:	ident	"ForBy"	false	0	0.000000	(20, 4) -> (20, 9)
+test/test_015.md:20:9:	dot	"."	false	0	0.000000	(20, 9) -> (20, 10)
+test/test_015.md:21:0:	eof	""	false	0	0.000000	(21, 0) -> (21, 0)
 ```
 ## AST
 ```scheme
@@ -98,10 +118,15 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteInt")
             (variable [i64] "x")
           )
         )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
       )
     )
     (for x
@@ -114,10 +139,15 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteInt")
             (variable [i64] "x")
           )
         )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
       )
     )
     (for x
@@ -127,10 +157,15 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
       (stmts
         (expr2stmt
           (call
-            (procedure [void] "C.print")
+            (procedure [void] "Texts.WriteInt")
             (variable [i64] "x")
           )
         )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
       )
     )
   )
@@ -139,7 +174,8 @@ test/test_015.md:16:0:	eof	""	false	0	0.000000	(16, 0) -> (16, 0)
 ## IR
 ```llvm
 @0 = global i64 0
-@1 = global [4 x i8] c"%d\0A\00"
+@1 = global [3 x i8] c"%d\00"
+@2 = global [1 x i8] c"\00"
 
 declare i64 @puts(i8* %str)
 
@@ -160,7 +196,7 @@ entry:
 
 0:
 	%1 = load i64, i64* @0
-	%2 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
+	%2 = getelementptr [3 x i8], [3 x i8]* @1, i64 0, i64 0
 	%3 = call i64 (i8*, ...) @printf(i8* %2, i64 %1)
 	%4 = load i64, i64* @0
 	%5 = add i64 %4, 2
@@ -169,50 +205,48 @@ entry:
 	br i1 %6, label %0, label %7
 
 7:
-	%8 = sub i64 0, 3
+	%8 = getelementptr [1 x i8], [1 x i8]* @2, i64 0, i64 0
+	%9 = call i64 @puts(i8* %8)
+	%10 = sub i64 0, 3
 	store i64 9, i64* @0
-	br label %9
+	br label %11
 
-9:
-	%10 = load i64, i64* @0
-	%11 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
-	%12 = call i64 (i8*, ...) @printf(i8* %11, i64 %10)
-	%13 = load i64, i64* @0
-	%14 = add i64 %13, %8
-	store i64 %14, i64* @0
-	%15 = icmp sge i64 %14, 1
-	br i1 %15, label %9, label %16
+11:
+	%12 = load i64, i64* @0
+	%13 = getelementptr [3 x i8], [3 x i8]* @1, i64 0, i64 0
+	%14 = call i64 (i8*, ...) @printf(i8* %13, i64 %12)
+	%15 = load i64, i64* @0
+	%16 = add i64 %15, %10
+	store i64 %16, i64* @0
+	%17 = icmp sge i64 %16, 1
+	br i1 %17, label %11, label %18
 
-16:
+18:
+	%19 = getelementptr [1 x i8], [1 x i8]* @2, i64 0, i64 0
+	%20 = call i64 @puts(i8* %19)
 	store i64 1, i64* @0
-	br label %17
+	br label %21
 
-17:
-	%18 = load i64, i64* @0
-	%19 = getelementptr [4 x i8], [4 x i8]* @1, i64 0, i64 0
-	%20 = call i64 (i8*, ...) @printf(i8* %19, i64 %18)
-	%21 = load i64, i64* @0
-	%22 = add i64 %21, 1
-	store i64 %22, i64* @0
-	%23 = icmp sle i64 %22, 3
-	br i1 %23, label %17, label %24
+21:
+	%22 = load i64, i64* @0
+	%23 = getelementptr [3 x i8], [3 x i8]* @1, i64 0, i64 0
+	%24 = call i64 (i8*, ...) @printf(i8* %23, i64 %22)
+	%25 = load i64, i64* @0
+	%26 = add i64 %25, 1
+	store i64 %26, i64* @0
+	%27 = icmp sle i64 %26, 3
+	br i1 %27, label %21, label %28
 
-24:
+28:
+	%29 = getelementptr [1 x i8], [1 x i8]* @2, i64 0, i64 0
+	%30 = call i64 @puts(i8* %29)
 	ret i64 0
 }
 
 ```
 ## Run
 ```bash
-1
-3
-5
-7
-9
-9
-6
-3
-1
-2
-3
+13579
+963
+123
 ```
