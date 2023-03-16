@@ -72,7 +72,7 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] replace `print` with builtin `Texts` procedures.
 - [x] move generated code to `oberonMain` to allow for preamble.
 - [x] capture command line arguments.
-- [ ] capture environment variables.
+- [x] capture environment variables.
 - [ ] basic local variable and assignment support.
 - [ ] generate call-graph in markdown.
 - [ ] support multiple modules in checker (and generator?).
