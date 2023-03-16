@@ -194,6 +194,7 @@ test/test_011.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
 @4 = global [3 x i8] c"%f\00"
 @__argc = global i64 0
 @__argv = global i8** inttoptr (i8 0 to i8**)
+@__envp = global i8** inttoptr (i8 0 to i8**)
 
 declare i64 @puts(i8* %str)
 
@@ -242,10 +243,11 @@ entry:
 	ret void
 }
 
-define i64 @main(i64 %argc, i8** %argv) {
+define i64 @main(i64 %argc, i8** %argv, i8** %argp) {
 entry:
 	store i64 %argc, i64* @__argc
 	store i8** %argv, i8*** @__argv
+	store i8** %argp, i8*** @__envp
 	call void @oberonMain()
 	ret i64 0
 }

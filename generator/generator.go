@@ -104,16 +104,18 @@ func (g *Generator) generateOberonMain(n ast.Stmt) *ir.Func {
 }
 
 func (g *Generator) generateMainPreamble(main *ir.Func) {
+	// Capture command-line arguments
 	g.vars["__argc"] = g.currentModule.NewGlobalDef("__argc",
 		constant.NewInt(types.I64, 0))
 	g.vars["__argv"] = g.currentModule.NewGlobalDef("__argv",
 		constant.NewIntToPtr(constant.NewInt(types.I8, 0), types.NewPointer(types.I8Ptr)))
-
-	// Capture command-line arguments
 	g.currentBlock.NewStore(main.Params[0], g.vars["__argc"])
 	g.currentBlock.NewStore(main.Params[1], g.vars["__argv"])
 
-	// TODO(daniel): capture environment variables?
+	// Capture environment variables
+	g.vars["__envp"] = g.currentModule.NewGlobalDef("__envp",
+		constant.NewIntToPtr(constant.NewInt(types.I8, 0), types.NewPointer(types.I8Ptr)))
+	g.currentBlock.NewStore(main.Params[2], g.vars["__envp"])
 }
 
 func (g *Generator) generateMain(n ast.Stmt) {
@@ -121,7 +123,8 @@ func (g *Generator) generateMain(n ast.Stmt) {
 
 	g.currentFunc = g.currentModule.NewFunc("main", types.I64,
 		ir.NewParam("argc", types.I64),
-		ir.NewParam("argv", types.NewPointer(types.I8Ptr)))
+		ir.NewParam("argv", types.NewPointer(types.I8Ptr)),
+		ir.NewParam("argp", types.NewPointer(types.I8Ptr)))
 	g.currentBlock = g.currentFunc.NewBlock("entry")
 
 	g.generateMainPreamble(g.currentFunc)
