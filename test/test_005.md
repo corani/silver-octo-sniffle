@@ -496,6 +496,8 @@ test/test_005.md:17:0:	eof	""	false	0	0.000000	(17, 0) -> (17, 0)
 ```llvm
 @0 = global [3 x i8] c"%d\00"
 @1 = global [1 x i8] c"\00"
+@__argc = global i64 0
+@__argv = global i8** inttoptr (i8 0 to i8**)
 
 declare i64 @puts(i8* %str)
 
@@ -509,7 +511,7 @@ declare i8* @malloc(i64 %size)
 
 declare i8* @free(i8* %ptr)
 
-define i64 @main() {
+define void @oberonMain() {
 entry:
 	%0 = icmp eq i64 1, 2
 	%1 = zext i1 %0 to i64
@@ -595,6 +597,14 @@ entry:
 	%81 = call i64 (i8*, ...) @printf(i8* %80, i64 %79)
 	%82 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
 	%83 = call i64 @puts(i8* %82)
+	ret void
+}
+
+define i64 @main(i64 %argc, i8** %argv) {
+entry:
+	store i64 %argc, i64* @__argc
+	store i8** %argv, i8*** @__argv
+	call void @oberonMain()
 	ret i64 0
 }
 

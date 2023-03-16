@@ -192,6 +192,8 @@ test/test_011.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
 @2 = global [3 x i8] c"%d\00"
 @3 = global [1 x i8] c"\00"
 @4 = global [3 x i8] c"%f\00"
+@__argc = global i64 0
+@__argv = global i8** inttoptr (i8 0 to i8**)
 
 declare i64 @puts(i8* %str)
 
@@ -205,7 +207,7 @@ declare i8* @malloc(i64 %size)
 
 declare i8* @free(i8* %ptr)
 
-define i64 @main() {
+define void @oberonMain() {
 entry:
 	store i64 1, i64* @0
 	%0 = load i64, i64* @0
@@ -237,6 +239,14 @@ entry:
 	%23 = call i64 (i8*, ...) @printf(i8* %22, i64 %21)
 	%24 = getelementptr [1 x i8], [1 x i8]* @3, i64 0, i64 0
 	%25 = call i64 @puts(i8* %24)
+	ret void
+}
+
+define i64 @main(i64 %argc, i8** %argv) {
+entry:
+	store i64 %argc, i64* @__argc
+	store i8** %argv, i8*** @__argv
+	call void @oberonMain()
 	ret i64 0
 }
 

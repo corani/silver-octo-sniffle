@@ -139,6 +139,8 @@ test/test_022.md:15:0:	eof	""	false	0	0.000000	(15, 0) -> (15, 0)
 @1 = global i64* inttoptr (i64 0 to i64*)
 @2 = global [3 x i8] c"%d\00"
 @3 = global [1 x i8] c"\00"
+@__argc = global i64 0
+@__argv = global i8** inttoptr (i8 0 to i8**)
 
 declare i64 @puts(i8* %str)
 
@@ -152,7 +154,7 @@ declare i8* @malloc(i64 %size)
 
 declare i8* @free(i8* %ptr)
 
-define i64 @main() {
+define void @oberonMain() {
 entry:
 	%0 = call i8* @malloc(i64 8)
 	%1 = bitcast i8* %0 to i64*
@@ -170,6 +172,14 @@ entry:
 	%10 = load i64*, i64** @0
 	%11 = bitcast i64* %10 to i8*
 	%12 = call i8* @free(i8* %11)
+	ret void
+}
+
+define i64 @main(i64 %argc, i8** %argv) {
+entry:
+	store i64 %argc, i64* @__argc
+	store i8** %argv, i8*** @__argv
+	call void @oberonMain()
 	ret i64 0
 }
 

@@ -101,6 +101,8 @@ test/test_012.md:12:0:	eof	""	false	0	0.000000	(12, 0) -> (12, 0)
 @0 = global i64 0
 @1 = global [3 x i8] c"%d\00"
 @2 = global [1 x i8] c"\00"
+@__argc = global i64 0
+@__argv = global i8** inttoptr (i8 0 to i8**)
 
 declare i64 @puts(i8* %str)
 
@@ -114,7 +116,7 @@ declare i8* @malloc(i64 %size)
 
 declare i8* @free(i8* %ptr)
 
-define i64 @main() {
+define void @oberonMain() {
 entry:
 	store i64 10, i64* @0
 	br label %0
@@ -133,6 +135,14 @@ entry:
 	br i1 %9, label %10, label %0
 
 10:
+	ret void
+}
+
+define i64 @main(i64 %argc, i8** %argv) {
+entry:
+	store i64 %argc, i64* @__argc
+	store i8** %argv, i8*** @__argv
+	call void @oberonMain()
 	ret i64 0
 }
 

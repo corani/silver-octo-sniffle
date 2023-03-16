@@ -9,7 +9,7 @@ BEGIN
     Texts.WriteInt(ORD(TRUE & FALSE));  Texts.WriteLn;
     Texts.WriteInt(ORD(TRUE OR FALSE)); Texts.WriteLn;
     Texts.WriteInt(ORD(TRUE));          Texts.WriteLn;
-    Texts.WriteInt(ORD(FALSE))          Texts.WriteLn;
+    Texts.WriteInt(ORD(FALSE));         Texts.WriteLn;
 END BooleanOperators.
 ```
 ## Tokens
@@ -103,6 +103,7 @@ test/test_004.md:9:22:	lparen	"("	false	0	0.000000	(9, 22) -> (9, 23)
 test/test_004.md:9:23:	boolean	"FALSE"	false	0	0.000000	(9, 23) -> (9, 28)
 test/test_004.md:9:28:	rparen	")"	false	0	0.000000	(9, 28) -> (9, 29)
 test/test_004.md:9:29:	rparen	")"	false	0	0.000000	(9, 29) -> (9, 30)
+test/test_004.md:9:30:	semicolon	";"	false	0	0.000000	(9, 30) -> (9, 31)
 test/test_004.md:9:40:	ident	"Texts"	false	0	0.000000	(9, 40) -> (9, 45)
 test/test_004.md:9:45:	dot	"."	false	0	0.000000	(9, 45) -> (9, 46)
 test/test_004.md:9:46:	ident	"WriteLn"	false	0	0.000000	(9, 46) -> (9, 53)
@@ -112,10 +113,180 @@ test/test_004.md:10:4:	ident	"BooleanOperators"	false	0	0.000000	(10, 4) -> (10,
 test/test_004.md:10:20:	dot	"."	false	0	0.000000	(10, 20) -> (10, 21)
 test/test_004.md:11:0:	eof	""	false	0	0.000000	(11, 0) -> (11, 0)
 ```
-## Parser errors
+## AST
+```scheme
+(module "BooleanOperators"
+  (stmts
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (not [boolean]
+            #true
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (not [boolean]
+            #false
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (ampersand [boolean]
+            #true
+            #false
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          (or [boolean]
+            #true
+            #false
+          )
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          #true
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteInt")
+        (call
+          (procedure [i64] "ORD")
+          #false
+        )
+      )
+    )
+    (expr2stmt
+      (call
+        (procedure [void] "Texts.WriteLn")
+      )
+    )
+  )
+)
 ```
-test/test_004.md:9:40: ERROR: unexpected token: Texts
-test/test_004.md:9:40: INFO : expected: semicolon
-test/test_004.md:9:53: ERROR: unexpected token: ;
-test/test_004.md:9:53: INFO : expected: end
+## IR
+```llvm
+@0 = global [3 x i8] c"%d\00"
+@1 = global [1 x i8] c"\00"
+@__argc = global i64 0
+@__argv = global i8** inttoptr (i8 0 to i8**)
+
+declare i64 @puts(i8* %str)
+
+declare i64 @rand()
+
+declare i64 @sprintf(i8* %buf, i8* %format, ...)
+
+declare i64 @printf(i8* %format, ...)
+
+declare i8* @malloc(i64 %size)
+
+declare i8* @free(i8* %ptr)
+
+define void @oberonMain() {
+entry:
+	%0 = icmp eq i1 true, false
+	%1 = zext i1 %0 to i64
+	%2 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%3 = call i64 (i8*, ...) @printf(i8* %2, i64 %1)
+	%4 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%5 = call i64 @puts(i8* %4)
+	%6 = icmp eq i1 false, false
+	%7 = zext i1 %6 to i64
+	%8 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%9 = call i64 (i8*, ...) @printf(i8* %8, i64 %7)
+	%10 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%11 = call i64 @puts(i8* %10)
+	%12 = and i1 true, false
+	%13 = zext i1 %12 to i64
+	%14 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%15 = call i64 (i8*, ...) @printf(i8* %14, i64 %13)
+	%16 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%17 = call i64 @puts(i8* %16)
+	%18 = or i1 true, false
+	%19 = zext i1 %18 to i64
+	%20 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%21 = call i64 (i8*, ...) @printf(i8* %20, i64 %19)
+	%22 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%23 = call i64 @puts(i8* %22)
+	%24 = zext i1 true to i64
+	%25 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%26 = call i64 (i8*, ...) @printf(i8* %25, i64 %24)
+	%27 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%28 = call i64 @puts(i8* %27)
+	%29 = zext i1 false to i64
+	%30 = getelementptr [3 x i8], [3 x i8]* @0, i64 0, i64 0
+	%31 = call i64 (i8*, ...) @printf(i8* %30, i64 %29)
+	%32 = getelementptr [1 x i8], [1 x i8]* @1, i64 0, i64 0
+	%33 = call i64 @puts(i8* %32)
+	ret void
+}
+
+define i64 @main(i64 %argc, i8** %argv) {
+entry:
+	store i64 %argc, i64* @__argc
+	store i8** %argv, i8*** @__argv
+	call void @oberonMain()
+	ret i64 0
+}
+
+```
+## Run
+```bash
+0
+1
+0
+1
+1
+0
 ```
