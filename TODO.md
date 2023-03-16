@@ -70,6 +70,11 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [x] support temporary built-in `DELETE` procedure.
 - [x] support qualified-identifiers.
 - [x] replace `print` with builtin `Texts` procedures.
+- [x] move generated code to `oberonMain` to allow for preamble.
+- [x] capture command line arguments.
+- [ ] capture environment variables.
+- [ ] basic local variable and assignment support.
+- [ ] generate call-graph in markdown.
 - [ ] support multiple modules in checker (and generator?).
 - [ ] better sync points during parser error recovery.
 - [ ] add "golden tests" for error conditions (e.g. invalid code).
@@ -84,7 +89,6 @@ The goal is to implement a working Oberon compiler. The checklist below will gro
 - [ ] support `RECORD` types.
 - [ ] support `PROCEDURE` types.
 - [ ] support `CASE` / `OF` statement.
-- [ ] basic local variable and assignment support.
 - [ ] make builtin `Texts` procedures real procedures.
 - [ ] better command line arguments.
 - [ ] update "golden test" files in-place, so any additional content doesn't get overwritten.

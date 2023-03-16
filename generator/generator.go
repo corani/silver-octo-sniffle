@@ -89,15 +89,44 @@ func (g *Generator) VisitModule(n *ast.Module) {
 	}
 }
 
-func (g *Generator) generateMain(n ast.Stmt) {
+func (g *Generator) generateOberonMain(n ast.Stmt) *ir.Func {
 	leaveNode := g.enterNode(n)
 	defer leaveNode()
 
-	g.currentFunc = g.currentModule.NewFunc("main", types.I64)
+	g.currentFunc = g.currentModule.NewFunc("oberonMain", types.Void)
 	g.currentBlock = g.currentFunc.NewBlock("entry")
 
 	n.Visit(g)
 
+	g.currentBlock.NewRet(nil)
+
+	return g.currentFunc
+}
+
+func (g *Generator) generateMainPreamble(main *ir.Func) {
+	g.vars["__argc"] = g.currentModule.NewGlobalDef("__argc",
+		constant.NewInt(types.I64, 0))
+	g.vars["__argv"] = g.currentModule.NewGlobalDef("__argv",
+		constant.NewIntToPtr(constant.NewInt(types.I8, 0), types.NewPointer(types.I8Ptr)))
+
+	// Capture command-line arguments
+	g.currentBlock.NewStore(main.Params[0], g.vars["__argc"])
+	g.currentBlock.NewStore(main.Params[1], g.vars["__argv"])
+
+	// TODO(daniel): capture environment variables?
+}
+
+func (g *Generator) generateMain(n ast.Stmt) {
+	oberonMain := g.generateOberonMain(n)
+
+	g.currentFunc = g.currentModule.NewFunc("main", types.I64,
+		ir.NewParam("argc", types.I64),
+		ir.NewParam("argv", types.NewPointer(types.I8Ptr)))
+	g.currentBlock = g.currentFunc.NewBlock("entry")
+
+	g.generateMainPreamble(g.currentFunc)
+
+	g.currentBlock.NewCall(oberonMain)
 	g.currentBlock.NewRet(zero)
 }
 
