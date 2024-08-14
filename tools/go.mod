@@ -2,7 +2,7 @@ module github.wdf.sap.corp/velocity/tachyon/tools
 
 go 1.19
 
-require github.com/golangci/golangci-lint v1.60.0
+require github.com/golangci/golangci-lint v1.60.1
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
