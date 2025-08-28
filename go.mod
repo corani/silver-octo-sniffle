@@ -6,7 +6,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/llir/llvm v0.3.6
 	github.com/stretchr/testify v1.11.1
-	github.com/yuin/goldmark v1.7.8
+	github.com/yuin/goldmark v1.7.13
 )
 
 require (
